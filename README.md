@@ -1,5 +1,5 @@
 # Fluxtion service starter
-An example using Fluxtion as a dependency controller for starting and stopping services in a deterministic order
+An example using [Fluxtion](https://github.com/v12technology/fluxtion) as a dependency controller for starting and stopping services in a deterministic order
 
 The service starter manages a set of services with the following behaviour
 1. A service cannot be started until its dependencies are in a STARTED state
