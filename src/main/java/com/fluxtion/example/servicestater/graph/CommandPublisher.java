@@ -1,4 +1,4 @@
-package com.fluxtion.example.servicestater.impl;
+package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.ServiceEvent;
 import com.fluxtion.runtim.Named;

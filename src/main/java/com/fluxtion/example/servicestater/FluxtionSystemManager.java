@@ -2,8 +2,7 @@ package com.fluxtion.example.servicestater;
 
 import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.compiler.builder.node.SEPConfig;
-import com.fluxtion.example.servicestater.ServiceEvent.*;
-import com.fluxtion.example.servicestater.impl.*;
+import com.fluxtion.example.servicestater.graph.*;
 import com.fluxtion.runtim.EventProcessor;
 import com.fluxtion.runtim.audit.EventLogControlEvent;
 import lombok.extern.java.Log;
@@ -75,8 +74,19 @@ public class FluxtionSystemManager {
         }
     }
 
+    public void startService(String serviceName){
+        log.info("start single service:" + serviceName);
+        startProcessor.onEvent(new ServiceEvent.StartSingleService(serviceName));
+        publishAllServiceStatus();
+    }
+
+    public void stopService(String serviceName){
+        log.info("stop single service:" + serviceName);
+        startProcessor.onEvent(new ServiceEvent.StopSingleService(serviceName));
+        publishAllServiceStatus();
+    }
+
     public void startAllServices() {
-//        ServiceEvent.StartSingleService startSingleServiceAll = new ServiceEvent.StartSingleService("all");
         log.info("start all");
         startProcessor.onEvent(new StartAllServices());
         publishAllServiceStatus();
@@ -98,6 +108,14 @@ public class FluxtionSystemManager {
 
     public void publishAllServiceStatus() {
         startProcessor.onEvent(new PublishStatus());
+    }
+
+    public void processServiceStartedNotification(String serviceName){
+        processStatusUpdate(ServiceEvent.newStartedUpdate( serviceName));
+    }
+
+    public void processServiceStoppedNotification(String serviceName){
+        processStatusUpdate(ServiceEvent.newStoppedUpdate( serviceName));
     }
 
     public void processStatusUpdate(StatusUpdate statusUpdate) {

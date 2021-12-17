@@ -1,4 +1,4 @@
-package com.fluxtion.example.servicestater.impl;
+package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.ServiceEvent;
 import com.fluxtion.example.servicestater.ServiceStatus;
@@ -20,6 +20,11 @@ public class StopServiceController extends ServiceController {
         super(serviceName, toStopServiceName(serviceName), commandPublisher, sharedServiceStatus);
     }
 
+    @EventHandler(filterVariable = "serviceName")
+    public boolean stopThisService(ServiceEvent.StopSingleService startSingleService){
+        return handleStop();
+    }
+
     /**
      * Injection point for external stop events into this instance. Fluxtion will route events to this instance.
      *
@@ -28,6 +33,10 @@ public class StopServiceController extends ServiceController {
      */
     @EventHandler(propagate = false)
     public boolean stopAllServices(ServiceEvent.StopAllServices stopSingleServiceCommand) {
+        return handleStop();
+    }
+
+    private boolean handleStop() {
         ServiceStatus startStatus = getStatus();
         switch (startStatus) {
             case STATUS_UNKNOWN:

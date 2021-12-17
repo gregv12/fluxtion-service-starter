@@ -1,4 +1,4 @@
-package com.fluxtion.example.servicestater.impl;
+package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.ServiceEvent;
 import com.fluxtion.example.servicestater.ServiceStatus;
@@ -20,6 +20,11 @@ public class StartServiceController extends ServiceController {
         super(serviceName, toStartServiceName(serviceName), commandPublisher, sharedServiceStatus);
     }
 
+    @EventHandler(filterVariable = "serviceName")
+    public boolean startThisService(ServiceEvent.StartSingleService startSingleService){
+        return handleStart();
+    }
+
     /**
      * Injection point for external start events into this instance. Fluxtion will route events to this instance.
      *
@@ -28,6 +33,10 @@ public class StartServiceController extends ServiceController {
      */
     @EventHandler(propagate = false)
     public boolean startAllServices(ServiceEvent.StartAllServices startSingleServiceCommand) {
+        return handleStart();
+    }
+
+    private boolean handleStart() {
         ServiceStatus startStatus = getStatus();
         switch (startStatus) {
             case STATUS_UNKNOWN:

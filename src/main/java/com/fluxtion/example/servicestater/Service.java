@@ -1,7 +1,7 @@
 package com.fluxtion.example.servicestater;
 
-import com.fluxtion.example.servicestater.impl.StartServiceController;
-import com.fluxtion.example.servicestater.impl.StopServiceController;
+import com.fluxtion.example.servicestater.graph.StartServiceController;
+import com.fluxtion.example.servicestater.graph.StopServiceController;
 import com.fluxtion.runtim.Named;
 
 import java.util.Collections;
