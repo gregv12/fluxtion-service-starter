@@ -98,7 +98,7 @@ public class FluxtionSystemManager {
         publishAllServiceStatus();
     }
 
-    public void registerCommandProcessor(Consumer<List<Command>> commandProcessor) {
+    public void registerCommandProcessor(Consumer<List<TaskWrapper>> commandProcessor) {
         startProcessor.onEvent(new RegisterCommandProcessor(commandProcessor));
     }
 
@@ -125,9 +125,9 @@ public class FluxtionSystemManager {
 
     private void addServicesToMap(Service s) {
         StartServiceController startServiceController = new StartServiceController(s.getName(), commandPublisher, sharedServiceStatus);
-        startServiceController.setTask(s.getStartTask());
+        startServiceController.setStartTask(s.getStartTask());
         StopServiceController stopServiceController = new StopServiceController(s.getName(), commandPublisher, sharedServiceStatus);
-        stopServiceController.setTask(s.getStartTask());
+        stopServiceController.setStopTask(s.getStopTask());
         managedStartServices.put(startServiceController.getName(), startServiceController);
         managedStartServices.put(stopServiceController.getName(), stopServiceController);
     }

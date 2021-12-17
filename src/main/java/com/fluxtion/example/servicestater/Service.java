@@ -46,6 +46,10 @@ public class Service implements Named {
         return startTask;
     }
 
+    public SerializableRunnable getStopTask() {
+        return stopTask;
+    }
+
     @Override
     public String getName() {
         return name;

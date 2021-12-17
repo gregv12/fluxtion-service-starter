@@ -92,7 +92,7 @@ public class ScannerTester {
     private static void stopByName(Scanner scanner){
         checkControllerIsBuilt();
         if(scanner.hasNext()){
-            fluxtionSystemManager.startService(scanner.next());
+            fluxtionSystemManager.stopService(scanner.next());
         }else{
             System.out.println("2nd argument required - service name");
         }
@@ -117,7 +117,7 @@ public class ScannerTester {
     }
 
     private static void buildGraph() {
-        Service svc_1 = new Service("svc_1", ScannerTester::notifySuccess, null);
+        Service svc_1 = new Service("svc_1", ScannerTester::notifyStart, ScannerTester::notifyStop);
         Service svc_2 = new Service("svc_2", svc_1);
         Service svc_A = new Service("svc_A");
         Service svc_B = new Service("svc_B", svc_A);
@@ -126,9 +126,16 @@ public class ScannerTester {
         //build and register outputs
         fluxtionSystemManager = new FluxtionSystemManager();
         fluxtionSystemManager.buildSystemController(svc_1, svc_2, svc_A, svc_B, svc_2BJoined);
-        fluxtionSystemManager.registerCommandProcessor(new PublishCommandsToConsole());
+        fluxtionSystemManager.registerCommandProcessor(new ServiceTaskExecutor());
         fluxtionSystemManager.registerStatusListener(new PublishStatusToConsole());
     }
 
-    public static void notifySuccess(){}
+    public static void notifyStart(){
+        System.out.println("svc_1::START task");
+    }
+
+
+    public static void notifyStop(){
+        System.out.println("svc_1::STOP task");
+    }
 }

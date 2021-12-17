@@ -1,5 +1,6 @@
 package com.fluxtion.example.servicestater;
 
+import com.fluxtion.example.servicestater.graph.TaskWrapper;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.event.Event;
 import lombok.ToString;
@@ -95,7 +96,7 @@ public interface ServiceEvent extends Named, Event {
 
     @Value
     class RegisterCommandProcessor {
-        Consumer<List<Command>> consumer;
+        Consumer<List<TaskWrapper>> consumer;
     }
 
     @Value

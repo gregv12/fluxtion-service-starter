@@ -17,15 +17,15 @@ import java.util.function.Consumer;
  */
 public class CommandPublisher implements Named {
 
-    private Consumer<List<ServiceEvent.Command>> commandPublisher = (command -> {});
-    private final List<ServiceEvent.Command> commandList = new ArrayList<>();
+    private Consumer<List<TaskWrapper>> commandPublisher = (command -> {});
+    private final List<TaskWrapper> commandList = new ArrayList<>();
 
     @EventHandler(propagate = false)
     public void registerCommandProcessor(ServiceEvent.RegisterCommandProcessor registerCommandProcessor) {
         this.commandPublisher = registerCommandProcessor.getConsumer();
     }
 
-    public void publishCommand(ServiceEvent.Command command){
+    public void publishCommand(TaskWrapper command){
         commandList.add(command);
     }
 

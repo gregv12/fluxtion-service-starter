@@ -35,7 +35,8 @@ public abstract class ServiceController implements Named {
     private final CommandPublisher commandPublisher;
     @PushReference
     private final SharedServiceStatus sharedServiceStatus;
-    private LambdaReflection.SerializableRunnable task;
+    private LambdaReflection.SerializableRunnable startTask;
+    private LambdaReflection.SerializableRunnable stopTask;
 
     public ServiceController(String serviceName, String controllerName, CommandPublisher commandPublisher, SharedServiceStatus sharedServiceStatus) {
         this.serviceName = serviceName;
@@ -84,16 +85,24 @@ public abstract class ServiceController implements Named {
         sharedServiceStatus.setServiceStatus(getServiceName(), serviceStatus);
     }
 
-    public LambdaReflection.SerializableRunnable getTask() {
-        return task;
+    public LambdaReflection.SerializableRunnable getStartTask() {
+        return startTask;
     }
 
-    public void setTask(LambdaReflection.SerializableRunnable task) {
-        this.task = task;
+    public void setStartTask(LambdaReflection.SerializableRunnable startTask) {
+        this.startTask = startTask;
     }
 
-    protected void publishCommand(ServiceEvent.Command command) {
-        commandPublisher.publishCommand(command);
+    public LambdaReflection.SerializableRunnable getStopTask() {
+        return stopTask;
+    }
+
+    public void setStopTask(LambdaReflection.SerializableRunnable stopTask) {
+        this.stopTask = stopTask;
+    }
+
+    protected void publishTask(TaskWrapper task) {
+        commandPublisher.publishCommand(task);
     }
 
     protected boolean areAllParentsStarted() {
@@ -106,12 +115,16 @@ public abstract class ServiceController implements Named {
     }
 
     protected void startService(){
-        publishCommand(new ServiceEvent.StartSingleService(getServiceName()));
+        if(getStartTask()!=null){
+            publishTask(new TaskWrapper(getServiceName(), true, getStartTask()));
+        }
         setStatus(ServiceStatus.STARTING);
     }
 
     protected void stopService(){
-        publishCommand(new ServiceEvent.StopSingleService(getServiceName()));
+        if(getStopTask()!=null){
+            publishTask(new TaskWrapper(getServiceName(), false, getStopTask()));
+        }
         setStatus(ServiceStatus.STOPPING);
     }
 
