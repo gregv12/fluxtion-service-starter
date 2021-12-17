@@ -26,6 +26,9 @@ The main class for client code to use is [FluxtionSystemManager](https://github.
 A service is modelled with [Service](https://github.com/gregv12/example-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/Service.java):
 - A service has a unique name
 - A service has a set of dependencies that must be in STARTED state before this service can start
+- Services are controlled in the graph be StartServiceController and StopServiceController
+- The contollers process events from the outside world, manage state and create commands to execute on services
+- Commands are published by the CommandPublisher to the outside world 
 
 ### Communicating with the outside world
 The FluxtionSystemManage reacts to inputs and produces commands for the external system to issue to services. A client application registers a command listener and then sends commands to services, example registering a dump commands to console:
