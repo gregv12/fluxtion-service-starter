@@ -85,8 +85,6 @@ svc_A - STATUS_UNKNOWN
 
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.FluxtionSystemManager startServices
 INFO: start all ServiceEvent.Start(super=name='all')
-
-
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishCommandsToConsole accept
 INFO: Command list:
 ServiceEvent.Start(super=name='svc_1')
@@ -111,11 +109,11 @@ svc_2 - STARTING
 svc_B - WAITING_FOR_PARENTS_TO_START
 svc_1 - STARTED
 svc_A - STARTING
-
-
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishCommandsToConsole accept
 INFO: Command list:
 ServiceEvent.Start(super=name='svc_2')
+
+
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.FluxtionSystemManager processStatusUpdate
 INFO: ServiceEvent.StatusUpdate(status=STARTED, name=svc_2)
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
@@ -136,11 +134,11 @@ svc_2 - STARTED
 svc_B - STARTING
 svc_1 - STARTED
 svc_A - STARTED
-
-
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishCommandsToConsole accept
 INFO: Command list:
 ServiceEvent.Start(super=name='svc_B')
+
+
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.FluxtionSystemManager processStatusUpdate
 INFO: ServiceEvent.StatusUpdate(status=STARTED, name=svc_B)
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
@@ -150,13 +148,9 @@ svc_2 - STARTED
 svc_B - STARTED
 svc_1 - STARTED
 svc_A - STARTED
-
-
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishCommandsToConsole accept
 INFO: Command list:
 ServiceEvent.Start(super=name='svc_2BJoined')
-
-
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
 INFO: Current status:
 svc_2BJoined - STARTING
@@ -171,8 +165,6 @@ INFO: start all ServiceEvent.Stop(super=name='all')
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishCommandsToConsole accept
 INFO: Command list:
 ServiceEvent.Stop(super=name='svc_2BJoined')
-
-
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
 INFO: Current status:
 svc_2BJoined - STOPPING
