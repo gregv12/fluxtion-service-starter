@@ -11,7 +11,7 @@ import static com.fluxtion.example.servicestater.ServiceStatus.*;
 /**
  * A controller for starting services in the graph, based upon the topological order of the nodes in the graph. Reacts to events:
  * <ul>
- *   <li>{@link ServiceEvent.Start} </li>
+ *   <li>{@link ServiceEvent.StartSingleService} </li>
  *   <li>Change notifications to parent {@link ServiceController} nodes</li>
  * </ul
  */
@@ -23,11 +23,11 @@ public class StartServiceController extends ServiceController {
     /**
      * Injection point for external start events into this instance. Fluxtion will route events to this instance.
      *
-     * @param startCommand Command to start this service
+     * @param startSingleServiceCommand Command to start this service
      * @return flag indicating change of state, true - propagate notification to child nodes
      */
     @EventHandler(propagate = false)
-    public boolean startService(ServiceEvent.Start startCommand) {
+    public boolean startAllServices(ServiceEvent.StartAllServices startSingleServiceCommand) {
         ServiceStatus startStatus = getStatus();
         switch (startStatus) {
             case STATUS_UNKNOWN:

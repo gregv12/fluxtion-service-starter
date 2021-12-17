@@ -26,7 +26,7 @@ class FluxtionSystemManagerTest {
 
 
         //start the service manager
-        fluxtionSystemManager.startServices();
+        fluxtionSystemManager.startAllServices();
 
         //interact with the service
         fluxtionSystemManager.processStatusUpdate(ServiceEvent.newStartedUpdate( "svc_1"));
@@ -36,6 +36,6 @@ class FluxtionSystemManagerTest {
         //status query
         fluxtionSystemManager.publishAllServiceStatus();
 
-        fluxtionSystemManager.stopServices();
+        fluxtionSystemManager.stopAllServices();
     }
 }

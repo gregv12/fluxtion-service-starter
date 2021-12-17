@@ -96,12 +96,12 @@ public abstract class ServiceController implements Named {
     }
 
     protected void startService(){
-        publishCommand(new ServiceEvent.Start(getServiceName()));
+        publishCommand(new ServiceEvent.StartSingleService(getServiceName()));
         setStatus(ServiceStatus.STARTING);
     }
 
     protected void stopService(){
-        publishCommand(new ServiceEvent.Stop(getServiceName()));
+        publishCommand(new ServiceEvent.StopSingleService(getServiceName()));
         setStatus(ServiceStatus.STOPPING);
     }
 

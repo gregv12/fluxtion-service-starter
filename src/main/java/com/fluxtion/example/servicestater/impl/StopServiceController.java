@@ -11,7 +11,7 @@ import static com.fluxtion.example.servicestater.ServiceStatus.WAITING_FOR_PAREN
 /**
  * A controller for stopping services in the graph, based upon the reverse topological order of the nodes in the graph. Reacts to events:
  * <ul>
- *   <li>{@link ServiceEvent.Start} </li>
+ *   <li>{@link ServiceEvent.StartSingleService} </li>
  *   <li>Change notifications to parent {@link ServiceController} nodes</li>
  * </ul
  */
@@ -23,11 +23,11 @@ public class StopServiceController extends ServiceController {
     /**
      * Injection point for external stop events into this instance. Fluxtion will route events to this instance.
      *
-     * @param stopCommand Command to stop this service
+     * @param stopSingleServiceCommand Command to stop this service
      * @return flag indicating change of state, true - propagate notification to child nodes
      */
     @EventHandler(propagate = false)
-    public boolean stopService(ServiceEvent.Stop stopCommand) {
+    public boolean stopAllServices(ServiceEvent.StopAllServices stopSingleServiceCommand) {
         ServiceStatus startStatus = getStatus();
         switch (startStatus) {
             case STATUS_UNKNOWN:

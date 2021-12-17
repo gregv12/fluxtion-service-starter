@@ -54,16 +54,16 @@ public interface ServiceEvent extends Named, Event {
     }
 
     @ToString(callSuper = true)
-    class Start extends Command{
+    class StartSingleService extends Command{
 
-        public Start(String name) {
+        public StartSingleService(String name) {
             super(name);
         }
     }
 
     @ToString(callSuper = true)
-    class Stop  extends Command{
-        public Stop(String name) {
+    class StopSingleService extends Command{
+        public StopSingleService(String name) {
             super(name);
         }
     }
@@ -104,5 +104,11 @@ public interface ServiceEvent extends Named, Event {
     }
 
     @ToString
-    class PublishStatus{};
+    class PublishStatus{}
+
+    @ToString
+    class StartAllServices{}
+
+    @ToString
+    class StopAllServices{}
 }

@@ -128,11 +128,11 @@
                 </jGraph:ShapeNode>
             </data>
         </node>
-        <node id="Start">
+        <node id="StartAllServices">
             <data key="vertex_label">
                 <jGraph:ShapeNode>
                     <jGraph:Geometry height="70" width="160" x="20" y="20"/>
-                    <jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;Start"/>
+                    <jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;StartAllServices"/>
                     <jGraph:Style properties="EVENT"/>
                 </jGraph:ShapeNode>
             </data>
@@ -173,11 +173,11 @@
                 </jGraph:ShapeNode>
             </data>
         </node>
-        <node id="Stop">
+        <node id="StopAllServices">
             <data key="vertex_label">
                 <jGraph:ShapeNode>
                     <jGraph:Geometry height="70" width="160" x="20" y="20"/>
-                    <jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;Stop"/>
+                    <jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;StopAllServices"/>
                     <jGraph:Style properties="EVENT"/>
                 </jGraph:ShapeNode>
             </data>
@@ -345,7 +345,7 @@
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="30" source="Start" target="svc_1_start">
+        <edge id="30" source="StartAllServices" target="svc_1_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
@@ -370,7 +370,7 @@
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="35" source="Start" target="svc_2BJoined_start">
+        <edge id="35" source="StartAllServices" target="svc_2BJoined_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
@@ -380,7 +380,7 @@
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="37" source="Start" target="svc_2_start">
+        <edge id="37" source="StartAllServices" target="svc_2_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
@@ -390,7 +390,7 @@
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="39" source="Start" target="svc_B_start">
+        <edge id="39" source="StartAllServices" target="svc_B_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
@@ -400,7 +400,7 @@
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="41" source="Start" target="svc_A_start">
+        <edge id="41" source="StartAllServices" target="svc_A_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
@@ -410,7 +410,7 @@
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="43" source="Stop" target="svc_2BJoined_stop">
+        <edge id="43" source="StopAllServices" target="svc_2BJoined_stop">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
@@ -420,7 +420,7 @@
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="45" source="Stop" target="svc_B_stop">
+        <edge id="45" source="StopAllServices" target="svc_B_stop">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
@@ -430,7 +430,7 @@
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="47" source="Stop" target="svc_1_stop">
+        <edge id="47" source="StopAllServices" target="svc_1_stop">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
@@ -440,7 +440,7 @@
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="49" source="Stop" target="svc_2_stop">
+        <edge id="49" source="StopAllServices" target="svc_2_stop">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
@@ -450,7 +450,7 @@
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="51" source="Stop" target="svc_A_stop">
+        <edge id="51" source="StopAllServices" target="svc_A_stop">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>

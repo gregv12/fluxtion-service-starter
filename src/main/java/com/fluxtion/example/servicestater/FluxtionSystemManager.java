@@ -2,11 +2,8 @@ package com.fluxtion.example.servicestater;
 
 import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.compiler.builder.node.SEPConfig;
-import com.fluxtion.example.servicestater.impl.CommandPublisher;
-import com.fluxtion.example.servicestater.impl.ServiceController;
-import com.fluxtion.example.servicestater.impl.StartServiceController;
-import com.fluxtion.example.servicestater.ServiceEvent.Command;
-import com.fluxtion.example.servicestater.impl.SharedServiceStatus;
+import com.fluxtion.example.servicestater.ServiceEvent.*;
+import com.fluxtion.example.servicestater.impl.*;
 import com.fluxtion.runtim.EventProcessor;
 import com.fluxtion.runtim.audit.EventLogControlEvent;
 import lombok.extern.java.Log;
@@ -15,7 +12,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import com.fluxtion.example.servicestater.impl.StopServiceController;
+import static com.fluxtion.example.servicestater.ServiceEvent.*;
 
 /**
  * Manages the lifecycle of a set of external {@link Service}'s. A Service has a set of dependencies and is only stopped/started
@@ -28,9 +25,9 @@ import com.fluxtion.example.servicestater.impl.StopServiceController;
  *     <li>Commands can be executed in parallel</li>
  *     <li>They are not executed by the FluxtionSystemManager, the client code actually invokes the tasks</li>
  * </ul>
- *
- *
- *
+ * <p>
+ * <p>
+ * <p>
  * The FluxtionSystemManager is an entry point for client code to :
  * <ul>
  *     <li>register services</li>
@@ -41,7 +38,6 @@ import com.fluxtion.example.servicestater.impl.StopServiceController;
  *     <li>Request publish of service status</li>
  *     <li>Post service status updates</li>
  * </ul>
- *
  */
 @Log
 public class FluxtionSystemManager {
@@ -71,41 +67,40 @@ public class FluxtionSystemManager {
 //        //rebuild
 //    }
 
-    public void traceMethodCalls(boolean traceOn){
-        if(traceOn){
+    public void traceMethodCalls(boolean traceOn) {
+        if (traceOn) {
             startProcessor.onEvent(new EventLogControlEvent(EventLogControlEvent.LogLevel.TRACE));
-        }else{
+        } else {
             startProcessor.onEvent(new EventLogControlEvent(EventLogControlEvent.LogLevel.WARN));
         }
     }
 
-    public void startServices() {
-        ServiceEvent.Start startAll = new ServiceEvent.Start("all");
-        log.info("start all " + startAll);
-        startProcessor.onEvent(startAll);
+    public void startAllServices() {
+//        ServiceEvent.StartSingleService startSingleServiceAll = new ServiceEvent.StartSingleService("all");
+        log.info("start all");
+        startProcessor.onEvent(new StartAllServices());
         publishAllServiceStatus();
     }
 
-    public void stopServices() {
-        ServiceEvent.Stop stopAll = new ServiceEvent.Stop("all");
-        log.info("start all " + stopAll);
-        startProcessor.onEvent(stopAll);
+    public void stopAllServices() {
+        log.info("stop all");
+        startProcessor.onEvent(new StopAllServices());
         publishAllServiceStatus();
     }
 
     public void registerCommandProcessor(Consumer<List<Command>> commandProcessor) {
-        startProcessor.onEvent(new ServiceEvent.RegisterCommandProcessor(commandProcessor));
+        startProcessor.onEvent(new RegisterCommandProcessor(commandProcessor));
     }
 
     public void registerStatusListener(Consumer<List<String>> statusUpdateListener) {
-        startProcessor.onEvent(new ServiceEvent.RegisterStatusListener(statusUpdateListener));
+        startProcessor.onEvent(new RegisterStatusListener(statusUpdateListener));
     }
 
     public void publishAllServiceStatus() {
-        startProcessor.onEvent(new ServiceEvent.PublishStatus());
+        startProcessor.onEvent(new PublishStatus());
     }
 
-    public void processStatusUpdate(ServiceEvent.StatusUpdate statusUpdate) {
+    public void processStatusUpdate(StatusUpdate statusUpdate) {
         log.info(statusUpdate.toString());
         startProcessor.onEvent(statusUpdate);
     }
