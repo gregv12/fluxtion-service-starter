@@ -12,7 +12,7 @@ import static com.fluxtion.example.servicestater.ServiceStatus.WAITING_FOR_PAREN
  * A controller for stopping services in the graph, based upon the reverse topological order of the nodes in the graph. Reacts to events:
  * <ul>
  *   <li>{@link ServiceEvent.Start} </li>
- *   <li>Changes to parent {@link ServiceController} nodes</li>
+ *   <li>Change notifications to parent {@link ServiceController} nodes</li>
  * </ul
  */
 public class StopServiceController extends ServiceController {
