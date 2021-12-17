@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 /**
  * A cache for the current status of the external {@link com.fluxtion.example.servicestater.Service}, both
- * {@link com.fluxtion.example.servicestater.impl.ServiceController.StartServiceController} and {@link com.fluxtion.example.servicestater.impl.ServiceController.StopServiceController}
+ * {@link StartServiceController} and {@link StopServiceController}
  * read and write the status cache to determine the state change to make.
  *
  * A client application can listen to status updates by calling {@link com.fluxtion.example.servicestater.FluxtionSystemManager#registerStatusListener(Consumer)}
@@ -33,17 +33,35 @@ public class SharedServiceStatus implements Named {
         serviceStatusMap.put(name, serviceStatus);
     }
 
+    /**
+     * Injection point for external RegisterStatusListener events, Fluxtion will route events to this instance.
+     *
+     * Upon registration the service status is published
+     *
+     * @param listener contains the status listener
+     */
     @EventHandler(propagate = false)
     public void registerStatusListener(ServiceEvent.RegisterStatusListener listener) {
         statusListener = listener.getStatusListener();
         publishStatus();
     }
 
+    /**
+     * Injection point for external publishStatusRequest events, Fluxtion will route events to this instance.
+     *
+     * On receiving the event the instance will publish the current service status
+     *
+     * @param publishStatusRequest contains the status listener
+     */
     @EventHandler(propagate = false)
     public void publishCurrentStatus(ServiceEvent.PublishStatus publishStatusRequest) {
         publishStatus();
     }
 
+    /**
+     * If any service dependencies have changed, publishes the current service status.
+     * @return flag indicating this node has changed and should notify child nodes of the change
+     */
     @OnEvent
     public boolean publishStatus() {
         statusListener.accept(

@@ -1,5 +1,7 @@
 package com.fluxtion.example.servicestater;
 
+import com.fluxtion.example.servicestater.impl.StartServiceController;
+import com.fluxtion.example.servicestater.impl.StopServiceController;
 import com.fluxtion.runtim.Named;
 
 import java.util.Collections;
@@ -7,7 +9,7 @@ import java.util.List;
 
 /**
  * A representation of an external service and its dependencies. This service will be wrapped in the graph and controlled
- * by {@link com.fluxtion.example.servicestater.impl.ServiceController.StartServiceController} and {@link com.fluxtion.example.servicestater.impl.ServiceController.StopServiceController}
+ * by {@link StartServiceController} and {@link StopServiceController}
  */
 public class Service implements Named {
 

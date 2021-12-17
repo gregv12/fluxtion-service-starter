@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+/**
+ * Publishes the state of the services as recorded by the graph at a point in time. Clients register a service
+ */
 public class StatusPublisher implements Named {
 
     private final List<ServiceController> monitoredServices;
@@ -19,12 +22,24 @@ public class StatusPublisher implements Named {
         this.monitoredServices = monitoredServices;
     }
 
+    /**
+     * Injection point for external RegisterStatusListener events, Fluxtion will route events to this instance.
+     *
+     * @param listener contains the status listener
+     */
     @EventHandler
     public void registerStatusListener(RegisterStatusListener listener) {
         statusListener = listener.getStatusListener();
         publishStatus();
     }
 
+    /**
+     * Injection point for external publishStatusRequest events, Fluxtion will route events to this instance.
+     *
+     * On receiving the event the instance will publish the current service status to a
+     *
+     * @param publishStatusRequest contains the status listener
+     */
     @EventHandler(propagate = false)
     public void publishCurrentStatus(PublishStatus publishStatusRequest){
         publishStatus();

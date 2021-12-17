@@ -5,24 +5,21 @@ import com.fluxtion.example.servicestater.ServiceStatus;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.annotations.EventHandler;
 import com.fluxtion.runtim.annotations.Initialise;
-import com.fluxtion.runtim.annotations.OnEvent;
 import com.fluxtion.runtim.annotations.PushReference;
+import com.fluxtion.runtim.event.Event;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.fluxtion.example.servicestater.FluxtionSystemManager.toStartServiceName;
-import static com.fluxtion.example.servicestater.FluxtionSystemManager.toStopServiceName;
-import static com.fluxtion.example.servicestater.ServiceStatus.*;
+import static com.fluxtion.example.servicestater.ServiceStatus.STATUS_UNKNOWN;
+import static com.fluxtion.example.servicestater.ServiceStatus.STOPPED;
 
 /**
- * Wraps the representation of an external {@link com.fluxtion.example.servicestater.Service}. The {@link ServiceController}
+ * A base class that wraps the representation of an external {@link com.fluxtion.example.servicestater.Service}. The {@link ServiceController}
  * is the data structure maintained by the graph i.e. it is a node in the graph. Reacts to events:
  * <ul>
  *     <li>{@link ServiceEvent.StatusUpdate} </li>
- *     <li>{@link ServiceEvent.Start} </li>
- *     <li>{@link ServiceEvent.Stop} </li>
  * </ul>
  *
  * If a Service command can be executed because the dependency requirements are met then the command to execute will
@@ -43,6 +40,22 @@ public abstract class ServiceController implements Named {
         this.controllerName = controllerName;
         this.commandPublisher = commandPublisher;
         this.sharedServiceStatus = sharedServiceStatus;
+    }
+
+    /**
+     * Injection point for external statusUpdate events into this instance. Fluxtion will route events to this instance
+     * where the {@link Event#filterString()} matches the serviceName variable of this instance.
+     *
+     * @param statusUpdate Command to the state of this service
+     * @return flag indicating change of state, true - propagate notification to child nodes
+     */
+    @EventHandler(filterVariable = "serviceName")
+    public boolean statusUpdate(ServiceEvent.StatusUpdate statusUpdate) {
+        boolean changed = getStatus()!=statusUpdate.getStatus();
+        if(changed){
+            setStatus(statusUpdate.getStatus());
+        }
+        return changed;
     }
 
     public void addDependency(ServiceController dependency) {
@@ -87,7 +100,6 @@ public abstract class ServiceController implements Named {
         setStatus(ServiceStatus.STARTING);
     }
 
-
     protected void stopService(){
         publishCommand(new ServiceEvent.Stop(getServiceName()));
         setStatus(ServiceStatus.STOPPING);
@@ -98,90 +110,10 @@ public abstract class ServiceController implements Named {
         return controllerName;
     }
 
-    @EventHandler(filterVariable = "serviceName")
-    public boolean statusUpdate(ServiceEvent.StatusUpdate statusUpdate) {
-        boolean changed = getStatus()!=statusUpdate.getStatus();
-        if(changed){
-            setStatus(statusUpdate.getStatus());
-        }
-        return changed;
-    }
-
 
     @Initialise
     public final void initialise() {
         setStatus(STATUS_UNKNOWN);
     }
 
-    public static class StartServiceController extends ServiceController {
-        public StartServiceController(String serviceName, CommandPublisher commandPublisher, SharedServiceStatus sharedServiceStatus) {
-            super(serviceName, toStartServiceName(serviceName), commandPublisher, sharedServiceStatus);
-        }
-
-        @EventHandler(propagate = false)
-        public boolean startService(ServiceEvent.Start startCommand) {
-            ServiceStatus startStatus = getStatus();
-            switch (startStatus) {
-                case STATUS_UNKNOWN:
-                case WAITING_FOR_PARENTS_TO_STOP:
-                case STOPPING:
-                case STOPPED:
-                    if (getDependencies().isEmpty() || areAllParentsStarted()) {
-                        startService();
-                    } else {
-                        setStatus(ServiceStatus.WAITING_FOR_PARENTS_TO_START);
-                    }
-                default:
-                    //do nothing
-            }
-            return startStatus != getStatus();
-        }
-
-        @OnEvent
-        public boolean recalculateStatusForStart() {
-            if (getStatus()==WAITING_FOR_PARENTS_TO_START && areAllParentsStarted()) {
-                startService();
-                return false;
-            }else if(!areAllParentsStarted() && (getStatus()==STARTING || getStatus()==STARTED)){
-                stopService();
-            }
-            return true;
-        }
-
-    }
-
-    public static class StopServiceController extends ServiceController {
-        public StopServiceController(String serviceName, CommandPublisher commandPublisher, SharedServiceStatus sharedServiceStatus) {
-            super(serviceName, toStopServiceName(serviceName), commandPublisher, sharedServiceStatus);
-        }
-
-        @EventHandler(propagate = false)
-        public boolean stopService(ServiceEvent.Stop startCommand) {
-            ServiceStatus startStatus = getStatus();
-            switch (startStatus) {
-                case STATUS_UNKNOWN:
-                case WAITING_FOR_PARENTS_TO_START:
-                case STARTING:
-                case STARTED:
-                    if (getDependencies().isEmpty() || areAllParentsStopped()) {
-                        stopService();
-                    } else {
-                        setStatus(ServiceStatus.WAITING_FOR_PARENTS_TO_STOP);
-                    }
-                default:
-                    //do nothing
-            }
-            return startStatus != getStatus();
-        }
-
-        @OnEvent
-        public boolean recalculateStatusForStop() {
-            if (getStatus()==WAITING_FOR_PARENTS_TO_STOP && areAllParentsStopped()) {
-                stopService();
-                return false;
-            }
-            return true;
-        }
-
-    }
 }

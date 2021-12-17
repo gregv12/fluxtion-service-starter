@@ -4,7 +4,7 @@ import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.compiler.builder.node.SEPConfig;
 import com.fluxtion.example.servicestater.impl.CommandPublisher;
 import com.fluxtion.example.servicestater.impl.ServiceController;
-import com.fluxtion.example.servicestater.impl.ServiceController.StartServiceController;
+import com.fluxtion.example.servicestater.impl.StartServiceController;
 import com.fluxtion.example.servicestater.ServiceEvent.Command;
 import com.fluxtion.example.servicestater.impl.SharedServiceStatus;
 import com.fluxtion.runtim.EventProcessor;
@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static com.fluxtion.example.servicestater.impl.ServiceController.StopServiceController;
+import com.fluxtion.example.servicestater.impl.StopServiceController;
 
 @Log
 public class FluxtionSystemManager {
