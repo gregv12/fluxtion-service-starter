@@ -151,6 +151,8 @@ svc_A - STARTED
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishCommandsToConsole accept
 INFO: Command list:
 ServiceEvent.Start(super=name='svc_2BJoined')
+
+
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
 INFO: Current status:
 svc_2BJoined - STARTING
