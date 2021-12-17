@@ -17,6 +17,32 @@ import java.util.stream.Collectors;
 
 import com.fluxtion.example.servicestater.impl.StopServiceController;
 
+/**
+ * Manages the lifecycle of a set of external {@link Service}'s. A Service has a set of dependencies and is only stopped/started
+ * if their dependencies are all in the correct state. The FluxtionSystemManager receives calls to start/stop as well as
+ * updates to service state. After processing the input a set of commands are generated that can be executed. The command
+ * list published at the end of the graph cycle has the following characteristic:
+ * <ul>
+ *     <li>Only commands are published for services whose dependencies are in the correct state</li>
+ *     <li>The command execution order is not important</li>
+ *     <li>Commands can be executed in parallel</li>
+ *     <li>They are not executed by the FluxtionSystemManager, the client code actually invokes the tasks</li>
+ * </ul>
+ *
+ *
+ *
+ * The FluxtionSystemManager is an entry point for client code to :
+ * <ul>
+ *     <li>register services</li>
+ *     <li>Build a service controller for the whole system</li>
+ *     <li>Start/stop system</li>
+ *     <li>Register status listeners</li>
+ *     <li>Register command processors</li>
+ *     <li>Request publish of service status</li>
+ *     <li>Post service status updates</li>
+ * </ul>
+ *
+ */
 @Log
 public class FluxtionSystemManager {
 
@@ -67,7 +93,7 @@ public class FluxtionSystemManager {
         publishAllServiceStatus();
     }
 
-    public void registerCommandPublisher(Consumer<List<Command>> commandProcessor) {
+    public void registerCommandProcessor(Consumer<List<Command>> commandProcessor) {
         startProcessor.onEvent(new ServiceEvent.RegisterCommandProcessor(commandProcessor));
     }
 

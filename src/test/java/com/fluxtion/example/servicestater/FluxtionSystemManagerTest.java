@@ -21,7 +21,7 @@ class FluxtionSystemManagerTest {
         FluxtionSystemManager fluxtionSystemManager = new FluxtionSystemManager();
         fluxtionSystemManager.buildSystemController(svc_1, svc_2, svc_A, svc_B, svc_2BJoined);
 //        fluxtionSystemManager.traceMethodCalls(false);
-        fluxtionSystemManager.registerCommandPublisher(new PublishCommandsToConsole());
+        fluxtionSystemManager.registerCommandProcessor(new PublishCommandsToConsole());
         fluxtionSystemManager.registerStatusListener(new PublishStatusToConsole());
 
 

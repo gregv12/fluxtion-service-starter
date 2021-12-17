@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 /**
  * Publishes commands for a service that are for execution by client code, a client application registers a command executor
- * by calling {@link com.fluxtion.example.servicestater.FluxtionSystemManager#registerCommandPublisher(Consumer)}
+ * by calling {@link com.fluxtion.example.servicestater.FluxtionSystemManager#registerCommandProcessor(Consumer)}
  *
  * The command list is of events that can be executed in parallel by the registered client.
  */
