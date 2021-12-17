@@ -6,7 +6,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A representation of an external service and its dependencies
+ * A representation of an external service and its dependencies. This service will be wrapped in the graph and controlled
+ * by {@link com.fluxtion.example.servicestater.impl.ServiceController.StartServiceController} and {@link com.fluxtion.example.servicestater.impl.ServiceController.StopServiceController}
  */
 public class Service implements Named {
 

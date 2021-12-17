@@ -1,4 +1,4 @@
-package com.fluxtion.example.servicestater;
+package com.fluxtion.example.servicestater.impl;
 
 import com.fluxtion.example.servicestater.ServiceEvent.PublishStatus;
 import com.fluxtion.example.servicestater.ServiceEvent.RegisterStatusListener;

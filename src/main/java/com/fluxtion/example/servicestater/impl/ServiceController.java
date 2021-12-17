@@ -1,5 +1,7 @@
-package com.fluxtion.example.servicestater;
+package com.fluxtion.example.servicestater.impl;
 
+import com.fluxtion.example.servicestater.ServiceEvent;
+import com.fluxtion.example.servicestater.ServiceStatus;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.annotations.EventHandler;
 import com.fluxtion.runtim.annotations.Initialise;
@@ -14,6 +16,18 @@ import static com.fluxtion.example.servicestater.FluxtionSystemManager.toStartSe
 import static com.fluxtion.example.servicestater.FluxtionSystemManager.toStopServiceName;
 import static com.fluxtion.example.servicestater.ServiceStatus.*;
 
+/**
+ * Wraps the representation of an external {@link com.fluxtion.example.servicestater.Service}. The {@link ServiceController}
+ * is the data structure maintained by the graph i.e. it is a node in the graph. Reacts to events:
+ * <ul>
+ *     <li>{@link ServiceEvent.StatusUpdate} </li>
+ *     <li>{@link ServiceEvent.Start} </li>
+ *     <li>{@link ServiceEvent.Stop} </li>
+ * </ul>
+ *
+ * If a Service command can be executed because the dependency requirements are met then the command to execute will
+ * be published {@link CommandPublisher}, for a client app to execute after the graph cycle has completed.
+ */
 public abstract class ServiceController implements Named {
 
     protected final String serviceName;
@@ -22,16 +36,16 @@ public abstract class ServiceController implements Named {
     @PushReference
     private final CommandPublisher commandPublisher;
     @PushReference
-    private final SharedStatus sharedStatus;
+    private final SharedServiceStatus sharedServiceStatus;
 
-    public ServiceController(String serviceName, String controllerName, CommandPublisher commandPublisher, SharedStatus sharedStatus) {
+    public ServiceController(String serviceName, String controllerName, CommandPublisher commandPublisher, SharedServiceStatus sharedServiceStatus) {
         this.serviceName = serviceName;
         this.controllerName = controllerName;
         this.commandPublisher = commandPublisher;
-        this.sharedStatus = sharedStatus;
+        this.sharedServiceStatus = sharedServiceStatus;
     }
 
-    void addDependency(ServiceController dependency) {
+    public void addDependency(ServiceController dependency) {
         dependencies.add(dependency);
     }
 
@@ -44,7 +58,7 @@ public abstract class ServiceController implements Named {
     }
 
     public final ServiceStatus getStatus() {
-        return sharedStatus.getStatus(getServiceName());
+        return sharedServiceStatus.getStatus(getServiceName());
     }
 
     public String getServiceName() {
@@ -52,7 +66,7 @@ public abstract class ServiceController implements Named {
     }
 
     protected void setStatus(ServiceStatus serviceStatus) {
-        sharedStatus.setServiceStatus(getServiceName(), serviceStatus);
+        sharedServiceStatus.setServiceStatus(getServiceName(), serviceStatus);
     }
 
     protected void publishCommand(ServiceEvent.Command command) {
@@ -100,8 +114,8 @@ public abstract class ServiceController implements Named {
     }
 
     public static class StartServiceController extends ServiceController {
-        public StartServiceController(String serviceName, CommandPublisher commandPublisher, SharedStatus sharedStatus) {
-            super(serviceName, toStartServiceName(serviceName), commandPublisher, sharedStatus);
+        public StartServiceController(String serviceName, CommandPublisher commandPublisher, SharedServiceStatus sharedServiceStatus) {
+            super(serviceName, toStartServiceName(serviceName), commandPublisher, sharedServiceStatus);
         }
 
         @EventHandler(propagate = false)
@@ -137,8 +151,8 @@ public abstract class ServiceController implements Named {
     }
 
     public static class StopServiceController extends ServiceController {
-        public StopServiceController(String serviceName, CommandPublisher commandPublisher, SharedStatus sharedStatus) {
-            super(serviceName, toStopServiceName(serviceName), commandPublisher, sharedStatus);
+        public StopServiceController(String serviceName, CommandPublisher commandPublisher, SharedServiceStatus sharedServiceStatus) {
+            super(serviceName, toStopServiceName(serviceName), commandPublisher, sharedServiceStatus);
         }
 
         @EventHandler(propagate = false)

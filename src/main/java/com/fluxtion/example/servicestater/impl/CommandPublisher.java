@@ -1,5 +1,6 @@
-package com.fluxtion.example.servicestater;
+package com.fluxtion.example.servicestater.impl;
 
+import com.fluxtion.example.servicestater.ServiceEvent;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.annotations.AfterEvent;
 import com.fluxtion.runtim.annotations.EventHandler;
@@ -8,6 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * Publishes commands for a service that need to executed by the system, a client application registers a command executor
+ * by calling {@link com.fluxtion.example.servicestater.FluxtionSystemManager#registerCommandPublisher(Consumer)}
+ */
 public class CommandPublisher implements Named {
 
     private Consumer<List<ServiceEvent.Command>> commandPublisher = (command -> {});

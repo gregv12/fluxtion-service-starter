@@ -20,7 +20,7 @@ class FluxtionSystemManagerTest {
         //build and register outputs
         FluxtionSystemManager fluxtionSystemManager = new FluxtionSystemManager();
         fluxtionSystemManager.buildSystemController(svc_1, svc_2, svc_A, svc_B, svc_2BJoined);
-        fluxtionSystemManager.traceMethodCalls(false);
+//        fluxtionSystemManager.traceMethodCalls(false);
         fluxtionSystemManager.registerCommandPublisher(new PublishCommandsToConsole());
         fluxtionSystemManager.registerStatusListener(new PublishStatusToConsole());
 
@@ -34,7 +34,7 @@ class FluxtionSystemManagerTest {
         fluxtionSystemManager.processStatusUpdate(ServiceEvent.newStartedUpdate( "svc_A"));
         fluxtionSystemManager.processStatusUpdate(ServiceEvent.newStartedUpdate( "svc_B"));
         //status query
-//        fluxtionSystemManager.publishAllServiceStatus();
+        fluxtionSystemManager.publishAllServiceStatus();
 
         fluxtionSystemManager.stopServices();
     }

@@ -1,5 +1,7 @@
-package com.fluxtion.example.servicestater;
+package com.fluxtion.example.servicestater.impl;
 
+import com.fluxtion.example.servicestater.ServiceEvent;
+import com.fluxtion.example.servicestater.ServiceStatus;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.annotations.EventHandler;
 import com.fluxtion.runtim.annotations.Initialise;
@@ -11,7 +13,14 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class SharedStatus implements Named {
+/**
+ * A cache for the current status of the external {@link com.fluxtion.example.servicestater.Service}, both
+ * {@link com.fluxtion.example.servicestater.impl.ServiceController.StartServiceController} and {@link com.fluxtion.example.servicestater.impl.ServiceController.StopServiceController}
+ * read and write the status cache to determine the state change to make.
+ *
+ * A client application can listen to status updates by calling {@link com.fluxtion.example.servicestater.FluxtionSystemManager#registerStatusListener(Consumer)}
+ */
+public class SharedServiceStatus implements Named {
 
     private Consumer<List<String>> statusListener = (strings -> {});
     private final Map<String, ServiceStatus> serviceStatusMap = new HashMap<>();
