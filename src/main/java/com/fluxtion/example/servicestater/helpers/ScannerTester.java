@@ -6,6 +6,9 @@ import com.fluxtion.example.servicestater.Service;
 import java.util.Locale;
 import java.util.Scanner;
 
+/**
+ * A command line client that tests a sample graph loaded into the
+ */
 public class ScannerTester {
 
     private static FluxtionSystemManager fluxtionSystemManager;
@@ -26,7 +29,7 @@ public class ScannerTester {
                 case "stop", "h" -> stopByName(scanner);
                 case "ns" -> notifiedStartedByName(scanner);
                 case "nh" -> notifiedStoppedByName(scanner);
-                case "exit" -> run = false;
+                case "exit", "e" -> run = false;
                 case "help", "?" -> printHelp();
                 default -> System.out.println("unknown command:" + command);
             }
@@ -37,19 +40,19 @@ public class ScannerTester {
 
     static void printHelp() {
         String help = """
-                Welcome to FluxtionServiceTester
+                Welcome to FluxtionService interactive tester
                 =========================================
                 Commands available are:
-                help or ? - print this message
-                build or b- drops the graph and builds a new graph from scratch
-                status or ss - prints the current status of the graph to console
-                startAll or sa - start all services
-                stopAll or ha - stop all services
-                start [service name] or s [service name] - start a single services by name
-                stop [service name] or h [service name] - stop a single service by name
-                ns [service name] - notify of started status for a single service by name
-                hs [service name] - notify of stopped status for a single service by name
-                exit - exit the application
+                help or ?                 - print this message
+                build or b                - drops the graph and builds a new graph from scratch
+                status or ss              - prints the current status of the graph to console
+                startAll or sa            - start all services
+                stopAll or ha             - stop all services
+                start or s [service name] - start a single services by name
+                stop or h [service name]  - stop a single service by name
+                ns [service name]         - notify of started status for a single service by name
+                hs [service name]         - notify of stopped status for a single service by name
+                exit or e                 - exit the application
                 """
                 ;
         System.out.println(help);
@@ -114,19 +117,18 @@ public class ScannerTester {
     }
 
     private static void buildGraph() {
-        //replace with JSON/YAML
-        Service svc_1 = new Service("svc_1");
+        Service svc_1 = new Service("svc_1", ScannerTester::notifySuccess, null);
         Service svc_2 = new Service("svc_2", svc_1);
         Service svc_A = new Service("svc_A");
         Service svc_B = new Service("svc_B", svc_A);
         //joined service
         Service svc_2BJoined = new Service("svc_2BJoined", svc_2, svc_B);
-
         //build and register outputs
         fluxtionSystemManager = new FluxtionSystemManager();
         fluxtionSystemManager.buildSystemController(svc_1, svc_2, svc_A, svc_B, svc_2BJoined);
-//        fluxtionSystemManager.traceMethodCalls(false);
         fluxtionSystemManager.registerCommandProcessor(new PublishCommandsToConsole());
         fluxtionSystemManager.registerStatusListener(new PublishStatusToConsole());
     }
+
+    public static void notifySuccess(){}
 }

@@ -18,7 +18,7 @@
         <dependency>
             <groupId>com.fluxtion</groupId>
             <artifactId>compiler</artifactId>
-            <version>3.1.10-SNAPSHOT</version>
+            <version>3.1.11-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

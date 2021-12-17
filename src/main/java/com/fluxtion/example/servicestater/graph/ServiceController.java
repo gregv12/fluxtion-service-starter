@@ -7,6 +7,7 @@ import com.fluxtion.runtim.annotations.EventHandler;
 import com.fluxtion.runtim.annotations.Initialise;
 import com.fluxtion.runtim.annotations.PushReference;
 import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtim.partition.LambdaReflection;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +35,7 @@ public abstract class ServiceController implements Named {
     private final CommandPublisher commandPublisher;
     @PushReference
     private final SharedServiceStatus sharedServiceStatus;
+    private LambdaReflection.SerializableRunnable task;
 
     public ServiceController(String serviceName, String controllerName, CommandPublisher commandPublisher, SharedServiceStatus sharedServiceStatus) {
         this.serviceName = serviceName;
@@ -80,6 +82,14 @@ public abstract class ServiceController implements Named {
 
     protected void setStatus(ServiceStatus serviceStatus) {
         sharedServiceStatus.setServiceStatus(getServiceName(), serviceStatus);
+    }
+
+    public LambdaReflection.SerializableRunnable getTask() {
+        return task;
+    }
+
+    public void setTask(LambdaReflection.SerializableRunnable task) {
+        this.task = task;
     }
 
     protected void publishCommand(ServiceEvent.Command command) {

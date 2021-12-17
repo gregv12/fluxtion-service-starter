@@ -2,6 +2,7 @@ package com.fluxtion.example.servicestater;
 
 import com.fluxtion.example.servicestater.helpers.PublishCommandsToConsole;
 import com.fluxtion.example.servicestater.helpers.PublishStatusToConsole;
+import com.fluxtion.example.servicestater.helpers.ScannerTester;
 import org.junit.jupiter.api.Test;
 
 class FluxtionSystemManagerTest {
@@ -10,7 +11,7 @@ class FluxtionSystemManagerTest {
     void buildSystemController() {
 
         //replace with JSON/YAML
-        Service svc_1 = new Service("svc_1");
+        Service svc_1 = new Service("svc_1", ScannerTester::notifySuccess, null);
         Service svc_2 = new Service("svc_2", svc_1);
         Service svc_A = new Service("svc_A");
         Service svc_B = new Service("svc_B", svc_A);

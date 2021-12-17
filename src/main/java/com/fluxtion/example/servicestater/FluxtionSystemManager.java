@@ -125,7 +125,9 @@ public class FluxtionSystemManager {
 
     private void addServicesToMap(Service s) {
         StartServiceController startServiceController = new StartServiceController(s.getName(), commandPublisher, sharedServiceStatus);
+        startServiceController.setTask(s.getStartTask());
         StopServiceController stopServiceController = new StopServiceController(s.getName(), commandPublisher, sharedServiceStatus);
+        stopServiceController.setTask(s.getStartTask());
         managedStartServices.put(startServiceController.getName(), startServiceController);
         managedStartServices.put(stopServiceController.getName(), stopServiceController);
     }
