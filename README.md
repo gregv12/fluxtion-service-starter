@@ -3,10 +3,11 @@ An example using [Fluxtion](https://github.com/v12technology/fluxtion) as a depe
 
 The service starter manages a set of services with the following behaviour
 1. A service cannot be started until its dependencies are in a STARTED state
-1. A call to start will issue a start command any services that do not have dependencies or all dependencies have started and move the service to the STARTING state
-1. Any dependencies of a STARTING service will move to WAITING_FOR_PARENTS_TO_START start
-1. When all dependencies of a WAITING_FOR_PARENTS_TO_START service have started back to (2) for this service
-1. Continues down the dependency tree until all services are started
+1. A call to FluxtionSystemManager.start() will start any services that have no dependencies or all dependencies have started
+2. Any service the FluxtionSystemManager starts will move to the STARTING state, and a [start command](https://github.com/gregv12/example-service-starter/blob/d15d4856af4f0315d08474de5fda74f849886757/src/main/java/com/fluxtion/example/servicestater/ServiceEvent.java#L57) will be published
+3. Any dependencies of a STARTING service will move to WAITING_FOR_PARENTS_TO_START state
+4. When all dependencies of a WAITING_FOR_PARENTS_TO_START service have STARTED state this service STARTING back to (3) for this service
+5. Continues down the dependency tree until all services are started
 
 Stopping has the same behaviour for the reverse dependency order.
 
