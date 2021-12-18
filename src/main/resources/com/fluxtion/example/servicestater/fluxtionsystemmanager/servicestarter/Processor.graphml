@@ -15,7 +15,7 @@
             <data key="vertex_label">
                 <jGraph:ShapeNode>
                     <jGraph:Geometry height="70" width="160" x="20" y="20"/>
-                    <jGraph:label text="&lt;&lt;EventHandle&gt;&gt;&#10;commandPublisher:&#10;CommandPublisher"/>
+                    <jGraph:label text="&lt;&lt;EventHandle&gt;&gt;&#10;commandPublisher:&#10;TaskWrapperPublisher"/>
                     <jGraph:Style properties="EVENTHANDLER"/>
                 </jGraph:ShapeNode>
             </data>

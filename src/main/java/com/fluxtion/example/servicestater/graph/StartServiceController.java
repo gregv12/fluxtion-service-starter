@@ -16,8 +16,8 @@ import static com.fluxtion.example.servicestater.ServiceStatus.*;
  * </ul
  */
 public class StartServiceController extends ServiceController {
-    public StartServiceController(String serviceName, CommandPublisher commandPublisher, SharedServiceStatus sharedServiceStatus) {
-        super(serviceName, toStartServiceName(serviceName), commandPublisher, sharedServiceStatus);
+    public StartServiceController(String serviceName, TaskWrapperPublisher taskWrapperPublisher, SharedServiceStatus sharedServiceStatus) {
+        super(serviceName, toStartServiceName(serviceName), taskWrapperPublisher, sharedServiceStatus);
     }
 
     @EventHandler(filterVariable = "serviceName")

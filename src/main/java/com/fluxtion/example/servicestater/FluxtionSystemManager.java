@@ -44,7 +44,7 @@ public class FluxtionSystemManager {
     public static final String START_SUFFIX = "_start";
     public static final String STOP_SUFFIX = "_stop";
     private final Map<String, ServiceController> managedStartServices = new HashMap<>();
-    private final CommandPublisher commandPublisher = new CommandPublisher();
+    private final TaskWrapperPublisher taskWrapperPublisher = new TaskWrapperPublisher();
     private final SharedServiceStatus sharedServiceStatus = new SharedServiceStatus();
     private EventProcessor startProcessor;
 
@@ -98,7 +98,7 @@ public class FluxtionSystemManager {
         publishAllServiceStatus();
     }
 
-    public void registerCommandProcessor(Consumer<List<TaskWrapper>> commandProcessor) {
+    public void registerTaskExecutor(Consumer<List<TaskWrapper>> commandProcessor) {
         startProcessor.onEvent(new RegisterCommandProcessor(commandProcessor));
     }
 
@@ -124,9 +124,9 @@ public class FluxtionSystemManager {
     }
 
     private void addServicesToMap(Service s) {
-        StartServiceController startServiceController = new StartServiceController(s.getName(), commandPublisher, sharedServiceStatus);
+        StartServiceController startServiceController = new StartServiceController(s.getName(), taskWrapperPublisher, sharedServiceStatus);
         startServiceController.setStartTask(s.getStartTask());
-        StopServiceController stopServiceController = new StopServiceController(s.getName(), commandPublisher, sharedServiceStatus);
+        StopServiceController stopServiceController = new StopServiceController(s.getName(), taskWrapperPublisher, sharedServiceStatus);
         stopServiceController.setStopTask(s.getStopTask());
         managedStartServices.put(startServiceController.getName(), startServiceController);
         managedStartServices.put(stopServiceController.getName(), stopServiceController);
@@ -153,7 +153,7 @@ public class FluxtionSystemManager {
 
     private void serviceStarter(SEPConfig cfg) {
         managedStartServices.values().forEach(cfg::addNode);
-        cfg.addNode(commandPublisher);
+        cfg.addNode(taskWrapperPublisher);
         cfg.addEventAudit(EventLogControlEvent.LogLevel.INFO);
     }
 

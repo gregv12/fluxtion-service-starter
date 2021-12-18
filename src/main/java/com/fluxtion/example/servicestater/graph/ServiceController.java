@@ -24,7 +24,7 @@ import static com.fluxtion.example.servicestater.ServiceStatus.STOPPED;
  * </ul>
  *
  * If a Service command can be executed because the dependency requirements are met then the command to execute will
- * be published {@link CommandPublisher}, for a client app to execute after the graph cycle has completed.
+ * be published {@link TaskWrapperPublisher}, for a client app to execute after the graph cycle has completed.
  */
 public abstract class ServiceController implements Named {
 
@@ -32,16 +32,16 @@ public abstract class ServiceController implements Named {
     protected final transient String controllerName;
     private List<ServiceController> dependencies = new ArrayList<>();
     @PushReference
-    private final CommandPublisher commandPublisher;
+    private final TaskWrapperPublisher taskWrapperPublisher;
     @PushReference
     private final SharedServiceStatus sharedServiceStatus;
     private LambdaReflection.SerializableRunnable startTask;
     private LambdaReflection.SerializableRunnable stopTask;
 
-    public ServiceController(String serviceName, String controllerName, CommandPublisher commandPublisher, SharedServiceStatus sharedServiceStatus) {
+    public ServiceController(String serviceName, String controllerName, TaskWrapperPublisher taskWrapperPublisher, SharedServiceStatus sharedServiceStatus) {
         this.serviceName = serviceName;
         this.controllerName = controllerName;
-        this.commandPublisher = commandPublisher;
+        this.taskWrapperPublisher = taskWrapperPublisher;
         this.sharedServiceStatus = sharedServiceStatus;
     }
 
@@ -102,7 +102,7 @@ public abstract class ServiceController implements Named {
     }
 
     protected void publishTask(TaskWrapper task) {
-        commandPublisher.publishCommand(task);
+        taskWrapperPublisher.publishCommand(task);
     }
 
     protected boolean areAllParentsStarted() {

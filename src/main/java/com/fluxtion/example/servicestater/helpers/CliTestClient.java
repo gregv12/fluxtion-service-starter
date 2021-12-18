@@ -7,11 +7,14 @@ import java.util.Locale;
 import java.util.Scanner;
 
 /**
- * A command line client that tests a sample graph loaded into the
+ * A command line client that tests a sample service graph loaded into the {@link FluxtionSystemManager}
+ *
+ * Various commands are provided to exercise all the operations on the service manager
  */
-public class ScannerTester {
+public class CliTestClient {
 
     private static FluxtionSystemManager fluxtionSystemManager;
+    private static ServiceTaskExecutor serviceTaskExecutor;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -36,6 +39,7 @@ public class ScannerTester {
             scanner.nextLine();
         }
         scanner.close();
+        serviceTaskExecutor.shutDown();
     }
 
     static void printHelp() {
@@ -117,7 +121,7 @@ public class ScannerTester {
     }
 
     private static void buildGraph() {
-        Service svc_1 = new Service("svc_1", ScannerTester::notifyStart, ScannerTester::notifyStop);
+        Service svc_1 = new Service("svc_1", CliTestClient::notifyStart, CliTestClient::notifyStop);
         Service svc_2 = new Service("svc_2", svc_1);
         Service svc_A = new Service("svc_A");
         Service svc_B = new Service("svc_B", svc_A);
@@ -125,8 +129,9 @@ public class ScannerTester {
         Service svc_2BJoined = new Service("svc_2BJoined", svc_2, svc_B);
         //build and register outputs
         fluxtionSystemManager = new FluxtionSystemManager();
+        serviceTaskExecutor = new ServiceTaskExecutor();
         fluxtionSystemManager.buildSystemController(svc_1, svc_2, svc_A, svc_B, svc_2BJoined);
-        fluxtionSystemManager.registerCommandProcessor(new ServiceTaskExecutor());
+        fluxtionSystemManager.registerTaskExecutor(serviceTaskExecutor);
         fluxtionSystemManager.registerStatusListener(new PublishStatusToConsole());
     }
 

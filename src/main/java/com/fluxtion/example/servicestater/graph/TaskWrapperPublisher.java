@@ -11,11 +11,11 @@ import java.util.function.Consumer;
 
 /**
  * Publishes commands for a service that are for execution by client code, a client application registers a command executor
- * by calling {@link com.fluxtion.example.servicestater.FluxtionSystemManager#registerCommandProcessor(Consumer)}
+ * by calling {@link com.fluxtion.example.servicestater.FluxtionSystemManager#registerTaskExecutor(Consumer)}
  *
  * The command list is of events that can be executed in parallel by the registered client.
  */
-public class CommandPublisher implements Named {
+public class TaskWrapperPublisher implements Named {
 
     private Consumer<List<TaskWrapper>> commandPublisher = (command -> {});
     private final List<TaskWrapper> commandList = new ArrayList<>();

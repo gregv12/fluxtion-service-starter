@@ -16,8 +16,8 @@ import static com.fluxtion.example.servicestater.ServiceStatus.WAITING_FOR_PAREN
  * </ul
  */
 public class StopServiceController extends ServiceController {
-    public StopServiceController(String serviceName, CommandPublisher commandPublisher, SharedServiceStatus sharedServiceStatus) {
-        super(serviceName, toStopServiceName(serviceName), commandPublisher, sharedServiceStatus);
+    public StopServiceController(String serviceName, TaskWrapperPublisher taskWrapperPublisher, SharedServiceStatus sharedServiceStatus) {
+        super(serviceName, toStopServiceName(serviceName), taskWrapperPublisher, sharedServiceStatus);
     }
 
     @EventHandler(filterVariable = "serviceName")

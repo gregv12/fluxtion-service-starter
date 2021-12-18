@@ -2,6 +2,9 @@ package com.fluxtion.example.servicestater.graph;
 
 import lombok.Value;
 
+/**
+ * Encapsulates a task that a service has provided during registration. Task are published
+ */
 @Value
 public class TaskWrapper {
     String serviceName;
