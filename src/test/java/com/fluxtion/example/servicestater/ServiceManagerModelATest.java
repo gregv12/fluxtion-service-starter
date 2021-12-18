@@ -79,8 +79,8 @@ class ServiceManagerModelATest {
 
     @Test
     void startingAggABThenNotifyPersisterStart() {
-        ADD_AUDIT_LOG = true;
-        COMPILED = true;
+//        ADD_AUDIT_LOG = true;
+//        COMPILED = true;
         var serviceManager = startAService(ServiceModels.AGG_AB);
         var statusMap = mapWithStatus(Status.STATUS_UNKNOWN);
         serviceManager.serviceStartedNotification(ServiceModels.PERSISTER);

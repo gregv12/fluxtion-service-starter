@@ -81,27 +81,27 @@ public class ServiceManager {
     }
 
     public void startService(String serviceName) {
-        log.info("start single service:" + serviceName);
+        log.fine("start single service:" + serviceName);
         startProcessor.onEvent(new GraphEvent.RequestServiceStart(serviceName));
         startProcessor.onEvent(new GraphEvent.PublishStartTask());
         publishAllServiceStatus();
     }
 
     public void stopService(String serviceName) {
-        log.info("stop single service:" + serviceName);
+        log.fine("stop single service:" + serviceName);
         startProcessor.onEvent(new GraphEvent.RequestServiceStop(serviceName));
         startProcessor.onEvent(new GraphEvent.PublishStartTask());
         publishAllServiceStatus();
     }
 
     public void startAllServices() {
-        log.info("start all");
+        log.fine("start all");
         startProcessor.onEvent(new GraphEvent.RequestStartAll());
         publishAllServiceStatus();
     }
 
     public void stopAllServices() {
-        log.info("stop all");
+        log.fine("stop all");
         startProcessor.onEvent(new GraphEvent.RequestStopAll());
         publishAllServiceStatus();
     }
@@ -120,13 +120,13 @@ public class ServiceManager {
 
     public void serviceStartedNotification(String serviceName) {
         GraphEvent.NotifyServiceStarted notifyServiceStarted = new GraphEvent.NotifyServiceStarted(serviceName);
-        log.info(notifyServiceStarted.toString());
+        log.fine(notifyServiceStarted.toString());
         startProcessor.onEvent(notifyServiceStarted);
     }
 
     public void serviceStoppedNotification(String serviceName) {
         GraphEvent.NotifyServiceStopped notifyServiceStarted = new GraphEvent.NotifyServiceStopped(serviceName);
-        log.info(notifyServiceStarted.toString());
+        log.fine(notifyServiceStarted.toString());
         startProcessor.onEvent(notifyServiceStarted);
     }
 

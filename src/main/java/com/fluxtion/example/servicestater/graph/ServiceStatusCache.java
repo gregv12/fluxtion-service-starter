@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
  */
 public class ServiceStatusCache implements Named {
 
-    private Consumer<List<StatusForService>> statusListener = (strings -> {
-    });
+    private Consumer<List<StatusForService>> statusListener = (strings -> {});
+
     private final Map<String, Service.Status> serviceStatusMap = new HashMap<>();
 
     public Service.Status getStatus(String name) {
