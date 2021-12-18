@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 
 /**
  * Wraps a ServiceManager to ensure single threaded access to the underlying {@link ServiceManager}. All method calls
- * are converted to task and placed on a task queue for later execution by the {@link ServiceManager} thread.
+ * are converted to tasks and placed on a task queue for later execution by the {@link ServiceManager} thread.
  */
 public class ServiceManagerServer {
 
@@ -19,9 +19,6 @@ public class ServiceManagerServer {
 
     public void setManager(ServiceManager manager) {
         this.manager = manager;
-    }
-
-    public void traceMethodCalls(boolean traceOn) {
     }
 
     public void startService(String serviceName) {
@@ -40,15 +37,15 @@ public class ServiceManagerServer {
         publisher.submit(ServiceManager::stopAllServices);
     }
 
-    public void publishAllServiceStatus() {
+    public void publishServiceStatus() {
         publisher.submit(ServiceManager::publishAllServiceStatus);
     }
 
-    public void processServiceStartedNotification(String serviceName) {
+    public void serviceStartedNotification(String serviceName) {
         publisher.submit(f -> f.serviceStartedNotification(serviceName));
     }
 
-    public void processServiceStoppedNotification(String serviceName) {
+    public void serviceStoppedNotification(String serviceName) {
         publisher.submit(f -> f.serviceStoppedNotification(serviceName));
     }
 

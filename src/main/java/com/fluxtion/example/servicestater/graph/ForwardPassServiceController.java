@@ -43,13 +43,32 @@ public class ForwardPassServiceController extends ServiceController {
         return changed;
     }
 
+    @EventHandler(propagate = false)
+    public void publishStartTasks(GraphEvent.PublishStopTask publishStartTask) {
+        if (getStatus() == Service.Status.WAITING_FOR_PARENTS_TO_STOP && (!hasParents() || areAllParentsStopped())) {
+            stopService();
+        }
+    }
+
+    @EventHandler(filterVariable = "serviceName")
+    public boolean notifyServiceStopped(GraphEvent.NotifyServiceStopped statusUpdate) {
+        boolean changed = getStatus() != Service.Status.STOPPED;
+        if (changed) {
+            setStatus(Service.Status.STOPPED);
+        }
+        return changed;
+    }
+
     @OnEvent
     public boolean recalculateStatusForStart() {
-        if(getStatus() != STARTED && getParentStatusSet().contains(WAITING_FOR_PARENTS_TO_START)){
+        if (getStatus() == Service.Status.WAITING_FOR_PARENTS_TO_STOP &&  areAllParentsStopped() ) {
+            stopService();
+            return true;
+        }else if(getStatus() != STARTED && getParentStatusSet().contains(WAITING_FOR_PARENTS_TO_START)){
             setStatus(WAITING_FOR_PARENTS_TO_START);
             return true;
         }
-        return false;
+        return true;
     }
 
 

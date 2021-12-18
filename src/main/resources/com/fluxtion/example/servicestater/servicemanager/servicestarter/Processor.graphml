@@ -128,6 +128,24 @@
                 </jGraph:ShapeNode>
             </data>
         </node>
+        <node id="NotifyServiceStopped">
+            <data key="vertex_label">
+                <jGraph:ShapeNode>
+                    <jGraph:Geometry height="70" width="160" x="20" y="20"/>
+                    <jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;NotifyServiceStopped"/>
+                    <jGraph:Style properties="EVENT"/>
+                </jGraph:ShapeNode>
+            </data>
+        </node>
+        <node id="PublishStopTask">
+            <data key="vertex_label">
+                <jGraph:ShapeNode>
+                    <jGraph:Geometry height="70" width="160" x="20" y="20"/>
+                    <jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;PublishStopTask"/>
+                    <jGraph:Style properties="EVENT"/>
+                </jGraph:ShapeNode>
+            </data>
+        </node>
         <node id="RequestServiceStart">
             <data key="vertex_label">
                 <jGraph:ShapeNode>
@@ -178,6 +196,15 @@
                 <jGraph:ShapeNode>
                     <jGraph:Geometry height="70" width="160" x="20" y="20"/>
                     <jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;PublishStartTask"/>
+                    <jGraph:Style properties="EVENT"/>
+                </jGraph:ShapeNode>
+            </data>
+        </node>
+        <node id="RequestServiceStop">
+            <data key="vertex_label">
+                <jGraph:ShapeNode>
+                    <jGraph:Geometry height="70" width="160" x="20" y="20"/>
+                    <jGraph:label text="&lt;&lt;Event&gt;&gt;&#10;RequestServiceStop"/>
                     <jGraph:Style properties="EVENT"/>
                 </jGraph:ShapeNode>
             </data>
@@ -352,107 +379,197 @@
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="35" source="RequestServiceStart" target="calcC_start">
+        <edge id="35" source="NotifyServiceStopped" target="calcC_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="36" source="RequestServiceStart" target="handlerC_start">
+        <edge id="36" source="PublishStopTask" target="calcC_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="37" source="RegisterStatusListener" target="serviceStatusCache">
+        <edge id="37" source="RequestServiceStart" target="calcC_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="38" source="PublishStatus" target="serviceStatusCache">
+        <edge id="38" source="NotifyServiceStopped" target="handlerC_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="39" source="RegisterCommandProcessor" target="commandPublisher">
+        <edge id="39" source="PublishStopTask" target="handlerC_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="40" source="NotifyServiceStarted" target="calcC_stop">
+        <edge id="40" source="RequestServiceStart" target="handlerC_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="41" source="PublishStartTask" target="calcC_stop">
+        <edge id="41" source="RegisterStatusListener" target="serviceStatusCache">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="42" source="NotifyServiceStarted" target="persister_stop">
+        <edge id="42" source="PublishStatus" target="serviceStatusCache">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="43" source="PublishStartTask" target="persister_stop">
+        <edge id="43" source="RegisterCommandProcessor" target="commandPublisher">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="44" source="RequestServiceStart" target="persister_start">
+        <edge id="44" source="NotifyServiceStarted" target="calcC_stop">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="45" source="RequestServiceStart" target="aggAB_start">
+        <edge id="45" source="PublishStartTask" target="calcC_stop">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="46" source="RequestServiceStart" target="handlerA_start">
+        <edge id="46" source="RequestServiceStop" target="calcC_stop">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="47" source="RequestServiceStart" target="handlerB_start">
+        <edge id="47" source="NotifyServiceStarted" target="persister_stop">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="48" source="NotifyServiceStarted" target="handlerB_stop">
+        <edge id="48" source="PublishStartTask" target="persister_stop">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="49" source="PublishStartTask" target="handlerB_stop">
+        <edge id="49" source="RequestServiceStop" target="persister_stop">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="50" source="NotifyServiceStarted" target="aggAB_stop">
+        <edge id="50" source="NotifyServiceStopped" target="persister_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="51" source="PublishStartTask" target="aggAB_stop">
+        <edge id="51" source="PublishStopTask" target="persister_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="52" source="NotifyServiceStarted" target="handlerC_stop">
+        <edge id="52" source="RequestServiceStart" target="persister_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="53" source="PublishStartTask" target="handlerC_stop">
+        <edge id="53" source="NotifyServiceStopped" target="aggAB_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="54" source="NotifyServiceStarted" target="handlerA_stop">
+        <edge id="54" source="PublishStopTask" target="aggAB_start">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>
         </edge>
-        <edge id="55" source="PublishStartTask" target="handlerA_stop">
+        <edge id="55" source="RequestServiceStart" target="aggAB_start">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="56" source="NotifyServiceStopped" target="handlerA_start">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="57" source="PublishStopTask" target="handlerA_start">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="58" source="RequestServiceStart" target="handlerA_start">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="59" source="NotifyServiceStopped" target="handlerB_start">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="60" source="PublishStopTask" target="handlerB_start">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="61" source="RequestServiceStart" target="handlerB_start">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="62" source="NotifyServiceStarted" target="handlerB_stop">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="63" source="PublishStartTask" target="handlerB_stop">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="64" source="RequestServiceStop" target="handlerB_stop">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="65" source="NotifyServiceStarted" target="aggAB_stop">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="66" source="PublishStartTask" target="aggAB_stop">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="67" source="RequestServiceStop" target="aggAB_stop">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="68" source="NotifyServiceStarted" target="handlerC_stop">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="69" source="PublishStartTask" target="handlerC_stop">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="70" source="RequestServiceStop" target="handlerC_stop">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="71" source="NotifyServiceStarted" target="handlerA_stop">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="72" source="PublishStartTask" target="handlerA_stop">
+            <data key="edge_label">
+                <jGraph:ShapeEdge/>
+            </data>
+        </edge>
+        <edge id="73" source="RequestServiceStop" target="handlerA_stop">
             <data key="edge_label">
                 <jGraph:ShapeEdge/>
             </data>

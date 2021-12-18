@@ -4,6 +4,7 @@ import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.runtim.annotations.EventHandler;
 import com.fluxtion.runtim.annotations.OnEvent;
 
+import static com.fluxtion.example.servicestater.Service.Status.*;
 import static com.fluxtion.example.servicestater.ServiceManager.toStopServiceName;
 
 /**
@@ -26,6 +27,25 @@ public class ReversePassServiceController extends ServiceController {
         super(serviceName, toStopServiceName(serviceName), taskWrapperPublisher, serviceStatusCache);
     }
 
+    private boolean justStarted = false;
+
+    @EventHandler(filterVariable = "serviceName")
+    public boolean stopThisService(GraphEvent.RequestServiceStop serviceStopRequest){
+        boolean changed = false;
+        Service.Status initialStatus = getStatus();
+        switch (initialStatus) {
+            case STATUS_UNKNOWN, WAITING_FOR_PARENTS_TO_START, STARTING, STARTED -> {
+                setStatus(Service.Status.WAITING_FOR_PARENTS_TO_STOP);
+                changed = true;
+            }
+            default -> {
+                //do nothing
+            }
+        }
+        auditLog.info("markStopping", changed);
+        return changed;
+    }
+
     @EventHandler(propagate = false)
     public void publishStartTasks(GraphEvent.PublishStartTask publishStartTask) {
         if (getStatus() == Service.Status.WAITING_FOR_PARENTS_TO_START && (!hasParents() || areAllParentsStarted())) {
@@ -38,6 +58,7 @@ public class ReversePassServiceController extends ServiceController {
         boolean changed = getStatus() != Service.Status.STARTED;
         if (changed) {
             setStatus(Service.Status.STARTED);
+            justStarted = true;
         }
         return changed;
     }
@@ -45,10 +66,17 @@ public class ReversePassServiceController extends ServiceController {
 
     @OnEvent
     public boolean recalculateStatusForStop() {
-        if (getStatus() == Service.Status.WAITING_FOR_PARENTS_TO_START &&  areAllParentsStarted() ) {
+        if (getStatus() == Service.Status.WAITING_FOR_PARENTS_TO_START && areAllParentsStarted() ) {
             startService();
+            return true;
+        }else if(getStatus() != STOPPED && getParentStatusSet().contains(WAITING_FOR_PARENTS_TO_STOP)){
+            setStatus(WAITING_FOR_PARENTS_TO_STOP);
+            return true;
+        } else if(justStarted){
+            justStarted = false;
+            return true;
         }
-        return true;
+        return false;
     }
 
 

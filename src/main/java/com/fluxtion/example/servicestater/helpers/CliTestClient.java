@@ -82,7 +82,7 @@ public class CliTestClient {
 
     private static void printStatus(){
         checkControllerIsBuilt();
-        serviceManagerServer.publishAllServiceStatus();
+        serviceManagerServer.publishServiceStatus();
     }
 
     private static void checkControllerIsBuilt() {
@@ -113,7 +113,7 @@ public class CliTestClient {
     private static void notifiedStartedByName(Scanner scanner){
         checkControllerIsBuilt();
         if(scanner.hasNext()){
-            serviceManagerServer.processServiceStartedNotification(scanner.next());
+            serviceManagerServer.serviceStartedNotification(scanner.next());
         }else{
             System.out.println("2nd argument required - service name");
         }
@@ -122,7 +122,7 @@ public class CliTestClient {
     private static void notifiedStoppedByName(Scanner scanner){
         checkControllerIsBuilt();
         if(scanner.hasNext()){
-            serviceManagerServer.processServiceStoppedNotification(scanner.next());
+            serviceManagerServer.serviceStoppedNotification(scanner.next());
         }else{
             System.out.println("2nd argument required - service name");
         }
@@ -151,18 +151,18 @@ public class CliTestClient {
         System.out.println("svc_1 START notification in 4 seconds");
         Thread.sleep(4_000);
         System.out.println("svc_1  sending START notification");
-        serviceManagerServer.processServiceStartedNotification("svc_1");
+        serviceManagerServer.serviceStartedNotification("svc_1");
     }
 
     @SneakyThrows
     public static void notifyStartedPersister(){
         log.info("persister::startTask notify persister STARTED");
-        serviceManagerServer.processServiceStartedNotification("persister");
+        serviceManagerServer.serviceStartedNotification("persister");
     }
 
     @SneakyThrows
     public static void notifyStartedAggAB(){
         log.info("aggAB::startTask notify aggAB STARTED");
-        serviceManagerServer.processServiceStartedNotification("aggAB");
+        serviceManagerServer.serviceStartedNotification("aggAB");
     }
 }

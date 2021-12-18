@@ -10,10 +10,10 @@ import lombok.ToString;
 public interface GraphEvent {
 
     /**
-     * A base event class that provides filtering functionality, allows routing an event to a specifiic service controller
-     * The filter should be the name of the service.
+     * A base event class that provides filtering functionality, allows routing of an event to a specific
+     * {@link ServiceController} and method. The filter should be the name of the service.
      */
-    class FilteredGraphEvent implements Named, Event{
+    class FilteredGraphEvent implements Named, Event {
         private final String name;
 
         public FilteredGraphEvent(String name) {
@@ -32,50 +32,55 @@ public interface GraphEvent {
 
         @Override
         public String toString() {
-            return "name='" + name + '\'' ;
+            return "name='" + name + '\'';
         }
     }
 
     @ToString(callSuper = true)
-    class RequestServiceStart extends FilteredGraphEvent{
+    class RequestServiceStart extends FilteredGraphEvent {
         public RequestServiceStart(String name) {
             super(name);
         }
     }
 
     @ToString(callSuper = true)
-    class RequestServiceStop extends FilteredGraphEvent{
+    class RequestServiceStop extends FilteredGraphEvent {
         public RequestServiceStop(String name) {
             super(name);
         }
     }
 
     @ToString(callSuper = true)
-    class NotifyServiceStarted extends FilteredGraphEvent{
+    class NotifyServiceStarted extends FilteredGraphEvent {
         public NotifyServiceStarted(String name) {
             super(name);
         }
     }
 
     @ToString(callSuper = true)
-    class NotifyServiceStopped extends FilteredGraphEvent{
+    class NotifyServiceStopped extends FilteredGraphEvent {
         public NotifyServiceStopped(String name) {
             super(name);
         }
     }
 
     @ToString
-    class PublishStartTask{}
+    class PublishStartTask {
+    }
 
     @ToString
-    class PublishStopTask{}
+    class PublishStopTask {
+    }
 
     @ToString
-    class PublishStatus{}
+    class PublishStatus {
+    }
 
     @ToString
-    class RequestStartAll{}
+    class RequestStartAll {
+    }
 
     @ToString
-    class RequestStopAll{}
+    class RequestStopAll {
+    }
 }

@@ -90,7 +90,7 @@ public class ServiceManager {
     public void stopService(String serviceName) {
         log.fine("stop single service:" + serviceName);
         startProcessor.onEvent(new GraphEvent.RequestServiceStop(serviceName));
-        startProcessor.onEvent(new GraphEvent.PublishStartTask());
+        startProcessor.onEvent(new GraphEvent.PublishStopTask());
         publishAllServiceStatus();
     }
 
