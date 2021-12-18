@@ -49,7 +49,7 @@ public class ServiceManager {
     private boolean addAudit = true;
     private boolean compile = true;
 
-    public ServiceManager buildSystemController(Service... serviceList) {
+    public ServiceManager buildServiceController(Service... serviceList) {
         Objects.requireNonNull(serviceList);
         managedStartServices.clear();
         Arrays.stream(serviceList).forEach(this::addServicesToMap);//change to recursive lookup

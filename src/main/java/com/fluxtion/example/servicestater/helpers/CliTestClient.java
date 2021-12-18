@@ -1,7 +1,7 @@
 package com.fluxtion.example.servicestater.helpers;
 
-import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.example.servicestater.Service;
+import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.example.servicestater.ServiceManagerServer;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
@@ -138,7 +138,7 @@ public class CliTestClient {
         //build and register outputs
         ServiceManager serviceManager = new ServiceManager();
         serviceTaskExecutor = new ServiceTaskExecutor();
-        serviceManager.buildSystemController(persister, aggAB, calcC, handlerA, handlerB, handlerC);
+        serviceManager.buildServiceController(persister, aggAB, calcC, handlerA, handlerB, handlerC);
         serviceManager.registerTaskExecutor(serviceTaskExecutor);
         serviceManager.registerStatusListener(new PublishStatusToConsole());
         //wrap in server

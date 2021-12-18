@@ -25,7 +25,7 @@ public interface ServiceModels {
         return new ServiceManager()
                 .addAuditLog(addAuditLog)
                 .compiled(compiled)
-                .buildSystemController(persister, aggAB, calcC, handlerA, handlerB, handlerC);
+                .buildServiceController(persister, aggAB, calcC, handlerA, handlerB, handlerC);
     }
 
     static List<StatusForService> allWithStatus(Service.Status status){
