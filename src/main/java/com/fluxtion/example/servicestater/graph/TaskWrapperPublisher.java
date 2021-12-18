@@ -1,6 +1,5 @@
 package com.fluxtion.example.servicestater.graph;
 
-import com.fluxtion.example.servicestater.ServiceEvent;
 import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.annotations.AfterEvent;
@@ -22,7 +21,7 @@ public class TaskWrapperPublisher implements Named {
     private final List<TaskWrapper> commandList = new ArrayList<>();
 
     @EventHandler(propagate = false)
-    public void registerCommandProcessor(ServiceEvent.RegisterCommandProcessor registerCommandProcessor) {
+    public void registerCommandProcessor(ServiceManager.RegisterCommandProcessor registerCommandProcessor) {
         this.commandPublisher = registerCommandProcessor.getConsumer();
     }
 

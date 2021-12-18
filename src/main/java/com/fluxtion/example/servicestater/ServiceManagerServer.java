@@ -52,7 +52,4 @@ public class ServiceManagerServer {
         publisher.submit(f -> f.processServiceStoppedNotification(serviceName));
     }
 
-    public void processStatusUpdate(ServiceEvent.StatusUpdate statusUpdate) {
-        publisher.submit(f -> f.processStatusUpdate(statusUpdate));
-    }
 }

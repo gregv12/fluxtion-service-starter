@@ -4,6 +4,7 @@ import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.ServiceManagerServer;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 
 import java.util.Locale;
 import java.util.Scanner;
@@ -15,12 +16,15 @@ import java.util.Scanner;
  * message is displayed detailing the usage.
  *
  */
+@Log
 public class CliTestClient {
 
     private static ServiceManagerServer serviceManagerServer;
     private static ServiceTaskExecutor serviceTaskExecutor;
 
     public static void main(String[] args) {
+        buildGraph();
+        serviceManagerServer.startService("aggAB");
         Scanner scanner = new Scanner(System.in);
         boolean run = true;
         printHelp();
@@ -125,19 +129,19 @@ public class CliTestClient {
     }
 
     private static void buildGraph() {
-        Service svc_1 = new Service("svc_1", CliTestClient::notifyStart, CliTestClient::notifyStop);
-        Service svc_2 = new Service("svc_2", svc_1);
-        Service svc_A = new Service("svc_A");
-        Service svc_B = new Service("svc_B", svc_A);
-        //joined service
-        Service svc_2BJoined = new Service("svc_2BJoined", svc_2, svc_B);
+        Service handlerA = new Service("handlerA");
+        Service handlerB = new Service("handlerB");
+        Service handlerC = new Service("handlerC");
+        Service aggAB = new Service("aggAB", CliTestClient::notifyStartedAggAB, null, handlerA, handlerB);
+        Service calcC = new Service("calcC", handlerC);
+        Service persister = new Service("persister", CliTestClient::notifyStartedPersister, null, aggAB, calcC);
         //build and register outputs
         ServiceManager serviceManager = new ServiceManager();
         serviceTaskExecutor = new ServiceTaskExecutor();
-        serviceManager.buildSystemController(svc_1, svc_2, svc_A, svc_B, svc_2BJoined);
+        serviceManager.buildSystemController(persister, aggAB, calcC, handlerA, handlerB, handlerC);
         serviceManager.registerTaskExecutor(serviceTaskExecutor);
         serviceManager.registerStatusListener(new PublishStatusToConsole());
-
+        //wrap in server
         serviceManagerServer = new ServiceManagerServer();
         serviceManagerServer.setManager(serviceManager);
     }
@@ -151,10 +155,14 @@ public class CliTestClient {
     }
 
     @SneakyThrows
-    public static void notifyStop(){
-        System.out.println("svc_1::STOP task callback in 4 seconds");
-        Thread.sleep(4_000);
-        System.out.println("svc_1::STOP task callback in 4 seconds");
-        serviceManagerServer.processServiceStoppedNotification("svc_1");
+    public static void notifyStartedPersister(){
+        log.info("persister::startTask notify persister STARTED");
+        serviceManagerServer.processServiceStartedNotification("persister");
+    }
+
+    @SneakyThrows
+    public static void notifyStartedAggAB(){
+        log.info("aggAB::startTask notify aggAB STARTED");
+        serviceManagerServer.processServiceStartedNotification("aggAB");
     }
 }

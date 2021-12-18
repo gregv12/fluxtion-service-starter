@@ -30,10 +30,6 @@ class ServiceManagerTest {
         serviceManager.startAllServices();
 
         //interact with the service
-        serviceManager.processStatusUpdate(ServiceEvent.newStartedUpdate( "svc_1"));
-        serviceManager.processStatusUpdate(ServiceEvent.newStartedUpdate( "svc_2"));
-        serviceManager.processStatusUpdate(ServiceEvent.newStartedUpdate( "svc_A"));
-        serviceManager.processStatusUpdate(ServiceEvent.newStartedUpdate( "svc_B"));
         //status query
         serviceManager.publishAllServiceStatus();
 

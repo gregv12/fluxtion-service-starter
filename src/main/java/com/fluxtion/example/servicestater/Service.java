@@ -1,7 +1,7 @@
 package com.fluxtion.example.servicestater;
 
-import com.fluxtion.example.servicestater.graph.StartServiceController;
-import com.fluxtion.example.servicestater.graph.StopServiceController;
+import com.fluxtion.example.servicestater.graph.ForwardPassServiceController;
+import com.fluxtion.example.servicestater.graph.ReversePassServiceController;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableRunnable;
 
@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * A representation of an external service and its dependencies. This service will be wrapped in the graph and controlled
- * by {@link StartServiceController} and {@link StopServiceController}. A service can optionally provide start and stop
+ * by {@link ForwardPassServiceController} and {@link ReversePassServiceController}. A service can optionally provide start and stop
  * tasks that will be executed when a service moves to the relevant state:
  * <ul>
  *     <li>Entering STARTING from WAITING_TO_START - the start task is executed</li>
@@ -19,6 +19,16 @@ import java.util.List;
  */
 public class Service implements Named {
 
+    public enum Status {
+        STATUS_UNKNOWN,
+        WAITING_FOR_PARENTS_TO_START,
+        STARTING,
+        STARTED,
+        WAITING_FOR_PARENTS_TO_STOP,
+        STOPPING,
+        STOPPED,
+    }
+    
     private final String name;
     private final List<Service> dependencies;
     private final SerializableRunnable startTask;
@@ -59,4 +69,6 @@ public class Service implements Named {
     public String getName() {
         return name;
     }
+
+
 }

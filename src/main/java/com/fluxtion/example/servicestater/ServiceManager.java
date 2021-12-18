@@ -5,13 +5,12 @@ import com.fluxtion.compiler.builder.node.SEPConfig;
 import com.fluxtion.example.servicestater.graph.*;
 import com.fluxtion.runtim.EventProcessor;
 import com.fluxtion.runtim.audit.EventLogControlEvent;
+import lombok.Value;
 import lombok.extern.java.Log;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import static com.fluxtion.example.servicestater.ServiceEvent.*;
 
 /**
  * Manages the lifecycle of a set of external {@link Service}'s. A Service has a set of dependencies and is only stopped/started
@@ -45,14 +44,14 @@ public class ServiceManager {
     public static final String STOP_SUFFIX = "_stop";
     private final Map<String, ServiceController> managedStartServices = new HashMap<>();
     private final TaskWrapperPublisher taskWrapperPublisher = new TaskWrapperPublisher();
-    private final SharedServiceStatus sharedServiceStatus = new SharedServiceStatus();
+    private final ServiceStatusCache serviceStatusCache = new ServiceStatusCache();
     private EventProcessor startProcessor;
 
     public void buildSystemController(Service... serviceList) {
         Objects.requireNonNull(serviceList);
         managedStartServices.clear();
-        Arrays.stream(serviceList).forEach(this::addServicesToMap);
-        Arrays.stream(serviceList).forEach(this::setServiceDependencies);
+        Arrays.stream(serviceList).forEach(this::addServicesToMap);//change to recursive lookup
+        Arrays.stream(serviceList).forEach(this::setServiceDependencies);//use the recursive list here
         startProcessor = Fluxtion.compile(this::serviceStarter);
         startProcessor.init();
     }
@@ -74,27 +73,29 @@ public class ServiceManager {
         }
     }
 
-    public void startService(String serviceName){
+    public void startService(String serviceName) {
         log.info("start single service:" + serviceName);
-        startProcessor.onEvent(new ServiceEvent.StartSingleService(serviceName));
+        startProcessor.onEvent(new GraphEvent.RequestServiceStart(serviceName));
+        startProcessor.onEvent(new GraphEvent.PublishStartTask());
         publishAllServiceStatus();
     }
 
-    public void stopService(String serviceName){
+    public void stopService(String serviceName) {
         log.info("stop single service:" + serviceName);
-        startProcessor.onEvent(new ServiceEvent.StopSingleService(serviceName));
+        startProcessor.onEvent(new GraphEvent.RequestServiceStop(serviceName));
+        startProcessor.onEvent(new GraphEvent.PublishStartTask());
         publishAllServiceStatus();
     }
 
     public void startAllServices() {
         log.info("start all");
-        startProcessor.onEvent(new StartAllServices());
+        startProcessor.onEvent(new GraphEvent.RequestStartAll());
         publishAllServiceStatus();
     }
 
     public void stopAllServices() {
         log.info("stop all");
-        startProcessor.onEvent(new StopAllServices());
+        startProcessor.onEvent(new GraphEvent.RequestStopAll());
         publishAllServiceStatus();
     }
 
@@ -107,29 +108,30 @@ public class ServiceManager {
     }
 
     public void publishAllServiceStatus() {
-        startProcessor.onEvent(new PublishStatus());
+        startProcessor.onEvent(new GraphEvent.PublishStatus());
     }
 
-    public void processServiceStartedNotification(String serviceName){
-        processStatusUpdate(ServiceEvent.newStartedUpdate( serviceName));
+    public void processServiceStartedNotification(String serviceName) {
+        GraphEvent.NotifyServiceStarted notifyServiceStarted = new GraphEvent.NotifyServiceStarted(serviceName);
+        log.info(notifyServiceStarted.toString());
+        startProcessor.onEvent(notifyServiceStarted);
     }
 
-    public void processServiceStoppedNotification(String serviceName){
-        processStatusUpdate(ServiceEvent.newStoppedUpdate( serviceName));
-    }
-
-    public void processStatusUpdate(StatusUpdate statusUpdate) {
-        log.info(statusUpdate.toString());
-        startProcessor.onEvent(statusUpdate);
+    public void processServiceStoppedNotification(String serviceName) {
+        GraphEvent.NotifyServiceStopped notifyServiceStarted = new GraphEvent.NotifyServiceStopped(serviceName);
+        log.info(notifyServiceStarted.toString());
+        startProcessor.onEvent(notifyServiceStarted);
     }
 
     private void addServicesToMap(Service s) {
-        StartServiceController startServiceController = new StartServiceController(s.getName(), taskWrapperPublisher, sharedServiceStatus);
-        startServiceController.setStartTask(s.getStartTask());
-        StopServiceController stopServiceController = new StopServiceController(s.getName(), taskWrapperPublisher, sharedServiceStatus);
-        stopServiceController.setStopTask(s.getStopTask());
-        managedStartServices.put(startServiceController.getName(), startServiceController);
-        managedStartServices.put(stopServiceController.getName(), stopServiceController);
+        ForwardPassServiceController forwardPassServiceController = new ForwardPassServiceController(s.getName(), taskWrapperPublisher, serviceStatusCache);
+        forwardPassServiceController.setStartTask(s.getStartTask());
+        forwardPassServiceController.setStopTask(s.getStopTask());
+        ReversePassServiceController reversePassServiceController = new ReversePassServiceController(s.getName(), taskWrapperPublisher, serviceStatusCache);
+        reversePassServiceController.setStartTask(s.getStartTask());
+        reversePassServiceController.setStopTask(s.getStopTask());
+        managedStartServices.put(forwardPassServiceController.getName(), forwardPassServiceController);
+        managedStartServices.put(reversePassServiceController.getName(), reversePassServiceController);
     }
 
     private void setServiceDependencies(Service service) {
@@ -163,5 +165,15 @@ public class ServiceManager {
 
     public static String toStopServiceName(String serviceName) {
         return serviceName + STOP_SUFFIX;
+    }
+
+    @Value
+    public static class RegisterCommandProcessor {
+        Consumer<List<TaskWrapper>> consumer;
+    }
+
+    @Value
+    public static class RegisterStatusListener {
+        Consumer<List<String>> statusListener;
     }
 }

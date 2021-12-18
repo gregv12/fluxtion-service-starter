@@ -1,8 +1,7 @@
 package com.fluxtion.example.servicestater.graph;
 
-import com.fluxtion.example.servicestater.ServiceEvent;
+import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.ServiceManager;
-import com.fluxtion.example.servicestater.ServiceStatus;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.annotations.EventHandler;
 import com.fluxtion.runtim.annotations.Initialise;
@@ -16,22 +15,22 @@ import java.util.stream.Collectors;
 
 /**
  * A cache for the current status of the external {@link com.fluxtion.example.servicestater.Service}, both
- * {@link StartServiceController} and {@link StopServiceController}
+ * {@link ForwardPassServiceController} and {@link ReversePassServiceController}
  * read and write the status cache to determine the state change to make.
  *
  * A client application can listen to status updates by calling {@link ServiceManager#registerStatusListener(Consumer)}
  */
-public class SharedServiceStatus implements Named {
+public class ServiceStatusCache implements Named {
 
     private Consumer<List<String>> statusListener = (strings -> {});
-    private final Map<String, ServiceStatus> serviceStatusMap = new HashMap<>();
+    private final Map<String, Service.Status> serviceStatusMap = new HashMap<>();
 
-    public ServiceStatus getStatus(String name) {
+    public Service.Status getStatus(String name) {
         return serviceStatusMap.get(name);
     }
 
-    public void setServiceStatus(String name, ServiceStatus serviceStatus) {
-        serviceStatusMap.put(name, serviceStatus);
+    public void setServiceStatus(String name, Service.Status status) {
+        serviceStatusMap.put(name, status);
     }
 
     /**
@@ -42,7 +41,7 @@ public class SharedServiceStatus implements Named {
      * @param listener contains the status listener
      */
     @EventHandler(propagate = false)
-    public void registerStatusListener(ServiceEvent.RegisterStatusListener listener) {
+    public void registerStatusListener(ServiceManager.RegisterStatusListener listener) {
         statusListener = listener.getStatusListener();
         publishStatus();
     }
@@ -55,7 +54,7 @@ public class SharedServiceStatus implements Named {
      * @param publishStatusRequest contains the status listener
      */
     @EventHandler(propagate = false)
-    public void publishCurrentStatus(ServiceEvent.PublishStatus publishStatusRequest) {
+    public void publishCurrentStatus(GraphEvent.PublishStatus publishStatusRequest) {
         publishStatus();
     }
 
