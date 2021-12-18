@@ -12,7 +12,8 @@ public class StatusForService {
 
     @Override
     public String toString() {
-        return "service='" + serviceName + '\'' +
-                ", status=" + status;
+        return "(service='" + serviceName + '\'' +
+                ", status=" + status
+                + ")";
     }
 }

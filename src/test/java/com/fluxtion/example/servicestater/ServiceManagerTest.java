@@ -1,38 +1,40 @@
 package com.fluxtion.example.servicestater;
 
 import com.fluxtion.example.servicestater.helpers.ServiceTaskExecutor;
-import com.fluxtion.example.servicestater.helpers.PublishStatusToConsole;
-import com.fluxtion.example.servicestater.helpers.CliTestClient;
+import lombok.extern.java.Log;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+
+@Log
 class ServiceManagerTest {
+
+    private final List<StatusForService> statusList = new ArrayList<>();
 
     @Test
     void buildSystemController() {
-
-        //replace with JSON/YAML
-        Service svc_1 = new Service("svc_1", CliTestClient::notifyStart, null);
-        Service svc_2 = new Service("svc_2", svc_1);
-        Service svc_A = new Service("svc_A");
-        Service svc_B = new Service("svc_B", svc_A);
-        //joined service
-        Service svc_2BJoined = new Service("svc_2BJoined", svc_2, svc_B);
-
-        //build and register outputs
-        ServiceManager serviceManager = new ServiceManager();
-        serviceManager.buildSystemController(svc_1, svc_2, svc_A, svc_B, svc_2BJoined);
-//        serviceManager.traceMethodCalls(false);
-        serviceManager.registerTaskExecutor(new ServiceTaskExecutor());
-//        serviceManager.registerStatusListener(new PublishStatusToConsole());
+        ServiceManager serviceManager = ServiceModels.buildModelA(false, false);
+        ServiceTaskExecutor serviceTaskExecutor = new ServiceTaskExecutor();
+        serviceManager.registerStatusListener(this::recordServiceStatus);
+        //
+        assertEquals(6, statusList.size());
+        assertThat(statusList, Matchers.containsInAnyOrder(ServiceModels.allUnknownStatus().toArray()));
+    }
 
 
-        //start the service manager
-        serviceManager.startAllServices();
-
-        //interact with the service
-        //status query
-        serviceManager.publishAllServiceStatus();
-
-        serviceManager.stopAllServices();
+    public void recordServiceStatus(List<StatusForService> statusUpdate) {
+        statusList.clear();
+        statusList.addAll(statusUpdate);
+//        log.info("Current status:\n" +
+//                statusUpdate.stream()
+//                        .map(Objects::toString)
+//                        .collect(Collectors.joining("\n"))
+//        );
     }
 }

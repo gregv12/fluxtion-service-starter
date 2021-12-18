@@ -46,14 +46,21 @@ public class ServiceManager {
     private final TaskWrapperPublisher taskWrapperPublisher = new TaskWrapperPublisher();
     private final ServiceStatusCache serviceStatusCache = new ServiceStatusCache();
     private EventProcessor startProcessor;
+    private boolean addAudit = true;
+    private boolean compile = true;
 
-    public void buildSystemController(Service... serviceList) {
+    public ServiceManager buildSystemController(Service... serviceList) {
         Objects.requireNonNull(serviceList);
         managedStartServices.clear();
         Arrays.stream(serviceList).forEach(this::addServicesToMap);//change to recursive lookup
         Arrays.stream(serviceList).forEach(this::setServiceDependencies);//use the recursive list here
-        startProcessor = Fluxtion.compile(this::serviceStarter);
+        if(compile){
+            startProcessor = Fluxtion.compile(this::serviceStarter);
+        }else{
+            startProcessor = Fluxtion.interpret(this::serviceStarter);
+        }
         startProcessor.init();
+        return this;
     }
 
 // TODO: implement dynamic graph building
@@ -123,6 +130,16 @@ public class ServiceManager {
         startProcessor.onEvent(notifyServiceStarted);
     }
 
+    public ServiceManager addAuditLog(boolean addAudit){
+        this.addAudit = addAudit;
+        return this;
+    }
+
+    public ServiceManager compiled(boolean compile){
+        this.compile = compile;
+        return this;
+    }
+
     private void addServicesToMap(Service s) {
         ForwardPassServiceController forwardPassServiceController = new ForwardPassServiceController(s.getName(), taskWrapperPublisher, serviceStatusCache);
         forwardPassServiceController.setStartTask(s.getStartTask());
@@ -156,7 +173,9 @@ public class ServiceManager {
     private void serviceStarter(SEPConfig cfg) {
         managedStartServices.values().forEach(cfg::addNode);
         cfg.addNode(taskWrapperPublisher);
-        cfg.addEventAudit(EventLogControlEvent.LogLevel.INFO);
+        if(addAudit){
+            cfg.addEventAudit(EventLogControlEvent.LogLevel.INFO);
+        }
     }
 
     public static String toStartServiceName(String serviceName) {
