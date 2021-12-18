@@ -45,11 +45,11 @@ public class ServiceManagerServer {
     }
 
     public void processServiceStartedNotification(String serviceName) {
-        publisher.submit(f -> f.processServiceStartedNotification(serviceName));
+        publisher.submit(f -> f.serviceStartedNotification(serviceName));
     }
 
     public void processServiceStoppedNotification(String serviceName) {
-        publisher.submit(f -> f.processServiceStoppedNotification(serviceName));
+        publisher.submit(f -> f.serviceStoppedNotification(serviceName));
     }
 
 }

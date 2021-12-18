@@ -118,13 +118,13 @@ public class ServiceManager {
         startProcessor.onEvent(new GraphEvent.PublishStatus());
     }
 
-    public void processServiceStartedNotification(String serviceName) {
+    public void serviceStartedNotification(String serviceName) {
         GraphEvent.NotifyServiceStarted notifyServiceStarted = new GraphEvent.NotifyServiceStarted(serviceName);
         log.info(notifyServiceStarted.toString());
         startProcessor.onEvent(notifyServiceStarted);
     }
 
-    public void processServiceStoppedNotification(String serviceName) {
+    public void serviceStoppedNotification(String serviceName) {
         GraphEvent.NotifyServiceStopped notifyServiceStarted = new GraphEvent.NotifyServiceStopped(serviceName);
         log.info(notifyServiceStarted.toString());
         startProcessor.onEvent(notifyServiceStarted);
