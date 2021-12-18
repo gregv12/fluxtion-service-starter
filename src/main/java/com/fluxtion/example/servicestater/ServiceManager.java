@@ -15,19 +15,19 @@ import static com.fluxtion.example.servicestater.ServiceEvent.*;
 
 /**
  * Manages the lifecycle of a set of external {@link Service}'s. A Service has a set of dependencies and is only stopped/started
- * if their dependencies are all in the correct state. The FluxtionSystemManager receives calls to start/stop as well as
+ * if their dependencies are all in the correct state. The ServiceManager receives calls to start/stop as well as
  * updates to service state. After processing the input a set of commands are generated that can be executed. The command
  * list published at the end of the graph cycle has the following characteristic:
  * <ul>
  *     <li>Only commands are published for services whose dependencies are in the correct state</li>
  *     <li>The command execution order is not important</li>
  *     <li>Commands can be executed in parallel</li>
- *     <li>They are not executed by the FluxtionSystemManager, the client code actually invokes the tasks</li>
+ *     <li>They are not executed by the ServiceManager, the client code actually invokes the tasks</li>
  * </ul>
  * <p>
  * <p>
  * <p>
- * The FluxtionSystemManager is an entry point for client code to :
+ * The ServiceManager is an entry point for client code to :
  * <ul>
  *     <li>register services</li>
  *     <li>Build a service controller for the whole system</li>
@@ -39,7 +39,7 @@ import static com.fluxtion.example.servicestater.ServiceEvent.*;
  * </ul>
  */
 @Log
-public class FluxtionSystemManager {
+public class ServiceManager {
 
     public static final String START_SUFFIX = "_start";
     public static final String STOP_SUFFIX = "_stop";
@@ -137,7 +137,7 @@ public class FluxtionSystemManager {
         controller.setDependencies(
                 service.getDependencies().stream()
                         .map(Service::getName)
-                        .map(FluxtionSystemManager::toStartServiceName)
+                        .map(ServiceManager::toStartServiceName)
                         .map(managedStartServices::get)
                         .collect(Collectors.toList())
         );
@@ -146,7 +146,7 @@ public class FluxtionSystemManager {
         final ServiceController stopController = controller;
         service.getDependencies().stream()
                 .map(Service::getName)
-                .map(FluxtionSystemManager::toStopServiceName)
+                .map(ServiceManager::toStopServiceName)
                 .map(managedStartServices::get)
                 .forEach(s -> s.addDependency(stopController));
     }

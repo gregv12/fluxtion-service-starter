@@ -5,7 +5,7 @@ import com.fluxtion.example.servicestater.ServiceStatus;
 import com.fluxtion.runtim.annotations.EventHandler;
 import com.fluxtion.runtim.annotations.OnEvent;
 
-import static com.fluxtion.example.servicestater.FluxtionSystemManager.toStartServiceName;
+import static com.fluxtion.example.servicestater.ServiceManager.toStartServiceName;
 import static com.fluxtion.example.servicestater.ServiceStatus.*;
 
 /**

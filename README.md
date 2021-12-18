@@ -37,11 +37,11 @@ A service is modelled with [Service](https://github.com/gregv12/example-service-
 The FluxtionSystemManage reacts to inputs and produces commands for the external system to issue to services. 
 A client application registers a command listener and can execute the commands received, example registering a dump commands to console:
 
-```fluxtionSystemManager.registerCommandPublisher(new PublishCommandsToConsole());```
+```serviceManager.registerCommandPublisher(new PublishCommandsToConsole());```
 
 Service status updates listeners are registered in a similar manner:
 
-```fluxtionSystemManager.registerStatusListener(new PublishStatusToConsole());```
+```serviceManager.registerStatusListener(new PublishStatusToConsole());```
 
 ## Example
 
@@ -57,23 +57,23 @@ Service status updates listeners are registered in a similar manner:
         Service svc_2BJoined = new Service("svc_2BJoined", svc_2, svc_B);
 
         //build and register outputs
-        FluxtionSystemManager fluxtionSystemManager = new FluxtionSystemManager();
-        fluxtionSystemManager.buildSystemController(svc_1, svc_2, svc_A, svc_B, svc_2BJoined);
-        fluxtionSystemManager.registerCommandPublisher(new PublishCommandsToConsole());
-        fluxtionSystemManager.registerStatusListener(new PublishStatusToConsole());
+        FluxtionSystemManager serviceManager = new FluxtionSystemManager();
+        serviceManager.buildSystemController(svc_1, svc_2, svc_A, svc_B, svc_2BJoined);
+        serviceManager.registerCommandPublisher(new PublishCommandsToConsole());
+        serviceManager.registerStatusListener(new PublishStatusToConsole());
 
         //start the service manager
-        fluxtionSystemManager.startServices();
+        serviceManager.startServices();
 
         //interact with the service
-        fluxtionSystemManager.processStatusUpdate(ServiceEvent.newStartedUpdate( "svc_1"));
-        fluxtionSystemManager.processStatusUpdate(ServiceEvent.newStartedUpdate( "svc_2"));
-        fluxtionSystemManager.processStatusUpdate(ServiceEvent.newStartedUpdate( "svc_A"));
-        fluxtionSystemManager.processStatusUpdate(ServiceEvent.newStartedUpdate( "svc_B"));
+        serviceManager.processStatusUpdate(ServiceEvent.newStartedUpdate( "svc_1"));
+        serviceManager.processStatusUpdate(ServiceEvent.newStartedUpdate( "svc_2"));
+        serviceManager.processStatusUpdate(ServiceEvent.newStartedUpdate( "svc_A"));
+        serviceManager.processStatusUpdate(ServiceEvent.newStartedUpdate( "svc_B"));
         //status query
-        fluxtionSystemManager.publishAllServiceStatus();
+        serviceManager.publishAllServiceStatus();
 
-        fluxtionSystemManager.stopServices();
+        serviceManager.stopServices();
     }
 ```
 
@@ -91,7 +91,7 @@ svc_1 - STATUS_UNKNOWN
 svc_A - STATUS_UNKNOWN
 
 
-Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.FluxtionSystemManager startServices
+Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.ServiceManager startServices
 INFO: start all ServiceEvent.Start(super=name='all')
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.ServiceTaskExecutor accept
 INFO: Command list:
@@ -108,7 +108,7 @@ svc_1 - STARTING
 svc_A - STARTING
 
 
-Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.FluxtionSystemManager processStatusUpdate
+Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.ServiceManager processStatusUpdate
 INFO: ServiceEvent.StatusUpdate(status=STARTED, name=svc_1)
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
 INFO: Current status:
@@ -122,7 +122,7 @@ INFO: Command list:
 ServiceEvent.Start(super=name='svc_2')
 
 
-Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.FluxtionSystemManager processStatusUpdate
+Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.ServiceManager processStatusUpdate
 INFO: ServiceEvent.StatusUpdate(status=STARTED, name=svc_2)
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
 INFO: Current status:
@@ -133,7 +133,7 @@ svc_1 - STARTED
 svc_A - STARTING
 
 
-Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.FluxtionSystemManager processStatusUpdate
+Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.ServiceManager processStatusUpdate
 INFO: ServiceEvent.StatusUpdate(status=STARTED, name=svc_A)
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
 INFO: Current status:
@@ -147,7 +147,7 @@ INFO: Command list:
 ServiceEvent.Start(super=name='svc_B')
 
 
-Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.FluxtionSystemManager processStatusUpdate
+Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.ServiceManager processStatusUpdate
 INFO: ServiceEvent.StatusUpdate(status=STARTED, name=svc_B)
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
 INFO: Current status:
@@ -170,7 +170,7 @@ svc_1 - STARTED
 svc_A - STARTED
 
 
-Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.FluxtionSystemManager stopServices
+Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.ServiceManager stopServices
 INFO: start all ServiceEvent.Stop(super=name='all')
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.ServiceTaskExecutor accept
 INFO: Command list:

@@ -5,7 +5,7 @@ import com.fluxtion.example.servicestater.ServiceStatus;
 import com.fluxtion.runtim.annotations.EventHandler;
 import com.fluxtion.runtim.annotations.OnEvent;
 
-import static com.fluxtion.example.servicestater.FluxtionSystemManager.toStopServiceName;
+import static com.fluxtion.example.servicestater.ServiceManager.toStopServiceName;
 import static com.fluxtion.example.servicestater.ServiceStatus.WAITING_FOR_PARENTS_TO_STOP;
 
 /**

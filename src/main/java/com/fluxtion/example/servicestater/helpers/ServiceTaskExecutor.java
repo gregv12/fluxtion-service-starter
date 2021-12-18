@@ -14,7 +14,7 @@ public class ServiceTaskExecutor implements Consumer<List<TaskWrapper>> {
     private final ExecutorService executorService;
 
     public ServiceTaskExecutor() {
-        executorService = Executors.newSingleThreadExecutor();
+        executorService = Executors.newCachedThreadPool();
     }
 
     public void shutDown(){

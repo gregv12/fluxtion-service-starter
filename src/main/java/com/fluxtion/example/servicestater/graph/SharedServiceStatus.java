@@ -1,6 +1,7 @@
 package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.ServiceEvent;
+import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.example.servicestater.ServiceStatus;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.annotations.EventHandler;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
  * {@link StartServiceController} and {@link StopServiceController}
  * read and write the status cache to determine the state change to make.
  *
- * A client application can listen to status updates by calling {@link com.fluxtion.example.servicestater.FluxtionSystemManager#registerStatusListener(Consumer)}
+ * A client application can listen to status updates by calling {@link ServiceManager#registerStatusListener(Consumer)}
  */
 public class SharedServiceStatus implements Named {
 
