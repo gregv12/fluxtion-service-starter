@@ -23,7 +23,7 @@ class ServiceManagerTest {
         serviceManager.buildSystemController(svc_1, svc_2, svc_A, svc_B, svc_2BJoined);
 //        serviceManager.traceMethodCalls(false);
         serviceManager.registerTaskExecutor(new ServiceTaskExecutor());
-        serviceManager.registerStatusListener(new PublishStatusToConsole());
+//        serviceManager.registerStatusListener(new PublishStatusToConsole());
 
 
         //start the service manager

@@ -103,7 +103,7 @@ public class ServiceManager {
         startProcessor.onEvent(new RegisterCommandProcessor(commandProcessor));
     }
 
-    public void registerStatusListener(Consumer<List<String>> statusUpdateListener) {
+    public void registerStatusListener(Consumer<List<StatusForService>> statusUpdateListener) {
         startProcessor.onEvent(new RegisterStatusListener(statusUpdateListener));
     }
 
@@ -174,6 +174,6 @@ public class ServiceManager {
 
     @Value
     public static class RegisterStatusListener {
-        Consumer<List<String>> statusListener;
+        Consumer<List<StatusForService>> statusListener;
     }
 }

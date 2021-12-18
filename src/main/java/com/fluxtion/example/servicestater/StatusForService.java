@@ -9,4 +9,10 @@ import lombok.Value;
 public class StatusForService {
     String serviceName;
     Service.Status status;
+
+    @Override
+    public String toString() {
+        return "service='" + serviceName + '\'' +
+                ", status=" + status;
+    }
 }
