@@ -11,7 +11,9 @@ import java.util.Scanner;
 /**
  * A command line client that tests a sample service graph loaded into the {@link ServiceManager}
  *
- * Various commands are provided to exercise all the operations on the service manager
+ * Various cli commands are provided to exercise all the operations on the service manager. Run the program and a help
+ * message is displayed detailing the usage.
+ *
  */
 public class CliTestClient {
 

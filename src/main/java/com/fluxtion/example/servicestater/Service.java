@@ -10,7 +10,12 @@ import java.util.List;
 
 /**
  * A representation of an external service and its dependencies. This service will be wrapped in the graph and controlled
- * by {@link StartServiceController} and {@link StopServiceController}
+ * by {@link StartServiceController} and {@link StopServiceController}. A service can optionally provide start and stop
+ * services that will be executed when a service moves to the relevant state:
+ * <ul>
+ *     <li>Entering STARTING from WAITING_TO_START - the start task is executed</li>
+ *     <li>Entering STOPPING from STOPPED - the stop task is executed</li>
+ * </ul>
  */
 public class Service implements Named {
 
