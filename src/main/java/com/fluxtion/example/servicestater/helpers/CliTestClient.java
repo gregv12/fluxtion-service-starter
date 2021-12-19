@@ -1,32 +1,34 @@
 package com.fluxtion.example.servicestater.helpers;
 
 import com.fluxtion.example.servicestater.Service;
-import com.fluxtion.example.servicestater.ServiceManager;
+import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
 import com.fluxtion.example.servicestater.ServiceManagerServer;
 import lombok.SneakyThrows;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Locale;
 import java.util.Scanner;
 
 /**
- * A command line client that tests a sample service graph loaded into the {@link ServiceManager}
+ * A command line client that tests a sample service graph loaded into the {@link FluxtionServiceManager}
  *
  * Various cli commands are provided to exercise all the operations on the service manager. Run the program and a help
  * message is displayed detailing the usage.
  *
  */
-@Log
+//@Log
+@Slf4j
 public class CliTestClient {
 
     private static ServiceManagerServer serviceManagerServer;
-    private static ServiceTaskExecutor serviceTaskExecutor;
 
+    @SneakyThrows
     public static void main(String[] args) {
         buildGraph();
         serviceManagerServer.startService("aggAB");
         Scanner scanner = new Scanner(System.in);
         boolean run = true;
+        Thread.sleep(100);//give the threads time to start and publish help message at end
         printHelp();
         while (run) {
             System.out.print(">");
@@ -47,7 +49,7 @@ public class CliTestClient {
             scanner.nextLine();
         }
         scanner.close();
-        serviceTaskExecutor.shutDown();
+        serviceManagerServer.shutdown();
     }
 
     static void printHelp() {
@@ -136,14 +138,13 @@ public class CliTestClient {
         Service calcC = new Service("calcC", handlerC);
         Service persister = new Service("persister", CliTestClient::notifyStartedPersister, null, aggAB, calcC);
         //build and register outputs
-        ServiceManager serviceManager = new ServiceManager();
-        serviceTaskExecutor = new ServiceTaskExecutor();
-        serviceManager.buildServiceController(persister, aggAB, calcC, handlerA, handlerB, handlerC);
-        serviceManager.registerTaskExecutor(serviceTaskExecutor);
-        serviceManager.registerStatusListener(new PublishStatusToConsole());
+        FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
+//        serviceTaskExecutor = new ServiceTaskExecutor();
+        fluxtionServiceManager.buildServiceController(persister, aggAB, calcC, handlerA, handlerB, handlerC);
         //wrap in server
         serviceManagerServer = new ServiceManagerServer();
-        serviceManagerServer.setManager(serviceManager);
+        serviceManagerServer.setManager(fluxtionServiceManager);
+        serviceManagerServer.registerStatusListener(new PublishServiceStatusRecordToLog());
     }
 
     @SneakyThrows

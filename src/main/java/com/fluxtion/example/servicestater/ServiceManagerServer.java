@@ -1,23 +1,45 @@
 package com.fluxtion.example.servicestater;
 
+import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.SubmissionPublisher;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
 
 /**
- * Wraps a ServiceManager to ensure single threaded access to the underlying {@link ServiceManager}. All method calls
- * are converted to tasks and placed on a task queue for later execution by the {@link ServiceManager} thread.
+ * Wraps a ServiceManager to ensure single threaded access to the underlying {@link FluxtionServiceManager}. All method calls
+ * are converted to tasks and placed on a task queue for later execution by the {@link FluxtionServiceManager} thread.
  */
+@Slf4j
 public class ServiceManagerServer {
 
-    private final SubmissionPublisher<Consumer<ServiceManager>> publisher;
-    private volatile ServiceManager manager;
+    private final SubmissionPublisher<Consumer<FluxtionServiceManager>> publisher;
+    private final ExecutorService executorService;
+    private volatile FluxtionServiceManager manager;
+    private static final LongAdder COUNT = new LongAdder();
 
     public ServiceManagerServer() {
-        publisher = new SubmissionPublisher<>();
+        executorService = Executors.newSingleThreadExecutor(r -> {
+            Thread thread = new Thread(r, "serviceManagerThread-" + COUNT.intValue());
+            COUNT.increment();
+            return thread;
+        });
+        publisher = new SubmissionPublisher<>(executorService, 1);
         publisher.consume(i -> i.accept(manager));
     }
 
-    public void setManager(ServiceManager manager) {
+    public void shutdown(){
+        publisher.submit(FluxtionServiceManager::shutdown);
+        publisher.close();
+        executorService.shutdown();
+        log.info("server shutdown");
+    }
+
+    public void setManager(FluxtionServiceManager manager) {
         this.manager = manager;
     }
 
@@ -30,15 +52,15 @@ public class ServiceManagerServer {
     }
 
     public void startAllServices() {
-        publisher.submit(ServiceManager::startAllServices);
+        publisher.submit(FluxtionServiceManager::startAllServices);
     }
 
     public void stopAllServices() {
-        publisher.submit(ServiceManager::stopAllServices);
+        publisher.submit(FluxtionServiceManager::stopAllServices);
     }
 
     public void publishServiceStatus() {
-        publisher.submit(ServiceManager::publishAllServiceStatus);
+        publisher.submit(FluxtionServiceManager::publishAllServiceStatus);
     }
 
     public void serviceStartedNotification(String serviceName) {
@@ -49,4 +71,7 @@ public class ServiceManagerServer {
         publisher.submit(f -> f.serviceStoppedNotification(serviceName));
     }
 
+    public void registerStatusListener(Consumer<List<ServiceStatusRecord>> publishStatusToLog) {
+        publisher.submit(f -> f.registerStatusListener(publishStatusToLog));
+    }
 }

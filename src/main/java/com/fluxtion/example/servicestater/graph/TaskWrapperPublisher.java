@@ -1,6 +1,5 @@
 package com.fluxtion.example.servicestater.graph;
 
-import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.annotations.AfterEvent;
 import com.fluxtion.runtim.annotations.EventHandler;
@@ -11,7 +10,7 @@ import java.util.function.Consumer;
 
 /**
  * Publishes commands for a service that are for execution by client code, a client application registers a command executor
- * by calling {@link ServiceManager#registerTaskExecutor(Consumer)}
+ * by calling {@link FluxtionServiceManager#registerTaskExecutor(Consumer)}
  *
  * The task list of events can be executed in parallel.
  */
@@ -21,7 +20,7 @@ public class TaskWrapperPublisher implements Named {
     private final List<TaskWrapper> commandList = new ArrayList<>();
 
     @EventHandler(propagate = false)
-    public void registerCommandProcessor(ServiceManager.RegisterCommandProcessor registerCommandProcessor) {
+    public void registerCommandProcessor(FluxtionServiceManager.RegisterCommandProcessor registerCommandProcessor) {
         this.commandPublisher = registerCommandProcessor.getConsumer();
     }
 

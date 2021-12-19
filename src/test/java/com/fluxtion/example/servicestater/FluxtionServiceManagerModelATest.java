@@ -1,6 +1,7 @@
 package com.fluxtion.example.servicestater;
 
 import com.fluxtion.example.servicestater.Service.Status;
+import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
 import lombok.extern.java.Log;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @Log
-class ServiceManagerModelATest {
+class FluxtionServiceManagerModelATest {
 
     /**
      * <pre>
@@ -50,7 +51,7 @@ class ServiceManagerModelATest {
 
     private boolean ADD_AUDIT_LOG = false;
     private boolean COMPILED = false;
-    private final List<StatusForService> statusList = new ArrayList<>();
+    private final List<ServiceStatusRecord> statusList = new ArrayList<>();
 
     @BeforeEach
     public void beforeTest() {
@@ -89,27 +90,27 @@ class ServiceManagerModelATest {
         checkStatusMatch(statusMap);
     }
 
-    private ServiceManager startAService(String serviceName) {
-        ServiceManager serviceManager = ServiceModels.buildModelA(ADD_AUDIT_LOG, COMPILED);
-        serviceManager.registerStatusListener(this::recordServiceStatus);
-        serviceManager.startService(serviceName);
-        return serviceManager;
+    private FluxtionServiceManager startAService(String serviceName) {
+        FluxtionServiceManager fluxtionServiceManager = ServiceModels.buildModelA(ADD_AUDIT_LOG, COMPILED);
+        fluxtionServiceManager.registerStatusListener(this::recordServiceStatus);
+        fluxtionServiceManager.startService(serviceName);
+        return fluxtionServiceManager;
     }
 
-    private void checkStatusMatch(List<StatusForService> statusMap) {
+    private void checkStatusMatch(List<ServiceStatusRecord> statusMap) {
         assertThat(statusList, Matchers.containsInAnyOrder(statusMap.toArray()));
     }
 
-    private void checkStatusMatch(Map<String, StatusForService> statusMap) {
+    private void checkStatusMatch(Map<String, ServiceStatusRecord> statusMap) {
         assertThat(statusList, Matchers.containsInAnyOrder(statusMap.values().toArray()));
     }
 
-    static void updateStatus(Map<String, StatusForService> statusMap, String serviceName, Status status) {
-        statusMap.put(serviceName, new StatusForService(serviceName, status));
+    static void updateStatus(Map<String, ServiceStatusRecord> statusMap, String serviceName, Status status) {
+        statusMap.put(serviceName, new ServiceStatusRecord(serviceName, status));
     }
 
 
-    public void recordServiceStatus(List<StatusForService> statusUpdate) {
+    public void recordServiceStatus(List<ServiceStatusRecord> statusUpdate) {
         statusList.clear();
         statusList.addAll(statusUpdate);
         if (ADD_AUDIT_LOG) {

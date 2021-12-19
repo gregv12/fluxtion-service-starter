@@ -4,7 +4,7 @@ import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.runtim.annotations.EventHandler;
 import com.fluxtion.runtim.annotations.OnEvent;
 
-import static com.fluxtion.example.servicestater.ServiceManager.toStartServiceName;
+import static com.fluxtion.example.servicestater.graph.FluxtionServiceManager.toStartServiceName;
 import static com.fluxtion.example.servicestater.Service.Status.STARTED;
 import static com.fluxtion.example.servicestater.Service.Status.WAITING_FOR_PARENTS_TO_START;
 
@@ -22,8 +22,8 @@ import static com.fluxtion.example.servicestater.Service.Status.WAITING_FOR_PARE
  * </ul
  */
 public class ForwardPassServiceController extends ServiceController {
-    public ForwardPassServiceController(String serviceName, TaskWrapperPublisher taskWrapperPublisher, ServiceStatusCache serviceStatusCache) {
-        super(serviceName, toStartServiceName(serviceName), taskWrapperPublisher, serviceStatusCache);
+    public ForwardPassServiceController(String serviceName, TaskWrapperPublisher taskWrapperPublisher, ServiceStatusRecordCache serviceStatusRecordCache) {
+        super(serviceName, toStartServiceName(serviceName), taskWrapperPublisher, serviceStatusRecordCache);
     }
 
     @EventHandler(filterVariable = "serviceName")

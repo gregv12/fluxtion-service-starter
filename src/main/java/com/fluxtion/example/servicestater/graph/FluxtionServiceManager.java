@@ -1,12 +1,15 @@
-package com.fluxtion.example.servicestater;
+package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.compiler.builder.node.SEPConfig;
-import com.fluxtion.example.servicestater.graph.*;
+import com.fluxtion.example.servicestater.Service;
+import com.fluxtion.example.servicestater.ServiceStatusRecord;
+import com.fluxtion.example.servicestater.helpers.ServiceTaskExecutor;
+import com.fluxtion.example.servicestater.helpers.Slf4JAuditLogger;
 import com.fluxtion.runtim.EventProcessor;
 import com.fluxtion.runtim.audit.EventLogControlEvent;
 import lombok.Value;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -37,30 +40,38 @@ import java.util.stream.Collectors;
  *     <li>Post service status updates</li>
  * </ul>
  */
-@Log
-public class ServiceManager {
+@Slf4j
+public class FluxtionServiceManager {
 
     public static final String START_SUFFIX = "_start";
     public static final String STOP_SUFFIX = "_stop";
     private final Map<String, ServiceController> managedStartServices = new HashMap<>();
     private final TaskWrapperPublisher taskWrapperPublisher = new TaskWrapperPublisher();
-    private final ServiceStatusCache serviceStatusCache = new ServiceStatusCache();
+    private final ServiceStatusRecordCache serviceStatusRecordCache = new ServiceStatusRecordCache();
     private EventProcessor startProcessor;
     private boolean addAudit = true;
     private boolean compile = true;
+    private final ServiceTaskExecutor taskExecutor = new ServiceTaskExecutor();
 
-    public ServiceManager buildServiceController(Service... serviceList) {
+    public FluxtionServiceManager buildServiceController(Service... serviceList) {
         Objects.requireNonNull(serviceList);
         managedStartServices.clear();
         Arrays.stream(serviceList).forEach(this::addServicesToMap);//change to recursive lookup
         Arrays.stream(serviceList).forEach(this::setServiceDependencies);//use the recursive list here
-        if(compile){
+        if (compile) {
             startProcessor = Fluxtion.compile(this::serviceStarter);
-        }else{
+        } else {
             startProcessor = Fluxtion.interpret(this::serviceStarter);
         }
         startProcessor.init();
+        startProcessor.onEvent(new EventLogControlEvent(new Slf4JAuditLogger()));
+        registerTaskExecutor(taskExecutor);
         return this;
+    }
+
+    public void shutdown() {
+        log.info("shutting down task executor");
+        taskExecutor.shutDown();
     }
 
 // TODO: implement dynamic graph building
@@ -81,27 +92,27 @@ public class ServiceManager {
     }
 
     public void startService(String serviceName) {
-        log.fine("start single service:" + serviceName);
+        log.info("start single service:" + serviceName);
         startProcessor.onEvent(new GraphEvent.RequestServiceStart(serviceName));
         startProcessor.onEvent(new GraphEvent.PublishStartTask());
         publishAllServiceStatus();
     }
 
     public void stopService(String serviceName) {
-        log.fine("stop single service:" + serviceName);
+        log.info("stop single service:" + serviceName);
         startProcessor.onEvent(new GraphEvent.RequestServiceStop(serviceName));
         startProcessor.onEvent(new GraphEvent.PublishStopTask());
         publishAllServiceStatus();
     }
 
     public void startAllServices() {
-        log.fine("start all");
+        log.info("start all");
         startProcessor.onEvent(new GraphEvent.RequestStartAll());
         publishAllServiceStatus();
     }
 
     public void stopAllServices() {
-        log.fine("stop all");
+        log.info("stop all");
         startProcessor.onEvent(new GraphEvent.RequestStopAll());
         publishAllServiceStatus();
     }
@@ -110,7 +121,7 @@ public class ServiceManager {
         startProcessor.onEvent(new RegisterCommandProcessor(commandProcessor));
     }
 
-    public void registerStatusListener(Consumer<List<StatusForService>> statusUpdateListener) {
+    public void registerStatusListener(Consumer<List<ServiceStatusRecord>> statusUpdateListener) {
         startProcessor.onEvent(new RegisterStatusListener(statusUpdateListener));
     }
 
@@ -120,31 +131,31 @@ public class ServiceManager {
 
     public void serviceStartedNotification(String serviceName) {
         GraphEvent.NotifyServiceStarted notifyServiceStarted = new GraphEvent.NotifyServiceStarted(serviceName);
-        log.fine(notifyServiceStarted.toString());
+        log.info(notifyServiceStarted.toString());
         startProcessor.onEvent(notifyServiceStarted);
     }
 
     public void serviceStoppedNotification(String serviceName) {
         GraphEvent.NotifyServiceStopped notifyServiceStarted = new GraphEvent.NotifyServiceStopped(serviceName);
-        log.fine(notifyServiceStarted.toString());
+        log.info(notifyServiceStarted.toString());
         startProcessor.onEvent(notifyServiceStarted);
     }
 
-    public ServiceManager addAuditLog(boolean addAudit){
+    public FluxtionServiceManager addAuditLog(boolean addAudit) {
         this.addAudit = addAudit;
         return this;
     }
 
-    public ServiceManager compiled(boolean compile){
+    public FluxtionServiceManager compiled(boolean compile) {
         this.compile = compile;
         return this;
     }
 
     private void addServicesToMap(Service s) {
-        ForwardPassServiceController forwardPassServiceController = new ForwardPassServiceController(s.getName(), taskWrapperPublisher, serviceStatusCache);
+        ForwardPassServiceController forwardPassServiceController = new ForwardPassServiceController(s.getName(), taskWrapperPublisher, serviceStatusRecordCache);
         forwardPassServiceController.setStartTask(s.getStartTask());
         forwardPassServiceController.setStopTask(s.getStopTask());
-        ReversePassServiceController reversePassServiceController = new ReversePassServiceController(s.getName(), taskWrapperPublisher, serviceStatusCache);
+        ReversePassServiceController reversePassServiceController = new ReversePassServiceController(s.getName(), taskWrapperPublisher, serviceStatusRecordCache);
         reversePassServiceController.setStartTask(s.getStartTask());
         reversePassServiceController.setStopTask(s.getStopTask());
         managedStartServices.put(forwardPassServiceController.getName(), forwardPassServiceController);
@@ -156,7 +167,7 @@ public class ServiceManager {
         controller.setDependencies(
                 service.getDependencies().stream()
                         .map(Service::getName)
-                        .map(ServiceManager::toStartServiceName)
+                        .map(FluxtionServiceManager::toStartServiceName)
                         .map(managedStartServices::get)
                         .collect(Collectors.toList())
         );
@@ -165,7 +176,7 @@ public class ServiceManager {
         final ServiceController stopController = controller;
         service.getDependencies().stream()
                 .map(Service::getName)
-                .map(ServiceManager::toStopServiceName)
+                .map(FluxtionServiceManager::toStopServiceName)
                 .map(managedStartServices::get)
                 .forEach(s -> s.addDependency(stopController));
     }
@@ -173,7 +184,7 @@ public class ServiceManager {
     private void serviceStarter(SEPConfig cfg) {
         managedStartServices.values().forEach(cfg::addNode);
         cfg.addNode(taskWrapperPublisher);
-        if(addAudit){
+        if (addAudit) {
             cfg.addEventAudit(EventLogControlEvent.LogLevel.INFO);
         }
     }
@@ -193,6 +204,6 @@ public class ServiceManager {
 
     @Value
     public static class RegisterStatusListener {
-        Consumer<List<StatusForService>> statusListener;
+        Consumer<List<ServiceStatusRecord>> statusListener;
     }
 }
