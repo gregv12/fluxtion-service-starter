@@ -91,7 +91,7 @@ To simplify debugging the behaviour an audit log is written recording all the re
 To help understand the behaviour of the service controller a cli example has been created. The example builds a predetermined
 service model and exposes that model as cli application for a user to experiment with, steps:
 
--  Navigate to CliTestClient
+-  Navigate to [CliTestClient](https://github.com/gregv12/example-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/helpers/CliTestClient.java)
 -  Execute the main method in CliTestClient. A model will be built at startup and exposed through a cli, that executes methods
 the ServiceManagerServer.
 
