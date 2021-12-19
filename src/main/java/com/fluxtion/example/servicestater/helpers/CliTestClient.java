@@ -67,7 +67,8 @@ public class CliTestClient {
                 FluxtionService interactive tester commands:
                 ===============================================
                 help or ?                 - print this message
-                build or b                - drops the graph and builds a new graph from scratch
+                build or b                - drops the graph and builds a new interpreted graph from scratch
+                compile or c              - drops the graph and builds a new graph from scratch, generated and compiles java source code
                 status or ss              - prints the current status of the graph to console
                 startAll or sa            - start all services
                 stopAll or ha             - stop all services
@@ -76,7 +77,7 @@ public class CliTestClient {
                 ns [service name]         - notify of started status for a single service by name
                 nh [service name]         - notify of stopped status for a single service by name
                 auditOn or aon            - turn audit recording on
-                auditOff or aoff          - turn audit recording on
+                auditOff or aoff          - turn audit recording off
                 exit or e                 - exit the application
                 """
                 ;
