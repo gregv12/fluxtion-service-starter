@@ -1,10 +1,13 @@
 package com.fluxtion.example.servicestater.helpers;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
 import com.fluxtion.example.servicestater.ServiceManagerServer;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
 import java.util.Scanner;
@@ -24,7 +27,7 @@ public class CliTestClient {
 
     @SneakyThrows
     public static void main(String[] args) {
-        buildGraph();
+        buildGraph(false);
         serviceManagerServer.startService("aggAB");
         Scanner scanner = new Scanner(System.in);
         boolean run = true;
@@ -34,7 +37,8 @@ public class CliTestClient {
             System.out.print(">");
             String command = scanner.next().toLowerCase(Locale.ROOT);
             switch (command) {
-                case "build", "b" -> buildGraph();
+                case "build", "b" -> buildGraph(false);
+                case "compile", "c" -> buildGraph(true);
                 case "status", "ss" -> printStatus();
                 case "startall", "sa" -> startAll();
                 case "stopall", "ha" -> stopAll();
@@ -42,6 +46,8 @@ public class CliTestClient {
                 case "stop", "h" -> stopByName(scanner);
                 case "ns" -> notifiedStartedByName(scanner);
                 case "nh" -> notifiedStoppedByName(scanner);
+                case "auditon", "aon" -> auditOn(true);
+                case "auditoff", "aoff" -> auditOn(false);
                 case "exit", "e" -> run = false;
                 case "help", "?" -> printHelp();
                 default -> System.out.println("unknown command:" + command + " ? for command list");
@@ -65,7 +71,9 @@ public class CliTestClient {
                 start or s [service name] - start a single services by name
                 stop or h [service name]  - stop a single service by name
                 ns [service name]         - notify of started status for a single service by name
-                hs [service name]         - notify of stopped status for a single service by name
+                nh [service name]         - notify of stopped status for a single service by name
+                auditOn or aon            - turn audit recording on
+                auditOff or aoff          - turn audit recording on
                 exit or e                 - exit the application
                 """
                 ;
@@ -90,7 +98,7 @@ public class CliTestClient {
     private static void checkControllerIsBuilt() {
         if(serviceManagerServer ==null){
             System.out.println("no service manager built, building one first");
-            buildGraph();
+            buildGraph(false);
         }
     }
 
@@ -130,7 +138,16 @@ public class CliTestClient {
         }
     }
 
-    private static void buildGraph() {
+    private static void auditOn(boolean flag){
+        Logger restClientLogger = (Logger) LoggerFactory.getLogger("fluxtion.eventLog");
+        if(flag){
+            restClientLogger.setLevel(Level.INFO);
+        }else{
+            restClientLogger.setLevel(Level.OFF);
+        }
+    }
+
+    private static void buildGraph(boolean compile) {
         Service handlerA = new Service("handlerA");
         Service handlerB = new Service("handlerB");
         Service handlerC = new Service("handlerC");
@@ -139,7 +156,7 @@ public class CliTestClient {
         Service persister = new Service("persister", CliTestClient::notifyStartedPersister, null, aggAB, calcC);
         //build and register outputs
         FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
-//        serviceTaskExecutor = new ServiceTaskExecutor();
+        fluxtionServiceManager.compiled(compile);
         fluxtionServiceManager.buildServiceController(persister, aggAB, calcC, handlerA, handlerB, handlerC);
         //wrap in server
         serviceManagerServer = new ServiceManagerServer();
