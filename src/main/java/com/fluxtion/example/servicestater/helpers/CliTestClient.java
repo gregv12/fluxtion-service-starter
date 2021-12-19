@@ -51,6 +51,7 @@ public class CliTestClient {
                 case "nh" -> notifiedStoppedByName(scanner);
                 case "auditon", "aon" -> auditOn(true);
                 case "auditoff", "aoff" -> auditOn(false);
+                case "printtree", "pt" -> printTree();
                 case "exit", "e" -> run = false;
                 case "help", "?" -> printHelp();
                 default -> System.out.println("unknown command:" + command + " ? for command list");
@@ -78,10 +79,15 @@ public class CliTestClient {
                 nh [service name]         - notify of stopped status for a single service by name
                 auditOn or aon            - turn audit recording on
                 auditOff or aoff          - turn audit recording off
+                printTree or pt           - print the DAG of the test model
                 exit or e                 - exit the application
                 """
                 ;
         System.out.println(help);
+    }
+
+    private static void printTree() {
+        System.out.println(asciiArtDAG);
     }
 
     public static void startAll(){
@@ -188,4 +194,27 @@ public class CliTestClient {
         log.info("aggAB::startTask notify aggAB STARTED");
         serviceManagerServer.serviceStartedNotification("aggAB");
     }
+
+    private static final String asciiArtDAG = """
+                Tree view of model
+               
+                +-------------+                      +------------+              +-----------+      |
+                |             |                      |            |              |           |      |
+                |  handler_c  |                      | handler_a  |              | handler_b |      |
+                +---+---------+                      +----+-------+              +-----+-----+      |
+                    |                                     |                            |            |
+                    |    +---------+                      |        +-------+           |            |   DIRECTION OF
+                    |    |         |                      |        |       |           |            |   EVENT FLOW
+                    +----+ calc_c  |                      +--------+agg_AB +-----------+            |
+                         +----+----+                               +---+---+                        |
+                              |                                        |                            |
+                              |                                        |                            |
+                              |                +-----------+           |                            |
+                              |                |           |           |                            |
+                              +----------------+ persister +-----------+                            |
+                                               |           |                                        |
+                                               +-----------+                                        v
+               
+                        
+            """;
 }
