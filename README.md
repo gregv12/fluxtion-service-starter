@@ -52,14 +52,11 @@ Service handlerB = new Service("handlerB");
 Service aggAB = new Service("aggAB", CliTestClient::notifyStartedAggAB, null, handlerA, handlerB);
 ```
 
-The list of services is passed to an instance of [FluxtionServiceManager](https://github.com/gregv12/example-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/graph/FluxtionServiceManager.java) and the controller is build. A ServiceManagerServer
-wraps the model for thread safe access. Clients invoke methods on ServiceManagerServer to ensure thread safety.
+The list of services is passed to an instance of [FluxtionServiceManager](https://github.com/gregv12/example-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/graph/FluxtionServiceManager.java)
+within the ServiceManagerServer using static builder methods. A ServiceManagerServer wraps the model for thread safe access, 
+clients can only invoke methods on ServiceManagerServer shielding the FluxtionServiceManager.
 ```java
-FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
-fluxtionServiceManager.buildServiceController(aggAB handlerA, handlerB);
-//register with server, this instance is what client code interacts with
-ServiceManagerServer serviceManagerServer = new ServiceManagerServer();
-serviceManagerServer.setManager(fluxtionServiceManager)
+ServiceManagerServer serviceManagerServer = ServiceManagerServer.compiledServer(aggAB, handlerA, handlerB);
 ```
 
 #### Executing a model
