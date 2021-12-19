@@ -16,7 +16,6 @@ import java.util.Scanner;
  * message is displayed detailing the usage.
  *
  */
-//@Log
 @Slf4j
 public class CliTestClient {
 
@@ -137,13 +136,7 @@ public class CliTestClient {
         Service aggAB = new Service("aggAB", CliTestClient::notifyStartedAggAB, null, handlerA, handlerB);
         Service calcC = new Service("calcC", handlerC);
         Service persister = new Service("persister", CliTestClient::notifyStartedPersister, null, aggAB, calcC);
-        //build and register outputs
-        FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
-//        serviceTaskExecutor = new ServiceTaskExecutor();
-        fluxtionServiceManager.buildServiceController(persister, aggAB, calcC, handlerA, handlerB, handlerC);
-        //wrap in server
-        serviceManagerServer = new ServiceManagerServer();
-        serviceManagerServer.setManager(fluxtionServiceManager);
+        serviceManagerServer = ServiceManagerServer.compiledServer(persister, aggAB, calcC, handlerA, handlerB, handlerC);
         serviceManagerServer.registerStatusListener(new PublishServiceStatusRecordToLog());
     }
 

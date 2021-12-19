@@ -19,17 +19,32 @@ public class ServiceManagerServer {
 
     private final SubmissionPublisher<Consumer<FluxtionServiceManager>> publisher;
     private final ExecutorService executorService;
-    private volatile FluxtionServiceManager manager;
+    private final FluxtionServiceManager fluxtionServiceManager;
     private static final LongAdder COUNT = new LongAdder();
 
-    public ServiceManagerServer() {
+    public static ServiceManagerServer compiledServer(Service... serviceList){
+        FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
+        fluxtionServiceManager.compiled(true);
+        fluxtionServiceManager.buildServiceController(serviceList);
+        return new ServiceManagerServer(fluxtionServiceManager);
+    }
+
+    public static ServiceManagerServer interpretedServer(Service... serviceList){
+        FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
+        fluxtionServiceManager.compiled(false);
+        fluxtionServiceManager.buildServiceController(serviceList);
+        return new ServiceManagerServer(fluxtionServiceManager);
+    }
+
+    private ServiceManagerServer(FluxtionServiceManager fluxtionServiceManager) {
+        this.fluxtionServiceManager = fluxtionServiceManager;
         executorService = Executors.newSingleThreadExecutor(r -> {
             Thread thread = new Thread(r, "serviceManagerThread-" + COUNT.intValue());
             COUNT.increment();
             return thread;
         });
         publisher = new SubmissionPublisher<>(executorService, 1);
-        publisher.consume(i -> i.accept(manager));
+        publisher.consume(i -> i.accept(this.fluxtionServiceManager));
     }
 
     public void shutdown(){
@@ -37,10 +52,6 @@ public class ServiceManagerServer {
         publisher.close();
         executorService.shutdown();
         log.info("server shutdown");
-    }
-
-    public void setManager(FluxtionServiceManager manager) {
-        this.manager = manager;
     }
 
     public void startService(String serviceName) {
