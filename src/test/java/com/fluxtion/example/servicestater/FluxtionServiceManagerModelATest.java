@@ -1,6 +1,7 @@
 package com.fluxtion.example.servicestater;
 
 import com.fluxtion.example.servicestater.Service.Status;
+import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
 import lombok.extern.java.Log;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @Log
-class ServiceManagerModelATest {
+class FluxtionServiceManagerModelATest {
 
     /**
      * <pre>
@@ -89,11 +90,11 @@ class ServiceManagerModelATest {
         checkStatusMatch(statusMap);
     }
 
-    private ServiceManager startAService(String serviceName) {
-        ServiceManager serviceManager = ServiceModels.buildModelA(ADD_AUDIT_LOG, COMPILED);
-        serviceManager.registerStatusListener(this::recordServiceStatus);
-        serviceManager.startService(serviceName);
-        return serviceManager;
+    private FluxtionServiceManager startAService(String serviceName) {
+        FluxtionServiceManager fluxtionServiceManager = ServiceModels.buildModelA(ADD_AUDIT_LOG, COMPILED);
+        fluxtionServiceManager.registerStatusListener(this::recordServiceStatus);
+        fluxtionServiceManager.startService(serviceName);
+        return fluxtionServiceManager;
     }
 
     private void checkStatusMatch(List<StatusForService> statusMap) {

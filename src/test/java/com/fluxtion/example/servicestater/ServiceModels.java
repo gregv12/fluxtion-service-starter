@@ -1,5 +1,7 @@
 package com.fluxtion.example.servicestater;
 
+import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +44,7 @@ public interface ServiceModels {
     String CALC_C = "calcC";
     String PERSISTER = "persister";
 
-    static ServiceManager buildModelA(boolean addAuditLog, boolean compiled) {
+    static FluxtionServiceManager buildModelA(boolean addAuditLog, boolean compiled) {
         Service handlerA = new Service(HANDLER_A);
         Service handlerB = new Service(HANDLER_B);
         Service handlerC = new Service(HANDLER_C);
@@ -50,7 +52,7 @@ public interface ServiceModels {
         Service calcC = new Service(CALC_C, handlerC);
         Service persister = new Service(PERSISTER, aggAB, calcC);
         //build and register outputs
-        return new ServiceManager()
+        return new FluxtionServiceManager()
                 .addAuditLog(addAuditLog)
                 .compiled(compiled)
                 .buildServiceController(persister, aggAB, calcC, handlerA, handlerB, handlerC);

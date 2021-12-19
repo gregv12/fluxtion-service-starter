@@ -1,7 +1,7 @@
 package com.fluxtion.example.servicestater.helpers;
 
 import com.fluxtion.example.servicestater.Service;
-import com.fluxtion.example.servicestater.ServiceManager;
+import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
 import com.fluxtion.example.servicestater.ServiceManagerServer;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
@@ -10,7 +10,7 @@ import java.util.Locale;
 import java.util.Scanner;
 
 /**
- * A command line client that tests a sample service graph loaded into the {@link ServiceManager}
+ * A command line client that tests a sample service graph loaded into the {@link FluxtionServiceManager}
  *
  * Various cli commands are provided to exercise all the operations on the service manager. Run the program and a help
  * message is displayed detailing the usage.
@@ -136,14 +136,14 @@ public class CliTestClient {
         Service calcC = new Service("calcC", handlerC);
         Service persister = new Service("persister", CliTestClient::notifyStartedPersister, null, aggAB, calcC);
         //build and register outputs
-        ServiceManager serviceManager = new ServiceManager();
+        FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
         serviceTaskExecutor = new ServiceTaskExecutor();
-        serviceManager.buildServiceController(persister, aggAB, calcC, handlerA, handlerB, handlerC);
-        serviceManager.registerTaskExecutor(serviceTaskExecutor);
-        serviceManager.registerStatusListener(new PublishStatusToConsole());
+        fluxtionServiceManager.buildServiceController(persister, aggAB, calcC, handlerA, handlerB, handlerC);
+        fluxtionServiceManager.registerTaskExecutor(serviceTaskExecutor);
+        fluxtionServiceManager.registerStatusListener(new PublishStatusToConsole());
         //wrap in server
         serviceManagerServer = new ServiceManagerServer();
-        serviceManagerServer.setManager(serviceManager);
+        serviceManagerServer.setManager(fluxtionServiceManager);
     }
 
     @SneakyThrows

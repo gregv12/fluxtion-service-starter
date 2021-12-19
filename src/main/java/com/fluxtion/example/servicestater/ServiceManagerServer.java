@@ -1,23 +1,25 @@
 package com.fluxtion.example.servicestater;
 
+import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
+
 import java.util.concurrent.SubmissionPublisher;
 import java.util.function.Consumer;
 
 /**
- * Wraps a ServiceManager to ensure single threaded access to the underlying {@link ServiceManager}. All method calls
- * are converted to tasks and placed on a task queue for later execution by the {@link ServiceManager} thread.
+ * Wraps a ServiceManager to ensure single threaded access to the underlying {@link FluxtionServiceManager}. All method calls
+ * are converted to tasks and placed on a task queue for later execution by the {@link FluxtionServiceManager} thread.
  */
 public class ServiceManagerServer {
 
-    private final SubmissionPublisher<Consumer<ServiceManager>> publisher;
-    private volatile ServiceManager manager;
+    private final SubmissionPublisher<Consumer<FluxtionServiceManager>> publisher;
+    private volatile FluxtionServiceManager manager;
 
     public ServiceManagerServer() {
         publisher = new SubmissionPublisher<>();
         publisher.consume(i -> i.accept(manager));
     }
 
-    public void setManager(ServiceManager manager) {
+    public void setManager(FluxtionServiceManager manager) {
         this.manager = manager;
     }
 
@@ -30,15 +32,15 @@ public class ServiceManagerServer {
     }
 
     public void startAllServices() {
-        publisher.submit(ServiceManager::startAllServices);
+        publisher.submit(FluxtionServiceManager::startAllServices);
     }
 
     public void stopAllServices() {
-        publisher.submit(ServiceManager::stopAllServices);
+        publisher.submit(FluxtionServiceManager::stopAllServices);
     }
 
     public void publishServiceStatus() {
-        publisher.submit(ServiceManager::publishAllServiceStatus);
+        publisher.submit(FluxtionServiceManager::publishAllServiceStatus);
     }
 
     public void serviceStartedNotification(String serviceName) {

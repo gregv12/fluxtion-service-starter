@@ -1,8 +1,9 @@
-package com.fluxtion.example.servicestater;
+package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.compiler.builder.node.SEPConfig;
-import com.fluxtion.example.servicestater.graph.*;
+import com.fluxtion.example.servicestater.Service;
+import com.fluxtion.example.servicestater.StatusForService;
 import com.fluxtion.runtim.EventProcessor;
 import com.fluxtion.runtim.audit.EventLogControlEvent;
 import lombok.Value;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
  * </ul>
  */
 @Log
-public class ServiceManager {
+public class FluxtionServiceManager {
 
     public static final String START_SUFFIX = "_start";
     public static final String STOP_SUFFIX = "_stop";
@@ -49,7 +50,7 @@ public class ServiceManager {
     private boolean addAudit = true;
     private boolean compile = true;
 
-    public ServiceManager buildServiceController(Service... serviceList) {
+    public FluxtionServiceManager buildServiceController(Service... serviceList) {
         Objects.requireNonNull(serviceList);
         managedStartServices.clear();
         Arrays.stream(serviceList).forEach(this::addServicesToMap);//change to recursive lookup
@@ -130,12 +131,12 @@ public class ServiceManager {
         startProcessor.onEvent(notifyServiceStarted);
     }
 
-    public ServiceManager addAuditLog(boolean addAudit){
+    public FluxtionServiceManager addAuditLog(boolean addAudit){
         this.addAudit = addAudit;
         return this;
     }
 
-    public ServiceManager compiled(boolean compile){
+    public FluxtionServiceManager compiled(boolean compile){
         this.compile = compile;
         return this;
     }
@@ -156,7 +157,7 @@ public class ServiceManager {
         controller.setDependencies(
                 service.getDependencies().stream()
                         .map(Service::getName)
-                        .map(ServiceManager::toStartServiceName)
+                        .map(FluxtionServiceManager::toStartServiceName)
                         .map(managedStartServices::get)
                         .collect(Collectors.toList())
         );
@@ -165,7 +166,7 @@ public class ServiceManager {
         final ServiceController stopController = controller;
         service.getDependencies().stream()
                 .map(Service::getName)
-                .map(ServiceManager::toStopServiceName)
+                .map(FluxtionServiceManager::toStopServiceName)
                 .map(managedStartServices::get)
                 .forEach(s -> s.addDependency(stopController));
     }

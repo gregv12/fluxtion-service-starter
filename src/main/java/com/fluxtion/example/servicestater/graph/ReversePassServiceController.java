@@ -5,7 +5,7 @@ import com.fluxtion.runtim.annotations.EventHandler;
 import com.fluxtion.runtim.annotations.OnEvent;
 
 import static com.fluxtion.example.servicestater.Service.Status.*;
-import static com.fluxtion.example.servicestater.ServiceManager.toStopServiceName;
+import static com.fluxtion.example.servicestater.graph.FluxtionServiceManager.toStopServiceName;
 
 /**
  * A controller for notifying services in the graph, based upon the reverse topological order of the nodes in the graph.

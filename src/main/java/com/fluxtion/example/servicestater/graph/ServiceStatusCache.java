@@ -1,7 +1,6 @@
 package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
-import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.example.servicestater.StatusForService;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.annotations.EventHandler;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
  * {@link ForwardPassServiceController} and {@link ReversePassServiceController}
  * read and write the status cache to determine the state change to make.
  * <p>
- * A client application can listen to status updates by calling {@link ServiceManager#registerStatusListener(Consumer)}
+ * A client application can listen to status updates by calling {@link FluxtionServiceManager#registerStatusListener(Consumer)}
  */
 public class ServiceStatusCache implements Named {
 
@@ -43,7 +42,7 @@ public class ServiceStatusCache implements Named {
      * @param listener contains the status listener
      */
     @EventHandler(propagate = false)
-    public void registerStatusListener(ServiceManager.RegisterStatusListener listener) {
+    public void registerStatusListener(FluxtionServiceManager.RegisterStatusListener listener) {
         statusListener = listener.getStatusListener();
         publishStatus();
     }
