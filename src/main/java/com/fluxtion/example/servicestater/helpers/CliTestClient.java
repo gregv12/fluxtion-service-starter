@@ -144,7 +144,7 @@ public class CliTestClient {
         //wrap in server
         serviceManagerServer = new ServiceManagerServer();
         serviceManagerServer.setManager(fluxtionServiceManager);
-        serviceManagerServer.registerStatusListener(new PublishStatusToLog());
+        serviceManagerServer.registerStatusListener(new PublishServiceStatusRecordToLog());
     }
 
     @SneakyThrows

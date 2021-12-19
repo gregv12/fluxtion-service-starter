@@ -6,7 +6,7 @@ import lombok.Value;
  * Immutable datatype representing the status of a service.
  */
 @Value
-public class StatusForService {
+public class ServiceStatusRecord {
     String serviceName;
     Service.Status status;
 

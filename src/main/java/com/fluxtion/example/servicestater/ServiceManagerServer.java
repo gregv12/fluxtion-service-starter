@@ -71,7 +71,7 @@ public class ServiceManagerServer {
         publisher.submit(f -> f.serviceStoppedNotification(serviceName));
     }
 
-    public void registerStatusListener(Consumer<List<StatusForService>> publishStatusToLog) {
+    public void registerStatusListener(Consumer<List<ServiceStatusRecord>> publishStatusToLog) {
         publisher.submit(f -> f.registerStatusListener(publishStatusToLog));
     }
 }

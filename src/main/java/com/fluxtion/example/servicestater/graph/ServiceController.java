@@ -33,15 +33,15 @@ public abstract class ServiceController extends EventLogNode implements Named {
     @PushReference
     private final TaskWrapperPublisher taskWrapperPublisher;
     @PushReference
-    private final ServiceStatusCache serviceStatusCache;
+    private final ServiceStatusRecordCache serviceStatusRecordCache;
     private LambdaReflection.SerializableRunnable startTask;
     private LambdaReflection.SerializableRunnable stopTask;
 
-    public ServiceController(String serviceName, String controllerName, TaskWrapperPublisher taskWrapperPublisher, ServiceStatusCache serviceStatusCache) {
+    public ServiceController(String serviceName, String controllerName, TaskWrapperPublisher taskWrapperPublisher, ServiceStatusRecordCache serviceStatusRecordCache) {
         this.serviceName = serviceName;
         this.controllerName = controllerName;
         this.taskWrapperPublisher = taskWrapperPublisher;
-        this.serviceStatusCache = serviceStatusCache;
+        this.serviceStatusRecordCache = serviceStatusRecordCache;
     }
 
 
@@ -58,7 +58,7 @@ public abstract class ServiceController extends EventLogNode implements Named {
     }
 
     public final Service.Status getStatus() {
-        return serviceStatusCache.getStatus(getServiceName());
+        return serviceStatusRecordCache.getStatus(getServiceName());
     }
 
     public String getServiceName() {
@@ -68,7 +68,7 @@ public abstract class ServiceController extends EventLogNode implements Named {
     protected void setStatus(Service.Status status) {
         auditLog.info("initialStatus", getStatus());
         auditLog.info("setStatus", status);
-        serviceStatusCache.setServiceStatus(getServiceName(), status);
+        serviceStatusRecordCache.setServiceStatus(getServiceName(), status);
     }
 
     public LambdaReflection.SerializableRunnable getStartTask() {

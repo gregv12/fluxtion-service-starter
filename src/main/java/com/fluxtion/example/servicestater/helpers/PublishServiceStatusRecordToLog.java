@@ -1,6 +1,6 @@
 package com.fluxtion.example.servicestater.helpers;
 
-import com.fluxtion.example.servicestater.StatusForService;
+import com.fluxtion.example.servicestater.ServiceStatusRecord;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @ToString
-public class PublishStatusToLog implements Consumer<List<StatusForService>> {
+public class PublishServiceStatusRecordToLog implements Consumer<List<ServiceStatusRecord>> {
 
     @Override
-    public void accept(List<StatusForService> status) {
+    public void accept(List<ServiceStatusRecord> status) {
         log.info("Current status:\n" + status.stream()
                 .map(Objects::toString)
                 .collect(Collectors.joining("\n")));

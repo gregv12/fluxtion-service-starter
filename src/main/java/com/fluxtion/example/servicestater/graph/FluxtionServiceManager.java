@@ -3,7 +3,7 @@ package com.fluxtion.example.servicestater.graph;
 import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.compiler.builder.node.SEPConfig;
 import com.fluxtion.example.servicestater.Service;
-import com.fluxtion.example.servicestater.StatusForService;
+import com.fluxtion.example.servicestater.ServiceStatusRecord;
 import com.fluxtion.example.servicestater.helpers.ServiceTaskExecutor;
 import com.fluxtion.example.servicestater.helpers.Slf4JAuditLogger;
 import com.fluxtion.runtim.EventProcessor;
@@ -47,7 +47,7 @@ public class FluxtionServiceManager {
     public static final String STOP_SUFFIX = "_stop";
     private final Map<String, ServiceController> managedStartServices = new HashMap<>();
     private final TaskWrapperPublisher taskWrapperPublisher = new TaskWrapperPublisher();
-    private final ServiceStatusCache serviceStatusCache = new ServiceStatusCache();
+    private final ServiceStatusRecordCache serviceStatusRecordCache = new ServiceStatusRecordCache();
     private EventProcessor startProcessor;
     private boolean addAudit = true;
     private boolean compile = true;
@@ -121,7 +121,7 @@ public class FluxtionServiceManager {
         startProcessor.onEvent(new RegisterCommandProcessor(commandProcessor));
     }
 
-    public void registerStatusListener(Consumer<List<StatusForService>> statusUpdateListener) {
+    public void registerStatusListener(Consumer<List<ServiceStatusRecord>> statusUpdateListener) {
         startProcessor.onEvent(new RegisterStatusListener(statusUpdateListener));
     }
 
@@ -152,10 +152,10 @@ public class FluxtionServiceManager {
     }
 
     private void addServicesToMap(Service s) {
-        ForwardPassServiceController forwardPassServiceController = new ForwardPassServiceController(s.getName(), taskWrapperPublisher, serviceStatusCache);
+        ForwardPassServiceController forwardPassServiceController = new ForwardPassServiceController(s.getName(), taskWrapperPublisher, serviceStatusRecordCache);
         forwardPassServiceController.setStartTask(s.getStartTask());
         forwardPassServiceController.setStopTask(s.getStopTask());
-        ReversePassServiceController reversePassServiceController = new ReversePassServiceController(s.getName(), taskWrapperPublisher, serviceStatusCache);
+        ReversePassServiceController reversePassServiceController = new ReversePassServiceController(s.getName(), taskWrapperPublisher, serviceStatusRecordCache);
         reversePassServiceController.setStartTask(s.getStartTask());
         reversePassServiceController.setStopTask(s.getStopTask());
         managedStartServices.put(forwardPassServiceController.getName(), forwardPassServiceController);
@@ -204,6 +204,6 @@ public class FluxtionServiceManager {
 
     @Value
     public static class RegisterStatusListener {
-        Consumer<List<StatusForService>> statusListener;
+        Consumer<List<ServiceStatusRecord>> statusListener;
     }
 }
