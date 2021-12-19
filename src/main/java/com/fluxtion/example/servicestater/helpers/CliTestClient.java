@@ -49,6 +49,8 @@ public class CliTestClient {
                 case "stop", "h" -> stopByName(scanner);
                 case "ns" -> notifiedStartedByName(scanner);
                 case "nh" -> notifiedStoppedByName(scanner);
+                case "auditon", "aon" -> auditOn(true);
+                case "auditoff", "aoff" -> auditOn(false);
                 case "exit", "e" -> run = false;
                 case "help", "?" -> printHelp();
                 default -> System.out.println("unknown command:" + command + " ? for command list");
@@ -150,6 +152,9 @@ public class CliTestClient {
     }
 
     private static void buildGraph(boolean compile) {
+        if(serviceManagerServer!=null){
+            serviceManagerServer.shutdown();
+        }
         Service handlerA = new Service("handlerA");
         Service handlerB = new Service("handlerB");
         Service handlerC = new Service("handlerC");
