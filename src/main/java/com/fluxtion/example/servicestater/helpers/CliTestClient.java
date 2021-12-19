@@ -175,21 +175,11 @@ public class CliTestClient {
         serviceManagerServer.registerStatusListener(new PublishServiceStatusRecordToLog());
     }
 
-    @SneakyThrows
-    public static void notifyStart(){
-        System.out.println("svc_1 START notification in 4 seconds");
-        Thread.sleep(4_000);
-        System.out.println("svc_1  sending START notification");
-        serviceManagerServer.serviceStartedNotification("svc_1");
-    }
-
-    @SneakyThrows
     public static void notifyStartedPersister(){
         log.info("persister::startTask notify persister STARTED");
         serviceManagerServer.serviceStartedNotification("persister");
     }
 
-    @SneakyThrows
     public static void notifyStartedAggAB(){
         log.info("aggAB::startTask notify aggAB STARTED");
         serviceManagerServer.serviceStartedNotification("aggAB");
