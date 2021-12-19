@@ -41,9 +41,8 @@ There are two phases for using the service starter. Phase 1 create and build a m
 environment
 
 #### Building a model
-For each service to be managed create a Service, give it a name. If a service has a task to execute while starting or
-stopping, wrap the task in a Runnable and pass as constructor arguments to the Service. If the service is a requirement
-for other services to start, add service dependencies in the constructor.
+For each service to be managed create a Service, supply a name, optional start/stop tasks, list of services that depend
+upon this service. Example service creation:
 
 ```java
 Service handlerA = new Service("handlerA");
