@@ -1,10 +1,13 @@
 package com.fluxtion.example.servicestater.helpers;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
 import com.fluxtion.example.servicestater.ServiceManagerServer;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
 import java.util.Scanner;
@@ -16,6 +19,7 @@ import java.util.Scanner;
  * message is displayed detailing the usage.
  *
  */
+//@Log
 @Slf4j
 public class CliTestClient {
 
@@ -23,7 +27,10 @@ public class CliTestClient {
 
     @SneakyThrows
     public static void main(String[] args) {
-        buildGraph();
+        System.out.println("Welcome to FluxtionService interactive tester - building test service graph");
+        System.out.println("===============================================================================");
+        auditOn(false);
+        buildGraph(false);
         serviceManagerServer.startService("aggAB");
         Scanner scanner = new Scanner(System.in);
         boolean run = true;
@@ -33,7 +40,8 @@ public class CliTestClient {
             System.out.print(">");
             String command = scanner.next().toLowerCase(Locale.ROOT);
             switch (command) {
-                case "build", "b" -> buildGraph();
+                case "build", "b" -> buildGraph(false);
+                case "compile", "c" -> buildGraph(true);
                 case "status", "ss" -> printStatus();
                 case "startall", "sa" -> startAll();
                 case "stopall", "ha" -> stopAll();
@@ -53,18 +61,21 @@ public class CliTestClient {
 
     static void printHelp() {
         String help = """
-                Welcome to FluxtionService interactive tester
-                =========================================
-                Commands available are:
+                
+                FluxtionService interactive tester commands:
+                ===============================================
                 help or ?                 - print this message
-                build or b                - drops the graph and builds a new graph from scratch
+                build or b                - drops the graph and builds a new interpreted graph from scratch
+                compile or c              - drops the graph and builds a new graph from scratch, generated and compiles java source code
                 status or ss              - prints the current status of the graph to console
                 startAll or sa            - start all services
                 stopAll or ha             - stop all services
                 start or s [service name] - start a single services by name
                 stop or h [service name]  - stop a single service by name
                 ns [service name]         - notify of started status for a single service by name
-                hs [service name]         - notify of stopped status for a single service by name
+                nh [service name]         - notify of stopped status for a single service by name
+                auditOn or aon            - turn audit recording on
+                auditOff or aoff          - turn audit recording off
                 exit or e                 - exit the application
                 """
                 ;
@@ -89,7 +100,7 @@ public class CliTestClient {
     private static void checkControllerIsBuilt() {
         if(serviceManagerServer ==null){
             System.out.println("no service manager built, building one first");
-            buildGraph();
+            buildGraph(false);
         }
     }
 
@@ -129,14 +140,27 @@ public class CliTestClient {
         }
     }
 
-    private static void buildGraph() {
+    private static void auditOn(boolean flag){
+        Logger restClientLogger = (Logger) LoggerFactory.getLogger("fluxtion.eventLog");
+        if(flag){
+            restClientLogger.setLevel(Level.INFO);
+        }else{
+            restClientLogger.setLevel(Level.OFF);
+        }
+    }
+
+    private static void buildGraph(boolean compile) {
         Service handlerA = new Service("handlerA");
         Service handlerB = new Service("handlerB");
         Service handlerC = new Service("handlerC");
         Service aggAB = new Service("aggAB", CliTestClient::notifyStartedAggAB, null, handlerA, handlerB);
         Service calcC = new Service("calcC", handlerC);
         Service persister = new Service("persister", CliTestClient::notifyStartedPersister, null, aggAB, calcC);
-        serviceManagerServer = ServiceManagerServer.compiledServer(persister, aggAB, calcC, handlerA, handlerB, handlerC);
+        if(compile) {
+            serviceManagerServer = ServiceManagerServer.compiledServer(persister, aggAB, calcC, handlerA, handlerB, handlerC);
+        }else{
+            serviceManagerServer = ServiceManagerServer.interpretedServer(persister, aggAB, calcC, handlerA, handlerB, handlerC);
+        }
         serviceManagerServer.registerStatusListener(new PublishServiceStatusRecordToLog());
     }
 
