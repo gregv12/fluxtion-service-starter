@@ -4,10 +4,12 @@ import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.compiler.builder.node.SEPConfig;
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.StatusForService;
+import com.fluxtion.example.servicestater.helpers.ServiceTaskExecutor;
+import com.fluxtion.example.servicestater.helpers.Slf4JAuditLogger;
 import com.fluxtion.runtim.EventProcessor;
 import com.fluxtion.runtim.audit.EventLogControlEvent;
 import lombok.Value;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -38,7 +40,7 @@ import java.util.stream.Collectors;
  *     <li>Post service status updates</li>
  * </ul>
  */
-@Log
+@Slf4j
 public class FluxtionServiceManager {
 
     public static final String START_SUFFIX = "_start";
@@ -49,19 +51,27 @@ public class FluxtionServiceManager {
     private EventProcessor startProcessor;
     private boolean addAudit = true;
     private boolean compile = true;
+    private final ServiceTaskExecutor taskExecutor = new ServiceTaskExecutor();
 
     public FluxtionServiceManager buildServiceController(Service... serviceList) {
         Objects.requireNonNull(serviceList);
         managedStartServices.clear();
         Arrays.stream(serviceList).forEach(this::addServicesToMap);//change to recursive lookup
         Arrays.stream(serviceList).forEach(this::setServiceDependencies);//use the recursive list here
-        if(compile){
+        if (compile) {
             startProcessor = Fluxtion.compile(this::serviceStarter);
-        }else{
+        } else {
             startProcessor = Fluxtion.interpret(this::serviceStarter);
         }
         startProcessor.init();
+        startProcessor.onEvent(new EventLogControlEvent(new Slf4JAuditLogger()));
+        registerTaskExecutor(taskExecutor);
         return this;
+    }
+
+    public void shutdown() {
+        log.info("shutting down task executor");
+        taskExecutor.shutDown();
     }
 
 // TODO: implement dynamic graph building
@@ -82,27 +92,27 @@ public class FluxtionServiceManager {
     }
 
     public void startService(String serviceName) {
-        log.fine("start single service:" + serviceName);
+        log.info("start single service:" + serviceName);
         startProcessor.onEvent(new GraphEvent.RequestServiceStart(serviceName));
         startProcessor.onEvent(new GraphEvent.PublishStartTask());
         publishAllServiceStatus();
     }
 
     public void stopService(String serviceName) {
-        log.fine("stop single service:" + serviceName);
+        log.info("stop single service:" + serviceName);
         startProcessor.onEvent(new GraphEvent.RequestServiceStop(serviceName));
         startProcessor.onEvent(new GraphEvent.PublishStopTask());
         publishAllServiceStatus();
     }
 
     public void startAllServices() {
-        log.fine("start all");
+        log.info("start all");
         startProcessor.onEvent(new GraphEvent.RequestStartAll());
         publishAllServiceStatus();
     }
 
     public void stopAllServices() {
-        log.fine("stop all");
+        log.info("stop all");
         startProcessor.onEvent(new GraphEvent.RequestStopAll());
         publishAllServiceStatus();
     }
@@ -121,22 +131,22 @@ public class FluxtionServiceManager {
 
     public void serviceStartedNotification(String serviceName) {
         GraphEvent.NotifyServiceStarted notifyServiceStarted = new GraphEvent.NotifyServiceStarted(serviceName);
-        log.fine(notifyServiceStarted.toString());
+        log.info(notifyServiceStarted.toString());
         startProcessor.onEvent(notifyServiceStarted);
     }
 
     public void serviceStoppedNotification(String serviceName) {
         GraphEvent.NotifyServiceStopped notifyServiceStarted = new GraphEvent.NotifyServiceStopped(serviceName);
-        log.fine(notifyServiceStarted.toString());
+        log.info(notifyServiceStarted.toString());
         startProcessor.onEvent(notifyServiceStarted);
     }
 
-    public FluxtionServiceManager addAuditLog(boolean addAudit){
+    public FluxtionServiceManager addAuditLog(boolean addAudit) {
         this.addAudit = addAudit;
         return this;
     }
 
-    public FluxtionServiceManager compiled(boolean compile){
+    public FluxtionServiceManager compiled(boolean compile) {
         this.compile = compile;
         return this;
     }
@@ -174,7 +184,7 @@ public class FluxtionServiceManager {
     private void serviceStarter(SEPConfig cfg) {
         managedStartServices.values().forEach(cfg::addNode);
         cfg.addNode(taskWrapperPublisher);
-        if(addAudit){
+        if (addAudit) {
             cfg.addEventAudit(EventLogControlEvent.LogLevel.INFO);
         }
     }

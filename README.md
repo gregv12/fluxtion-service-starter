@@ -82,7 +82,7 @@ See an image of the service dependencies [here](https://github.com/gregv12/examp
 output for sample:
 
 ```
-Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
+Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToLog accept
 INFO: Current status:
 svc_2BJoined - STATUS_UNKNOWN
 svc_2 - STATUS_UNKNOWN
@@ -99,7 +99,7 @@ ServiceEvent.Start(super=name='svc_1')
 ServiceEvent.Start(super=name='svc_A')
 
 
-Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
+Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToLog accept
 INFO: Current status:
 svc_2BJoined - WAITING_FOR_PARENTS_TO_START
 svc_2 - WAITING_FOR_PARENTS_TO_START
@@ -110,7 +110,7 @@ svc_A - STARTING
 
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.graph.FluxtionServiceManager processStatusUpdate
 INFO: ServiceEvent.StatusUpdate(status=STARTED, name=svc_1)
-Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
+Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToLog accept
 INFO: Current status:
 svc_2BJoined - WAITING_FOR_PARENTS_TO_START
 svc_2 - STARTING
@@ -124,7 +124,7 @@ ServiceEvent.Start(super=name='svc_2')
 
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.graph.FluxtionServiceManager processStatusUpdate
 INFO: ServiceEvent.StatusUpdate(status=STARTED, name=svc_2)
-Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
+Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToLog accept
 INFO: Current status:
 svc_2BJoined - WAITING_FOR_PARENTS_TO_START
 svc_2 - STARTED
@@ -135,7 +135,7 @@ svc_A - STARTING
 
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.graph.FluxtionServiceManager processStatusUpdate
 INFO: ServiceEvent.StatusUpdate(status=STARTED, name=svc_A)
-Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
+Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToLog accept
 INFO: Current status:
 svc_2BJoined - WAITING_FOR_PARENTS_TO_START
 svc_2 - STARTED
@@ -149,7 +149,7 @@ ServiceEvent.Start(super=name='svc_B')
 
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.graph.FluxtionServiceManager processStatusUpdate
 INFO: ServiceEvent.StatusUpdate(status=STARTED, name=svc_B)
-Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
+Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToLog accept
 INFO: Current status:
 svc_2BJoined - STARTING
 svc_2 - STARTED
@@ -161,7 +161,7 @@ INFO: Command list:
 ServiceEvent.Start(super=name='svc_2BJoined')
 
 
-Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
+Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToLog accept
 INFO: Current status:
 svc_2BJoined - STARTING
 svc_2 - STARTED
@@ -175,7 +175,7 @@ INFO: start all ServiceEvent.Stop(super=name='all')
 Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.ServiceTaskExecutor accept
 INFO: Command list:
 ServiceEvent.Stop(super=name='svc_2BJoined')
-Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToConsole accept
+Dec 16, 2021 11:34:08 PM com.fluxtion.example.servicestater.helpers.PublishStatusToLog accept
 INFO: Current status:
 svc_2BJoined - STOPPING
 svc_2 - WAITING_FOR_PARENTS_TO_STOP

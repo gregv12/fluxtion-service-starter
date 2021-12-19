@@ -4,7 +4,7 @@ import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
 import com.fluxtion.example.servicestater.ServiceManagerServer;
 import lombok.SneakyThrows;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Locale;
 import java.util.Scanner;
@@ -16,17 +16,19 @@ import java.util.Scanner;
  * message is displayed detailing the usage.
  *
  */
-@Log
+//@Log
+@Slf4j
 public class CliTestClient {
 
     private static ServiceManagerServer serviceManagerServer;
-    private static ServiceTaskExecutor serviceTaskExecutor;
 
+    @SneakyThrows
     public static void main(String[] args) {
         buildGraph();
         serviceManagerServer.startService("aggAB");
         Scanner scanner = new Scanner(System.in);
         boolean run = true;
+        Thread.sleep(100);//give the threads time to start and publish help message at end
         printHelp();
         while (run) {
             System.out.print(">");
@@ -47,7 +49,7 @@ public class CliTestClient {
             scanner.nextLine();
         }
         scanner.close();
-        serviceTaskExecutor.shutDown();
+        serviceManagerServer.shutdown();
     }
 
     static void printHelp() {
@@ -137,13 +139,12 @@ public class CliTestClient {
         Service persister = new Service("persister", CliTestClient::notifyStartedPersister, null, aggAB, calcC);
         //build and register outputs
         FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
-        serviceTaskExecutor = new ServiceTaskExecutor();
+//        serviceTaskExecutor = new ServiceTaskExecutor();
         fluxtionServiceManager.buildServiceController(persister, aggAB, calcC, handlerA, handlerB, handlerC);
-        fluxtionServiceManager.registerTaskExecutor(serviceTaskExecutor);
-        fluxtionServiceManager.registerStatusListener(new PublishStatusToConsole());
         //wrap in server
         serviceManagerServer = new ServiceManagerServer();
         serviceManagerServer.setManager(fluxtionServiceManager);
+        serviceManagerServer.registerStatusListener(new PublishStatusToLog());
     }
 
     @SneakyThrows
