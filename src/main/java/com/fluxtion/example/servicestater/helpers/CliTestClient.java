@@ -27,6 +27,9 @@ public class CliTestClient {
 
     @SneakyThrows
     public static void main(String[] args) {
+        System.out.println("Welcome to FluxtionService interactive tester - building test service graph");
+        System.out.println("===============================================================================");
+        auditOn(false);
         buildGraph(false);
         serviceManagerServer.startService("aggAB");
         Scanner scanner = new Scanner(System.in);
@@ -60,9 +63,9 @@ public class CliTestClient {
 
     static void printHelp() {
         String help = """
-                Welcome to FluxtionService interactive tester
-                =========================================
-                Commands available are:
+                
+                FluxtionService interactive tester commands:
+                ===============================================
                 help or ?                 - print this message
                 build or b                - drops the graph and builds a new graph from scratch
                 status or ss              - prints the current status of the graph to console
