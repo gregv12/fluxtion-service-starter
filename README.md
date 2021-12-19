@@ -14,9 +14,9 @@ lifecycle overwhelms a handwritten manual solution. Service starter provides an 
 start and stop tasks associated with a particular service at the correct time.
 
 ### Main components
-- **ServiceManagerServer** manages the execution of lifecycle tasks associated with a service. The server places all 
+- **[ServiceManagerServer](https://github.com/gregv12/example-service-starter/blob/e9a6d092f492cd89060abc717c70f6539cf8f856/src/main/java/com/fluxtion/example/servicestater/ServiceManagerServer.java#L18)** manages the execution of lifecycle tasks associated with a service. The server places all 
  clients requests on a queue and executes them on its own thread. 
-- **Service** - To manage a user service a proxy Service is instantiated and registered with the ServiceManagerServer. 
+- **[Service](https://github.com/gregv12/example-service-starter/blob/e9a6d092f492cd89060abc717c70f6539cf8f856/src/main/java/com/fluxtion/example/servicestater/Service.java#L20)** - To manage a user service a proxy Service is instantiated and registered with the ServiceManagerServer. 
  An external service has a one to one mapping with a Service. Data held by the Service:
   - name - a unique service name that can be identified globally
   - dependents - Upstream services that require this service to be started for validity
@@ -52,7 +52,7 @@ Service handlerB = new Service("handlerB");
 Service aggAB = new Service("aggAB", CliTestClient::notifyStartedAggAB, null, handlerA, handlerB);
 ```
 
-The list of services is passed to an instance of FluxtionServiceManager and the controller is build. A ServiceManagerServer
+The list of services is passed to an instance of [FluxtionServiceManager](https://github.com/gregv12/example-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/graph/FluxtionServiceManager.java) and the controller is build. A ServiceManagerServer
 wraps the model for thread safe access. Clients invoke methods on ServiceManagerServer to ensure thread safety.
 ```java
 FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
