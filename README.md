@@ -4,9 +4,12 @@ with [Fluxtion](https://github.com/v12technology/fluxtion) to manage the underly
 
 ### Overview
 In many systems services execute independently but need to co-ordinate their lifecycle with each other. A service
-may require all downstream service to be started before starting itself and becoming available to accept upstream requests.
+may require all downstream services to be started before starting and becoming available to accept upstream requests.
+
 Similarly, if a downstream service becomes unavailable all upstream services will need to be notified and take appropriate 
-actions. As systems grow a complex graph of interdependent services quickly arises, the difficulty in correctly managing 
+actions. 
+
+As systems grow a complex graph of interdependent services quickly arises, the difficulty in correctly managing 
 lifecycle overwhelms a handwritten manual solution. 
 
 Service starter provides an automated utility for managing the lifecycle of independent services, executing
