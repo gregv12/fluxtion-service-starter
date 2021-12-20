@@ -1,11 +1,15 @@
 package com.fluxtion.example.servicestater;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import com.fluxtion.example.servicestater.Service.Status;
 import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
 import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-@Log
+@Slf4j
 class FluxtionServiceManagerModelATest {
 
     /**
@@ -114,11 +118,24 @@ class FluxtionServiceManagerModelATest {
         statusList.clear();
         statusList.addAll(statusUpdate);
         if (ADD_AUDIT_LOG) {
-            log.info("Current status:\n" +
-                    statusUpdate.stream()
-                            .map(Objects::toString)
-                            .collect(Collectors.joining("\n"))
-            );
+            logStatus(statusUpdate);
+        }
+    }
+
+    public static void logStatus(List<ServiceStatusRecord> statusUpdate){
+        log.info("Current status:\n" +
+                statusUpdate.stream()
+                        .map(Objects::toString)
+                        .collect(Collectors.joining("\n"))
+        );
+    }
+
+    public static void auditOn(boolean flag){
+        Logger restClientLogger = (Logger) LoggerFactory.getLogger("fluxtion.eventLog");
+        if(flag){
+            restClientLogger.setLevel(Level.INFO);
+        }else{
+            restClientLogger.setLevel(Level.OFF);
         }
     }
 }

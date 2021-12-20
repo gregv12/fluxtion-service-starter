@@ -83,14 +83,14 @@ public class FluxtionServiceManager {
     }
 
     public void startService(String serviceName) {
-        log.info("start single service:" + serviceName);
+        log.info("start single service:'{}'", serviceName);
         startProcessor.onEvent(new GraphEvent.RequestServiceStart(serviceName));
         startProcessor.onEvent(new GraphEvent.PublishStartTask());
         publishAllServiceStatus();
     }
 
     public void stopService(String serviceName) {
-        log.info("stop single service:" + serviceName);
+        log.info("stop single service:'{}'", serviceName);
         startProcessor.onEvent(new GraphEvent.RequestServiceStop(serviceName));
         startProcessor.onEvent(new GraphEvent.PublishStopTask());
         publishAllServiceStatus();
@@ -121,12 +121,14 @@ public class FluxtionServiceManager {
     }
 
     public void serviceStartedNotification(String serviceName) {
+        log.info("notified service started;'{}'", serviceName);
         GraphEvent.NotifyServiceStarted notifyServiceStarted = new GraphEvent.NotifyServiceStarted(serviceName);
-        log.info(notifyServiceStarted.toString());
+        log.debug(notifyServiceStarted.toString());
         startProcessor.onEvent(notifyServiceStarted);
     }
 
     public void serviceStoppedNotification(String serviceName) {
+        log.info("notified service stopped;'{}'", serviceName);
         GraphEvent.NotifyServiceStopped notifyServiceStarted = new GraphEvent.NotifyServiceStopped(serviceName);
         log.info(notifyServiceStarted.toString());
         startProcessor.onEvent(notifyServiceStarted);
@@ -186,6 +188,10 @@ public class FluxtionServiceManager {
 
     public static String toStopServiceName(String serviceName) {
         return serviceName + STOP_SUFFIX;
+    }
+
+    public void waitForTasksToComplete(boolean waitForTasks) {
+        taskExecutor.waitForTasksToComplete(waitForTasks);
     }
 
     @Value

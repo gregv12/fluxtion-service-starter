@@ -85,4 +85,17 @@ public class ServiceManagerServer {
     public void registerStatusListener(Consumer<List<ServiceStatusRecord>> publishStatusToLog) {
         publisher.submit(f -> f.registerStatusListener(publishStatusToLog));
     }
+
+    /**
+     * Controls the blocking behaviour of this ServiceManagerServer while processing start/stop tasks:
+     * <ul>
+     *     <li>true - will not process any client requests until all the start/stop tasks are complete</li>
+     *     <li>false - start/stop tasks are processed asynchronously, the ServiceManagerServer is free to process
+     *     new requests while the tasks are executing</li>
+     * </ul>
+     * @param waitForTasks flag controlling blocking behaviour while executing tasks
+     */
+    public void waitForTasksToComplete(boolean waitForTasks){
+        publisher.submit(f -> f.waitForTasksToComplete(waitForTasks));
+    }
 }
