@@ -74,15 +74,6 @@ public class FluxtionServiceManager {
         taskExecutor.shutDown();
     }
 
-// TODO: implement dynamic graph building
-//    public void addOrUpdateService(Service service) {
-//        //rebuild
-//    }
-//
-//    public void removeService(String serviceName) {
-//        //rebuild
-//    }
-
     public void traceMethodCalls(boolean traceOn) {
         if (traceOn) {
             startProcessor.onEvent(new EventLogControlEvent(EventLogControlEvent.LogLevel.TRACE));
