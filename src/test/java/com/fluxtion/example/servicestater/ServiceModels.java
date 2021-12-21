@@ -45,12 +45,18 @@ public interface ServiceModels {
     String PERSISTER = "persister";
 
     static FluxtionServiceManager buildModelA(boolean addAuditLog, boolean compiled) {
-        Service handlerA = new Service(HANDLER_A);
-        Service handlerB = new Service(HANDLER_B);
-        Service handlerC = new Service(HANDLER_C);
-        Service aggAB = new Service(AGG_AB, handlerA, handlerB);
-        Service calcC = new Service(CALC_C, handlerC);
-        Service persister = new Service(PERSISTER, aggAB, calcC);
+        Service handlerA = Service.builder(HANDLER_A).build();
+        Service handlerB = Service.builder(HANDLER_B).build();
+        Service handlerC = Service.builder(HANDLER_C).build();
+        Service aggAB = Service.builder(AGG_AB)
+                .servicesThatRequireMe(List.of(handlerA, handlerB))
+                .build();
+        Service calcC = Service.builder(CALC_C)
+                .servicesThatRequireMe(List.of(handlerC))
+                .build();
+        Service persister = Service.builder(PERSISTER)
+                .servicesThatRequireMe(List.of(aggAB, calcC))
+                .build();
         //build and register outputs
         return new FluxtionServiceManager()
                 .addAuditLog(addAuditLog)

@@ -20,7 +20,7 @@ public class ServiceTaskExecutor implements Consumer<List<TaskWrapper>> {
     public static final long TIMEOUT_SECONDS = 10L;
     private final ExecutorService executorService;
     private static final LongAdder COUNT = new LongAdder();
-    private boolean waitForTasks = true;
+    private boolean waitForTasks = false;
 
     public ServiceTaskExecutor() {
         executorService = Executors.newCachedThreadPool(this::namedThreadFactory);

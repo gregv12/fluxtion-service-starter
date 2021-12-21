@@ -8,6 +8,7 @@ import com.fluxtion.example.servicestater.helpers.ServiceTaskExecutor;
 import com.fluxtion.example.servicestater.helpers.Slf4JAuditLogger;
 import com.fluxtion.runtim.EventProcessor;
 import com.fluxtion.runtim.audit.EventLogControlEvent;
+import lombok.Synchronized;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,11 +70,13 @@ public class FluxtionServiceManager {
         return this;
     }
 
+    @Synchronized
     public void shutdown() {
         log.info("shutting down task executor");
         taskExecutor.shutDown();
     }
 
+    @Synchronized
     public void traceMethodCalls(boolean traceOn) {
         if (traceOn) {
             startProcessor.onEvent(new EventLogControlEvent(EventLogControlEvent.LogLevel.TRACE));
@@ -82,6 +85,7 @@ public class FluxtionServiceManager {
         }
     }
 
+    @Synchronized
     public void startService(String serviceName) {
         log.info("start single service:'{}'", serviceName);
         startProcessor.onEvent(new GraphEvent.RequestServiceStart(serviceName));
@@ -89,6 +93,7 @@ public class FluxtionServiceManager {
         publishAllServiceStatus();
     }
 
+    @Synchronized
     public void stopService(String serviceName) {
         log.info("stop single service:'{}'", serviceName);
         startProcessor.onEvent(new GraphEvent.RequestServiceStop(serviceName));
@@ -96,30 +101,36 @@ public class FluxtionServiceManager {
         publishAllServiceStatus();
     }
 
+    @Synchronized
     public void startAllServices() {
         log.info("start all");
         startProcessor.onEvent(new GraphEvent.RequestStartAll());
         publishAllServiceStatus();
     }
 
+    @Synchronized
     public void stopAllServices() {
         log.info("stop all");
         startProcessor.onEvent(new GraphEvent.RequestStopAll());
         publishAllServiceStatus();
     }
 
+    @Synchronized
     public void registerTaskExecutor(Consumer<List<TaskWrapper>> commandProcessor) {
         startProcessor.onEvent(new RegisterCommandProcessor(commandProcessor));
     }
 
+    @Synchronized
     public void registerStatusListener(Consumer<List<ServiceStatusRecord>> statusUpdateListener) {
         startProcessor.onEvent(new RegisterStatusListener(statusUpdateListener));
     }
 
+    @Synchronized
     public void publishAllServiceStatus() {
         startProcessor.onEvent(new GraphEvent.PublishStatus());
     }
 
+    @Synchronized
     public void serviceStartedNotification(String serviceName) {
         log.info("notified service started;'{}'", serviceName);
         GraphEvent.NotifyServiceStarted notifyServiceStarted = new GraphEvent.NotifyServiceStarted(serviceName);
@@ -127,6 +138,7 @@ public class FluxtionServiceManager {
         startProcessor.onEvent(notifyServiceStarted);
     }
 
+    @Synchronized
     public void serviceStoppedNotification(String serviceName) {
         log.info("notified service stopped;'{}'", serviceName);
         GraphEvent.NotifyServiceStopped notifyServiceStarted = new GraphEvent.NotifyServiceStopped(serviceName);
@@ -158,7 +170,7 @@ public class FluxtionServiceManager {
     private void setServiceDependencies(Service service) {
         ServiceController controller = managedStartServices.get(toStartServiceName(service.getName()));
         controller.setDependencies(
-                service.getDependencies().stream()
+                service.getServicesThatRequireMe().stream()
                         .map(Service::getName)
                         .map(FluxtionServiceManager::toStartServiceName)
                         .map(managedStartServices::get)
@@ -167,7 +179,7 @@ public class FluxtionServiceManager {
 
         controller = managedStartServices.get(toStopServiceName(service.getName()));
         final ServiceController stopController = controller;
-        service.getDependencies().stream()
+        service.getServicesThatRequireMe().stream()
                 .map(Service::getName)
                 .map(FluxtionServiceManager::toStopServiceName)
                 .map(managedStartServices::get)

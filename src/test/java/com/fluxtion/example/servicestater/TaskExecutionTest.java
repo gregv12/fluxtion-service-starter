@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,14 +24,23 @@ public class TaskExecutionTest {
         //two tasks that are auto triggered to run in parallel
         //The first task will trigger a dependent service to start
         //The second parallel task is slow the system will not process the dependent start until both parallel tasks have completed
-        Service finishService = new Service("finishService", TaskExecutionTest::releaseTest, null);
-        Service parallel_2 = new Service("parallel_2", TaskExecutionTest::parallel_2_sleep_3_seconds, null, finishService);
-        Service parallel_1 = new Service("parallel_1", TaskExecutionTest::parallel_1_immediate, null, finishService);
-        Service rootService = new Service("rootTask", TaskExecutionTest::triggerBothParallels, null, parallel_1, parallel_2);
+        Service finishService = Service.builder("finishService")
+                .startTask(TaskExecutionTest::releaseTest)
+                .build();
+        Service parallel_2 = Service.builder("parallel_2")
+                .startTask(TaskExecutionTest::parallel_2_sleep_3_seconds)
+                .servicesThatRequireMe(List.of(finishService))
+                .build();
+        Service parallel_1 = Service.builder("parallel_1")
+                .startTask(TaskExecutionTest::parallel_1_immediate)
+                .servicesThatRequireMe(List.of(finishService))
+                .build();
+        Service rootService = Service.builder("rootService")
+                .startTask(TaskExecutionTest::triggerBothParallels)
+                .servicesThatRequireMe(List.of(parallel_1, parallel_2))
+                .build();
         server = ServiceManagerServer.interpretedServer(rootService, parallel_1, parallel_2, finishService);
 //        server.registerStatusListener(FluxtionServiceManagerModelATest::logStatus);
-
-
         //kick off the tasks - will cause all the sub tasks to be running before starting
         server.startService("finishService");
 
@@ -40,7 +50,7 @@ public class TaskExecutionTest {
 
     public static void triggerBothParallels(){
         log.info("ROOT::completed");
-        executorService.submit(() ->server.serviceStartedNotification("rootTask"));
+        executorService.submit(() ->server.serviceStartedNotification("rootService"));
     }
 
     @SneakyThrows
