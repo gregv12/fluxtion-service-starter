@@ -42,7 +42,6 @@ public class Service implements Named {
     @Nullable
     private final Service[] servicesThatRequireMeArray;
 
-
     @Nullable
     private final SerializableRunnable startTask;
     @Nullable
@@ -56,12 +55,12 @@ public class Service implements Named {
         return servicesThatRequireMe ==null?Collections.emptyList(): servicesThatRequireMe;
     }
 
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     public SerializableRunnable getStartTask() {
         return startTask;
     }
 
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     public SerializableRunnable getStopTask() {
         return stopTask;
     }
