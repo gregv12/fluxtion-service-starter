@@ -3,7 +3,7 @@ package com.fluxtion.example.servicestater.helpers;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.fluxtion.example.servicestater.Service;
-import com.fluxtion.example.servicestater.ServiceManagerServer;
+import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import java.util.Scanner;
 @Slf4j
 public class CliTestClient {
 
-    private static ServiceManagerServer serviceManagerServer;
+    private static ServiceManager serviceManagerServer;
 
     @SneakyThrows
     public static void main(String[] args) {
@@ -101,7 +101,7 @@ public class CliTestClient {
 
     private static void printStatus() {
         checkControllerIsBuilt();
-        serviceManagerServer.publishServiceStatus();
+        serviceManagerServer.publishSystemStatus();
     }
 
     private static void checkControllerIsBuilt() {
@@ -132,7 +132,7 @@ public class CliTestClient {
     private static void notifiedStartedByName(Scanner scanner) {
         checkControllerIsBuilt();
         if (scanner.hasNext()) {
-            serviceManagerServer.serviceStartedNotification(scanner.next());
+            serviceManagerServer.serviceStarted(scanner.next());
         } else {
             System.out.println("2nd argument required - service name");
         }
@@ -141,7 +141,7 @@ public class CliTestClient {
     private static void notifiedStoppedByName(Scanner scanner) {
         checkControllerIsBuilt();
         if (scanner.hasNext()) {
-            serviceManagerServer.serviceStoppedNotification(scanner.next());
+            serviceManagerServer.serviceStopped(scanner.next());
         } else {
             System.out.println("2nd argument required - service name");
         }
@@ -183,21 +183,21 @@ public class CliTestClient {
                 .build();
 
         if (compile) {
-            serviceManagerServer = ServiceManagerServer.compiledServer(persister, aggAB, calcC, handlerA, handlerB, handlerC);
+            serviceManagerServer = ServiceManager.compiledServiceManager(persister, aggAB, calcC, handlerA, handlerB, handlerC);
         } else {
-            serviceManagerServer = ServiceManagerServer.interpretedServer(persister, aggAB, calcC, handlerA, handlerB, handlerC);
+            serviceManagerServer = ServiceManager.interpretedServiceManager(persister, aggAB, calcC, handlerA, handlerB, handlerC);
         }
         serviceManagerServer.registerStatusListener(new PublishServiceStatusRecordToLog());
     }
 
     public static void notifyStartedPersister() {
         log.info("persister::startTask notify persister STARTED");
-        serviceManagerServer.serviceStartedNotification(PERSISTER);
+        serviceManagerServer.serviceStarted(PERSISTER);
     }
 
     public static void notifyStartedAggAB() {
         log.info("aggAB::startTask notify aggAB STARTED");
-        serviceManagerServer.serviceStartedNotification(AGG_AB);
+        serviceManagerServer.serviceStarted(AGG_AB);
     }
 
     private static final String asciiArtDAG = """

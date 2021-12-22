@@ -1,7 +1,10 @@
-package com.fluxtion.example.servicestater;
+package com.fluxtion.example.servicestater.graph;
 
+import com.fluxtion.example.servicestater.Service;
+import com.fluxtion.example.servicestater.ServiceManager;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,12 +14,12 @@ import java.util.concurrent.Executors;
 
 @Slf4j
 public class TaskExecutionTest {
-    static ServiceManagerServer server;
-
+    static ServiceManager server;
     static CountDownLatch countDownLatch;
     static ExecutorService executorService;
 
     @Test
+    @Disabled("does not actually test only demonstrates, needs to be updated")
     public void testSynchronousTaskExecution() throws InterruptedException {
         FluxtionServiceManagerModelATest.auditOn(false);
         countDownLatch = new CountDownLatch(1);
@@ -39,7 +42,7 @@ public class TaskExecutionTest {
                 .startTask(TaskExecutionTest::triggerBothParallels)
                 .servicesThatRequireMe(List.of(parallel_1, parallel_2))
                 .build();
-        server = ServiceManagerServer.interpretedServer(rootService, parallel_1, parallel_2, finishService);
+        server = ServiceManager.interpretedServiceManager(rootService, parallel_1, parallel_2, finishService);
 //        server.registerStatusListener(FluxtionServiceManagerModelATest::logStatus);
         //kick off the tasks - will cause all the sub tasks to be running before starting
         server.startService("finishService");
@@ -50,7 +53,7 @@ public class TaskExecutionTest {
 
     public static void triggerBothParallels(){
         log.info("ROOT::completed");
-        executorService.submit(() ->server.serviceStartedNotification("rootService"));
+        executorService.submit(() ->server.serviceStarted("rootService"));
     }
 
     @SneakyThrows
@@ -58,17 +61,17 @@ public class TaskExecutionTest {
         log.info("PARALLEL_2::sleeping");
         Thread.sleep(3_000);
         log.info("PARALLEL_2::completed");
-        executorService.submit(() ->server.serviceStartedNotification("parallel_2"));
+        executorService.submit(() ->server.serviceStarted("parallel_2"));
     }
 
     public static void parallel_1_immediate(){
         log.info("PARALLEL_1:: completed");
-        executorService.submit(() ->server.serviceStartedNotification("parallel_1"));
+        executorService.submit(() ->server.serviceStarted("parallel_1"));
     }
 
     public static void releaseTest(){
         log.info("FINISHSERVICE::executing delayed task!!!");
-        executorService.submit(() ->server.serviceStartedNotification("finishService"));
+        executorService.submit(() ->server.serviceStarted("finishService"));
         countDownLatch.countDown();
     }
 }

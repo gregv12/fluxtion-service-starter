@@ -3,9 +3,11 @@ package com.fluxtion.example.servicestater.graph;
 import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.compiler.builder.node.SEPConfig;
 import com.fluxtion.example.servicestater.Service;
+import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.example.servicestater.ServiceStatusRecord;
-import com.fluxtion.example.servicestater.helpers.ServiceTaskExecutor;
+import com.fluxtion.example.servicestater.TaskWrapper;
 import com.fluxtion.example.servicestater.helpers.Slf4JAuditLogger;
+import com.fluxtion.example.servicestater.helpers.SynchronousTaskExecutor;
 import com.fluxtion.runtim.EventProcessor;
 import com.fluxtion.runtim.audit.EventLogControlEvent;
 import lombok.Synchronized;
@@ -42,7 +44,7 @@ import java.util.stream.Collectors;
  * </ul>
  */
 @Slf4j
-public class FluxtionServiceManager {
+public class FluxtionServiceManager implements ServiceManager {
 
     public static final String START_SUFFIX = "_start";
     public static final String STOP_SUFFIX = "_stop";
@@ -52,7 +54,7 @@ public class FluxtionServiceManager {
     private EventProcessor startProcessor;
     private boolean addAudit = true;
     private boolean compile = true;
-    private final ServiceTaskExecutor taskExecutor = new ServiceTaskExecutor();
+    private final DelegatingTaskExecutor taskExecutor = new DelegatingTaskExecutor();
 
     public FluxtionServiceManager buildServiceController(Service... serviceList) {
         Objects.requireNonNull(serviceList);
@@ -60,23 +62,28 @@ public class FluxtionServiceManager {
         Arrays.stream(serviceList).forEach(this::addServicesToMap);//change to recursive lookup
         Arrays.stream(serviceList).forEach(this::setServiceDependencies);//use the recursive list here
         if (compile) {
-            startProcessor = Fluxtion.compile(this::serviceStarter);
+            startProcessor = new SynchronizedEventProcessor(Fluxtion.compile(this::serviceStarter));
         } else {
-            startProcessor = Fluxtion.interpret(this::serviceStarter);
+            startProcessor = new SynchronizedEventProcessor(Fluxtion.interpret(this::serviceStarter));
         }
         startProcessor.init();
         startProcessor.onEvent(new EventLogControlEvent(new Slf4JAuditLogger()));
-        registerTaskExecutor(taskExecutor);
+        startProcessor.onEvent(new RegisterCommandProcessor(taskExecutor));
         return this;
     }
 
+    @Override
     @Synchronized
     public void shutdown() {
         log.info("shutting down task executor");
-        taskExecutor.shutDown();
+        try {
+            taskExecutor.close();
+        } catch (Exception e) {
+            log.warn("failed to shutdown task executor", e);
+        }
     }
 
-    @Synchronized
+    @Override
     public void traceMethodCalls(boolean traceOn) {
         if (traceOn) {
             startProcessor.onEvent(new EventLogControlEvent(EventLogControlEvent.LogLevel.TRACE));
@@ -85,65 +92,74 @@ public class FluxtionServiceManager {
         }
     }
 
+    @Override
     @Synchronized
     public void startService(String serviceName) {
         log.info("start single service:'{}'", serviceName);
         startProcessor.onEvent(new GraphEvent.RequestServiceStart(serviceName));
+        taskExecutor.publishTasksToDelegate();
         startProcessor.onEvent(new GraphEvent.PublishStartTask());
-        publishAllServiceStatus();
+        taskExecutor.publishTasksToDelegate();
+        publishSystemStatus();
     }
 
+    @Override
     @Synchronized
     public void stopService(String serviceName) {
         log.info("stop single service:'{}'", serviceName);
         startProcessor.onEvent(new GraphEvent.RequestServiceStop(serviceName));
+        taskExecutor.publishTasksToDelegate();
         startProcessor.onEvent(new GraphEvent.PublishStopTask());
-        publishAllServiceStatus();
+        taskExecutor.publishTasksToDelegate();
+        publishSystemStatus();
     }
 
-    @Synchronized
+    @Override
     public void startAllServices() {
         log.info("start all");
         startProcessor.onEvent(new GraphEvent.RequestStartAll());
-        publishAllServiceStatus();
+        taskExecutor.publishTasksToDelegate();
+        publishSystemStatus();
     }
 
-    @Synchronized
+    @Override
     public void stopAllServices() {
         log.info("stop all");
         startProcessor.onEvent(new GraphEvent.RequestStopAll());
-        publishAllServiceStatus();
+        publishSystemStatus();
     }
 
-    @Synchronized
-    public void registerTaskExecutor(Consumer<List<TaskWrapper>> commandProcessor) {
-        startProcessor.onEvent(new RegisterCommandProcessor(commandProcessor));
+    @Override
+    public void registerTaskExecutor(TaskWrapper.TaskExecutor commandProcessor) {
+        taskExecutor.setDelegate(commandProcessor);
     }
 
-    @Synchronized
+    @Override
     public void registerStatusListener(Consumer<List<ServiceStatusRecord>> statusUpdateListener) {
         startProcessor.onEvent(new RegisterStatusListener(statusUpdateListener));
     }
 
-    @Synchronized
-    public void publishAllServiceStatus() {
+    @Override
+    public void publishSystemStatus() {
         startProcessor.onEvent(new GraphEvent.PublishStatus());
     }
 
-    @Synchronized
-    public void serviceStartedNotification(String serviceName) {
+    @Override
+    public void serviceStarted(String serviceName) {
         log.info("notified service started;'{}'", serviceName);
         GraphEvent.NotifyServiceStarted notifyServiceStarted = new GraphEvent.NotifyServiceStarted(serviceName);
         log.debug(notifyServiceStarted.toString());
         startProcessor.onEvent(notifyServiceStarted);
+        taskExecutor.publishTasksToDelegate();
     }
 
-    @Synchronized
-    public void serviceStoppedNotification(String serviceName) {
+    @Override
+    public void serviceStopped(String serviceName) {
         log.info("notified service stopped;'{}'", serviceName);
         GraphEvent.NotifyServiceStopped notifyServiceStarted = new GraphEvent.NotifyServiceStopped(serviceName);
         log.info(notifyServiceStarted.toString());
         startProcessor.onEvent(notifyServiceStarted);
+        taskExecutor.publishTasksToDelegate();
     }
 
     public FluxtionServiceManager addAuditLog(boolean addAudit) {
@@ -202,10 +218,6 @@ public class FluxtionServiceManager {
         return serviceName + STOP_SUFFIX;
     }
 
-    public void waitForTasksToComplete(boolean waitForTasks) {
-        taskExecutor.waitForTasksToComplete(waitForTasks);
-    }
-
     @Value
     public static class RegisterCommandProcessor {
         Consumer<List<TaskWrapper>> consumer;
@@ -214,5 +226,62 @@ public class FluxtionServiceManager {
     @Value
     public static class RegisterStatusListener {
         Consumer<List<ServiceStatusRecord>> statusListener;
+    }
+
+    @Value
+    static class SynchronizedEventProcessor implements EventProcessor {
+        EventProcessor delegate;
+
+        @Override
+        @Synchronized
+        public void onEvent(Object e) {
+            delegate.onEvent(e);
+        }
+
+        @Override
+        @Synchronized
+        public void init() {
+            delegate.init();
+        }
+
+        @Override
+        @Synchronized
+        public void tearDown() {
+            delegate.tearDown();
+        }
+    }
+
+
+    static class DelegatingTaskExecutor implements TaskWrapper.TaskExecutor {
+        private TaskWrapper.TaskExecutor delegate;
+        private transient final List<TaskWrapper> tasks = new ArrayList<>();
+
+        public DelegatingTaskExecutor() {
+            delegate = new SynchronousTaskExecutor();
+        }
+
+        public void setDelegate(TaskWrapper.TaskExecutor delegate) {
+            Objects.requireNonNull(delegate);
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void close() throws Exception {
+            delegate.close();
+        }
+
+        @Override
+        public void accept(List<TaskWrapper> taskWrappers) {
+            tasks.clear();
+            tasks.addAll(taskWrappers);
+        }
+
+        public void publishTasksToDelegate() {
+            if (!tasks.isEmpty()) {
+                List<TaskWrapper> tempTasks = new ArrayList<>(tasks);
+                tasks.clear();
+                delegate.accept(tempTasks);
+            }
+        }
     }
 }
