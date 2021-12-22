@@ -94,6 +94,31 @@ class FluxtionServiceManagerModelATest {
         checkStatusMatch(statusMap);
     }
 
+    @Test
+    void stopAll(){
+        ADD_AUDIT_LOG = true;
+        FluxtionServiceManager fluxtionServiceManager = ServiceModels.buildModelA(ADD_AUDIT_LOG, COMPILED);
+        fluxtionServiceManager.registerStatusListener(this::recordServiceStatus);
+        fluxtionServiceManager.stopAllServices();
+        Map<String, ServiceStatusRecord> statusMap = mapWithStatus(Status.WAITING_FOR_PARENTS_TO_STOP);
+        updateStatus(statusMap, ServiceModels.HANDLER_A, Status.STOPPING);
+        updateStatus(statusMap, ServiceModels.HANDLER_B, Status.STOPPING);
+        updateStatus(statusMap, ServiceModels.HANDLER_C, Status.STOPPING);
+        checkStatusMatch(statusMap);
+    }
+
+    @Test
+    void startAll(){
+        ADD_AUDIT_LOG = true;
+        FluxtionServiceManager fluxtionServiceManager = ServiceModels.buildModelA(ADD_AUDIT_LOG, COMPILED);
+        fluxtionServiceManager.registerStatusListener(this::recordServiceStatus);
+        fluxtionServiceManager.stopAllServices();
+        fluxtionServiceManager.startAllServices();
+        Map<String, ServiceStatusRecord> statusMap = mapWithStatus(Status.WAITING_FOR_PARENTS_TO_START);
+        updateStatus(statusMap, ServiceModels.PERSISTER, Status.STARTING);
+        checkStatusMatch(statusMap);
+    }
+
     private FluxtionServiceManager startAService(String serviceName) {
         FluxtionServiceManager fluxtionServiceManager = ServiceModels.buildModelA(ADD_AUDIT_LOG, COMPILED);
         fluxtionServiceManager.registerStatusListener(this::recordServiceStatus);
