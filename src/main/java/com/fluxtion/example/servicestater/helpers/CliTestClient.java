@@ -3,27 +3,27 @@ package com.fluxtion.example.servicestater.helpers;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.fluxtion.example.servicestater.Service;
+import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
-import com.fluxtion.example.servicestater.ServiceManagerServer;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
 /**
  * A command line client that tests a sample service graph loaded into the {@link FluxtionServiceManager}
- *
+ * <p>
  * Various cli commands are provided to exercise all the operations on the service manager. Run the program and a help
  * message is displayed detailing the usage.
- *
  */
 //@Log
 @Slf4j
 public class CliTestClient {
 
-    private static ServiceManagerServer serviceManagerServer;
+    private static ServiceManager serviceManagerServer;
 
     @SneakyThrows
     public static void main(String[] args) {
@@ -64,7 +64,7 @@ public class CliTestClient {
 
     static void printHelp() {
         String help = """
-                
+                                
                 FluxtionService interactive tester commands:
                 ===============================================
                 help or ?                 - print this message
@@ -81,8 +81,7 @@ public class CliTestClient {
                 auditOff or aoff          - turn audit recording off
                 printTree or pt           - print the DAG of the test model
                 exit or e                 - exit the application
-                """
-                ;
+                """;
         System.out.println(help);
     }
 
@@ -90,99 +89,115 @@ public class CliTestClient {
         System.out.println(asciiArtDAG);
     }
 
-    public static void startAll(){
+    public static void startAll() {
         checkControllerIsBuilt();
         serviceManagerServer.startAllServices();
     }
 
-    public static void stopAll(){
+    public static void stopAll() {
         checkControllerIsBuilt();
         serviceManagerServer.stopAllServices();
     }
 
-    private static void printStatus(){
+    private static void printStatus() {
         checkControllerIsBuilt();
-        serviceManagerServer.publishServiceStatus();
+        serviceManagerServer.publishSystemStatus();
     }
 
     private static void checkControllerIsBuilt() {
-        if(serviceManagerServer ==null){
+        if (serviceManagerServer == null) {
             System.out.println("no service manager built, building one first");
             buildGraph(false);
         }
     }
 
-    private static void startByName(Scanner scanner){
+    private static void startByName(Scanner scanner) {
         checkControllerIsBuilt();
-        if(scanner.hasNext()){
+        if (scanner.hasNext()) {
             serviceManagerServer.startService(scanner.next());
-        }else{
+        } else {
             System.out.println("2nd argument required - service name");
         }
     }
 
-    private static void stopByName(Scanner scanner){
+    private static void stopByName(Scanner scanner) {
         checkControllerIsBuilt();
-        if(scanner.hasNext()){
+        if (scanner.hasNext()) {
             serviceManagerServer.stopService(scanner.next());
-        }else{
+        } else {
             System.out.println("2nd argument required - service name");
         }
     }
 
-    private static void notifiedStartedByName(Scanner scanner){
+    private static void notifiedStartedByName(Scanner scanner) {
         checkControllerIsBuilt();
-        if(scanner.hasNext()){
-            serviceManagerServer.serviceStartedNotification(scanner.next());
-        }else{
+        if (scanner.hasNext()) {
+            serviceManagerServer.serviceStarted(scanner.next());
+        } else {
             System.out.println("2nd argument required - service name");
         }
     }
 
-    private static void notifiedStoppedByName(Scanner scanner){
+    private static void notifiedStoppedByName(Scanner scanner) {
         checkControllerIsBuilt();
-        if(scanner.hasNext()){
-            serviceManagerServer.serviceStoppedNotification(scanner.next());
-        }else{
+        if (scanner.hasNext()) {
+            serviceManagerServer.serviceStopped(scanner.next());
+        } else {
             System.out.println("2nd argument required - service name");
         }
     }
 
-    private static void auditOn(boolean flag){
+    private static void auditOn(boolean flag) {
         Logger restClientLogger = (Logger) LoggerFactory.getLogger("fluxtion.eventLog");
-        if(flag){
+        if (flag) {
             restClientLogger.setLevel(Level.INFO);
-        }else{
+        } else {
             restClientLogger.setLevel(Level.OFF);
         }
     }
 
+    private static final String HANDLER_A = "handlerA";
+    private static final String HANDLER_B = "handlerB";
+    private static final String HANDLER_C = "handlerC";
+    private static final String AGG_AB = "aggAB";
+    private static final String CALC_C = "calcC";
+    private static final String PERSISTER = "persister";
+
     private static void buildGraph(boolean compile) {
-        if(serviceManagerServer!=null){
+        if (serviceManagerServer != null) {
             serviceManagerServer.shutdown();
         }
-        Service handlerA = new Service("handlerA");
-        Service handlerB = new Service("handlerB");
-        Service handlerC = new Service("handlerC");
-        Service aggAB = new Service("aggAB", CliTestClient::notifyStartedAggAB, null, handlerA, handlerB);
-        Service calcC = new Service("calcC", handlerC);
-        Service persister = new Service("persister", CliTestClient::notifyStartedPersister, null, aggAB, calcC);
-        if(compile) {
-            serviceManagerServer = ServiceManagerServer.compiledServer(persister, aggAB, calcC, handlerA, handlerB, handlerC);
-        }else{
-            serviceManagerServer = ServiceManagerServer.interpretedServer(persister, aggAB, calcC, handlerA, handlerB, handlerC);
+        Service handlerA = Service.builder(HANDLER_A).build();
+        Service handlerB = Service.builder(HANDLER_B).build();
+        Service handlerC = Service.builder(HANDLER_C).build();
+        Service aggAB = Service.builder(AGG_AB)
+                .servicesThatRequireMe(List.of(handlerA, handlerB))
+                .startTask(CliTestClient::notifyStartedAggAB)
+                .build();
+        Service calcC = Service.builder(CALC_C)
+                .servicesThatRequireMe(List.of(handlerC))
+                .build();
+        Service persister = Service.builder(PERSISTER)
+                .servicesThatRequireMe(List.of(aggAB, calcC))
+                .startTask(CliTestClient::notifyStartedPersister)
+                .build();
+
+        if (compile) {
+            serviceManagerServer = ServiceManager.compiledServiceManager(persister, aggAB, calcC, handlerA, handlerB, handlerC);
+        } else {
+            serviceManagerServer = ServiceManager.interpretedServiceManager(persister, aggAB, calcC, handlerA, handlerB, handlerC);
         }
         serviceManagerServer.registerStatusListener(new PublishServiceStatusRecordToLog());
     }
 
-    public static void notifyStartedPersister(){
+    public static void notifyStartedPersister() {
         log.info("persister::startTask notify persister STARTED");
-        serviceManagerServer.serviceStartedNotification("persister");
+        serviceManagerServer.serviceStarted(PERSISTER);
     }
 
-    public static void notifyStartedAggAB(){
+    public static void notifyStartedAggAB() {
         log.info("aggAB::startTask notify aggAB STARTED");
-        serviceManagerServer.serviceStartedNotification("aggAB");
+        serviceManagerServer.serviceStarted(AGG_AB);
     }
 
     private static final String asciiArtDAG = """

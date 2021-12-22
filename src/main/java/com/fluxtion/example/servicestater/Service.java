@@ -4,7 +4,11 @@ import com.fluxtion.example.servicestater.graph.ForwardPassServiceController;
 import com.fluxtion.example.servicestater.graph.ReversePassServiceController;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableRunnable;
+import lombok.Builder;
+import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,6 +21,7 @@ import java.util.List;
  *     <li>Entering STOPPING from STOPPED - the stop task is executed</li>
  * </ul>
  */
+@Builder(builderMethodName = "hiddenBuilder")
 public class Service implements Named {
 
     public enum Status {
@@ -28,43 +33,39 @@ public class Service implements Named {
         STOPPING,
         STOPPED,
     }
-    
+
+    @NonNull
     private final String name;
-    private final List<Service> dependencies;
+    @Nullable
+    private final List<Service> servicesThatRequireMe;
+
+    @Nullable
+    private final Service[] servicesThatRequireMeArray;
+
+    @Nullable
     private final SerializableRunnable startTask;
+    @Nullable
     private final SerializableRunnable stopTask;
 
-    public Service(String name, List<Service> dependencies) {
-        this(name, null, null, dependencies );
+    public static ServiceBuilder builder(String name){
+        return hiddenBuilder().name(name);
     }
 
-    public Service(String serviceName, Service... services) {
-        this(serviceName, services==null? Collections.emptyList():List.of(services));
+    public List<Service> getServicesThatRequireMe() {
+        return servicesThatRequireMe ==null?Collections.emptyList(): servicesThatRequireMe;
     }
 
-    public Service(String serviceName, SerializableRunnable startTask, SerializableRunnable stopTask, Service... services) {
-        this(serviceName, startTask, stopTask, services==null? Collections.emptyList():List.of(services));
-    }
-
-    public Service(String name, SerializableRunnable startTask, SerializableRunnable stopTask, List<Service> dependencies) {
-        this.name = name;
-        this.stopTask = stopTask;
-        this.dependencies = dependencies;
-        this.startTask = startTask;
-    }
-
-    public List<Service> getDependencies() {
-        return dependencies;
-    }
-
+    @Nullable
     public SerializableRunnable getStartTask() {
         return startTask;
     }
 
+    @Nullable
     public SerializableRunnable getStopTask() {
         return stopTask;
     }
 
+    @NotNull
     @Override
     public String getName() {
         return name;

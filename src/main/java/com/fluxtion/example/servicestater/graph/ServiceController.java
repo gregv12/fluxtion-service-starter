@@ -1,6 +1,7 @@
 package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
+import com.fluxtion.example.servicestater.TaskWrapper;
 import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.annotations.Initialise;
 import com.fluxtion.runtim.annotations.PushReference;

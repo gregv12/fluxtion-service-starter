@@ -1,10 +1,10 @@
-package com.fluxtion.example.servicestater;
+package com.fluxtion.example.servicestater.graph;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.fluxtion.example.servicestater.Service.Status;
-import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
-import lombok.extern.java.Log;
+import com.fluxtion.example.servicestater.ServiceModels;
+import com.fluxtion.example.servicestater.ServiceStatusRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,7 +88,7 @@ class FluxtionServiceManagerModelATest {
 //        COMPILED = true;
         var serviceManager = startAService(ServiceModels.AGG_AB);
         var statusMap = mapWithStatus(Status.STATUS_UNKNOWN);
-        serviceManager.serviceStartedNotification(ServiceModels.PERSISTER);
+        serviceManager.serviceStarted(ServiceModels.PERSISTER);
         updateStatus(statusMap, ServiceModels.AGG_AB, Status.STARTING);
         updateStatus(statusMap, ServiceModels.PERSISTER, Status.STARTED);
         checkStatusMatch(statusMap);
