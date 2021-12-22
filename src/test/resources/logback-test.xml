@@ -31,6 +31,6 @@ along with this program.  If not, see
   <logger name="com.fluxtion.compiler.generation.compiler.SepCompiler" level="info"/>
 
   <root level="INFO">
-    <appender-ref ref="STDOUT" />
+<!--    <appender-ref ref="STDOUT" />-->
   </root>
 </configuration>

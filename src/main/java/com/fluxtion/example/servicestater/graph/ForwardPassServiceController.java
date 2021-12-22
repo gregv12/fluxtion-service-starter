@@ -26,8 +26,17 @@ public class ForwardPassServiceController extends ServiceController {
         super(serviceName, toStartServiceName(serviceName), taskWrapperPublisher, serviceStatusRecordCache);
     }
 
+    @EventHandler
+    public boolean startAllServices(GraphEvent.RequestStartAll startAll){
+        return startServiceRequest();
+    }
+
     @EventHandler(filterVariable = "serviceName")
     public boolean startThisService(GraphEvent.RequestServiceStart startSingleService) {
+        return startServiceRequest();
+    }
+
+    private boolean startServiceRequest() {
         boolean changed = false;
         Service.Status startStatus = getStatus();
         switch (startStatus) {
