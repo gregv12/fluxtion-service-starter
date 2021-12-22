@@ -40,11 +40,14 @@ public class ForwardPassServiceController extends ServiceController {
         boolean changed = false;
         Service.Status startStatus = getStatus();
         switch (startStatus) {
-            case STATUS_UNKNOWN, WAITING_FOR_PARENTS_TO_STOP, STOPPING, STOPPED -> {
+            case STATUS_UNKNOWN:
+            case WAITING_FOR_PARENTS_TO_STOP:
+            case STOPPING:
+            case STOPPED:{
                 setStatus(Service.Status.WAITING_FOR_PARENTS_TO_START);
                 changed = true;
             }
-            default -> {
+            default: {
                 //do nothing
             }
         }

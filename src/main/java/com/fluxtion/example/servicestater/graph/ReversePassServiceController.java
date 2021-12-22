@@ -43,11 +43,14 @@ public class ReversePassServiceController extends ServiceController {
         boolean changed = false;
         Service.Status initialStatus = getStatus();
         switch (initialStatus) {
-            case STATUS_UNKNOWN, WAITING_FOR_PARENTS_TO_START, STARTING, STARTED -> {
+            case STATUS_UNKNOWN:
+            case WAITING_FOR_PARENTS_TO_START:
+            case STARTING:
+            case STARTED: {
                 setStatus(Service.Status.WAITING_FOR_PARENTS_TO_STOP);
                 changed = true;
             }
-            default -> {
+            default: {
                 //do nothing
             }
         }

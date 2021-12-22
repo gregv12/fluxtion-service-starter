@@ -1,10 +1,10 @@
-package com.fluxtion.example.servicestater.helpers;
+package com.fluxtion.example.servicestater.graph;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.ServiceManager;
-import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
+import com.fluxtion.example.servicestater.helpers.PublishServiceStatusRecordToLog;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,6 @@ import java.util.Scanner;
  * Various cli commands are provided to exercise all the operations on the service manager. Run the program and a help
  * message is displayed detailing the usage.
  */
-//@Log
 @Slf4j
 public class CliTestClient {
 
@@ -40,21 +39,50 @@ public class CliTestClient {
             System.out.print(">");
             String command = scanner.next().toLowerCase(Locale.ROOT);
             switch (command) {
-                case "build", "b" -> buildGraph(false);
-                case "compile", "c" -> buildGraph(true);
-                case "status", "ss" -> printStatus();
-                case "startall", "sa" -> startAll();
-                case "stopall", "ha" -> stopAll();
-                case "start", "s" -> startByName(scanner);
-                case "stop", "h" -> stopByName(scanner);
-                case "ns" -> notifiedStartedByName(scanner);
-                case "nh" -> notifiedStoppedByName(scanner);
-                case "auditon", "aon" -> auditOn(true);
-                case "auditoff", "aoff" -> auditOn(false);
-                case "printtree", "pt" -> printTree();
-                case "exit", "e" -> run = false;
-                case "help", "?" -> printHelp();
-                default -> System.out.println("unknown command:" + command + " ? for command list");
+                case "build":
+                case "b": {
+                    buildGraph(false);
+                }
+                case "compile":
+                case "c":
+                    buildGraph(true);
+                case "ss":
+                case "status":
+                    printStatus();
+                case "sa":
+                case "startall":
+                    startAll();
+                case "ha":
+                case "stopall":
+                    stopAll();
+                case "s":
+                case "start":
+                    startByName(scanner);
+                case "h":
+                case "stop":
+                    stopByName(scanner);
+                case "ns":
+                    notifiedStartedByName(scanner);
+                case "nh":
+                    notifiedStoppedByName(scanner);
+                case "aon":
+                case "auditon":
+                    auditOn(true);
+                case "auditoff":
+                case "aoff":
+                    auditOn(false);
+                case "printtree":
+                    printTree();
+                case "pt":
+                    printTree();
+                case "e":
+                case "exit":
+                    run = false;
+                case "?":
+                case "help":
+                    printHelp();
+                default:
+                    System.out.println("unknown command:" + command + " ? for command list");
             }
             scanner.nextLine();
         }
@@ -63,25 +91,23 @@ public class CliTestClient {
     }
 
     static void printHelp() {
-        String help = """
-                                
-                FluxtionService interactive tester commands:
-                ===============================================
-                help or ?                 - print this message
-                build or b                - drops the graph and builds a new interpreted graph from scratch
-                compile or c              - drops the graph and builds a new graph from scratch, generated and compiles java source code
-                status or ss              - prints the current status of the graph to console
-                startAll or sa            - start all services
-                stopAll or ha             - stop all services
-                start or s [service name] - start a single services by name
-                stop or h [service name]  - stop a single service by name
-                ns [service name]         - notify of started status for a single service by name
-                nh [service name]         - notify of stopped status for a single service by name
-                auditOn or aon            - turn audit recording on
-                auditOff or aoff          - turn audit recording off
-                printTree or pt           - print the DAG of the test model
-                exit or e                 - exit the application
-                """;
+        String help = "\n" +
+                "FluxtionService interactive tester commands:\n" +
+                "===============================================\n" +
+                "help or ?                 - print this message\n" +
+                "build or b                - drops the graph and builds a new interpreted graph from scratch\n" +
+                "compile or c              - drops the graph and builds a new graph from scratch, generated and compiles java source code\n" +
+                "status or ss              - prints the current status of the graph to console\n" +
+                "startAll or sa            - start all services\n" +
+                "stopAll or ha             - stop all services\n" +
+                "start or s [service name] - start a single services by name\n" +
+                "stop or h [service name]  - stop a single service by name\n" +
+                "ns [service name]         - notify of started status for a single service by name\n" +
+                "nh [service name]         - notify of stopped status for a single service by name\n" +
+                "auditOn or aon            - turn audit recording on\n" +
+                "auditOff or aoff          - turn audit recording off\n" +
+                "printTree or pt           - print the DAG of the test model\n" +
+                "exit or e                 - exit the application";
         System.out.println(help);
     }
 
@@ -200,26 +226,25 @@ public class CliTestClient {
         serviceManagerServer.serviceStarted(AGG_AB);
     }
 
-    private static final String asciiArtDAG = """
-                Tree view of model
-               
-                +-------------+                      +------------+              +-----------+      |
-                |             |                      |            |              |           |      |
-                |  handler_c  |                      | handler_a  |              | handler_b |      |
-                +---+---------+                      +----+-------+              +-----+-----+      |
-                    |                                     |                            |            |
-                    |    +---------+                      |        +-------+           |            |   DIRECTION OF
-                    |    |         |                      |        |       |           |            |   EVENT FLOW
-                    +----+ calc_c  |                      +--------+agg_AB +-----------+            |
-                         +----+----+                               +---+---+                        |
-                              |                                        |                            |
-                              |                                        |                            |
-                              |                +-----------+           |                            |
-                              |                |           |           |                            |
-                              +----------------+ persister +-----------+                            |
-                                               |           |                                        |
-                                               +-----------+                                        v
-               
-                        
-            """;
+    public static final String asciiArtDAG = "" +
+            "    Tree view of model\n" +
+            "               \n" +
+            "                +-------------+                      +------------+              +-----------+      |\n" +
+            "                |             |                      |            |              |           |      |\n" +
+            "                |  handler_c  |                      | handler_a  |              | handler_b |      |\n" +
+            "                +---+---------+                      +----+-------+              +-----+-----+      |\n" +
+            "                    |                                     |                            |            |\n" +
+            "                    |    +---------+                      |        +-------+           |            |   DIRECTION OF\n" +
+            "                    |    |         |                      |        |       |           |            |   EVENT FLOW\n" +
+            "                    +----+ calc_c  |                      +--------+agg_AB +-----------+            |\n" +
+            "                         +----+----+                               +---+---+                        |\n" +
+            "                              |                                        |                            |\n" +
+            "                              |                                        |                            |\n" +
+            "                              |                +-----------+           |                            |\n" +
+            "                              |                |           |           |                            |\n" +
+            "                              +----------------+ persister +-----------+                            |\n" +
+            "                                               |           |                                        |\n" +
+            "                                               +-----------+                                        v\n" +
+            "               \n" +
+            "                        ";
 }
