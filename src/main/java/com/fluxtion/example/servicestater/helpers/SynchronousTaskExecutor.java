@@ -15,7 +15,7 @@ public class SynchronousTaskExecutor implements TaskWrapper.TaskExecutor {
 
     @Override
     public void accept(List<TaskWrapper> taskWrapper) {
-            taskWrapper.forEach(TaskWrapper::call);
+        taskWrapper.forEach(TaskWrapper::call);
     }
 
 }
