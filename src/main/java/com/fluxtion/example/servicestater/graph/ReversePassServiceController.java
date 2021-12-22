@@ -29,8 +29,17 @@ public class ReversePassServiceController extends ServiceController {
 
     private boolean justStarted = false;
 
+    @EventHandler
+    public boolean stopAllServices(GraphEvent.RequestStopAll startAll){
+        return stopServiceRequest();
+    }
+
     @EventHandler(filterVariable = "serviceName")
     public boolean stopThisService(GraphEvent.RequestServiceStop serviceStopRequest){
+        return stopServiceRequest();
+    }
+
+    private boolean stopServiceRequest() {
         boolean changed = false;
         Service.Status initialStatus = getStatus();
         switch (initialStatus) {

@@ -119,6 +119,8 @@ public class FluxtionServiceManager implements ServiceManager {
         log.info("start all");
         startProcessor.onEvent(new GraphEvent.RequestStartAll());
         taskExecutor.publishTasksToDelegate();
+        startProcessor.onEvent(new GraphEvent.PublishStartTask());
+        taskExecutor.publishTasksToDelegate();
         publishSystemStatus();
     }
 
@@ -126,6 +128,8 @@ public class FluxtionServiceManager implements ServiceManager {
     public void stopAllServices() {
         log.info("stop all");
         startProcessor.onEvent(new GraphEvent.RequestStopAll());
+        startProcessor.onEvent(new GraphEvent.PublishStopTask());
+        taskExecutor.publishTasksToDelegate();
         publishSystemStatus();
     }
 
