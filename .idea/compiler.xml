@@ -11,5 +11,8 @@
         <module name="service-starter" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="fluxtion-service-starter" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>
