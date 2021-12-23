@@ -7,8 +7,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="fluxtion-service-starter" />
         <module name="service-starter" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="fluxtion-service-starter" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>

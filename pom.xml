@@ -1,19 +1,216 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.fluxtion.example</groupId>
+    <groupId>com.fluxtion.extension</groupId>
     <artifactId>service-starter</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.6-SNAPSHOT</version>
+    <name>fluxtion.extension :: service-starter</name>
+    <description>A task manager for a directed acyclic graph of services</description>
+    <url>https://github.com/gregv12/fluxtion-service-starter</url>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <logback.version>1.2.9</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <nexus.url>https://oss.sonatype.org</nexus.url>
+        <local.repository.path>target/deploy-sample</local.repository.path>
     </properties>
+
+
+    <licenses>
+        <license>
+            <distribution>repo</distribution>
+            <name>GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0</name>
+            <url>https://www.gnu.org/licenses/agpl-3.0.en.html</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Greg Higgins</name>
+            <email>greg.higgins@v12technology.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/gregv12/fluxtion-service-starter.git</connection>
+        <developerConnection>scm:git:https://github.com/gregv12/fluxtion-service-starter.git</developerConnection>
+        <url>https://github.com/gregv12/fluxtion-service-starter</url>
+      <tag>service-starter-0.1.4</tag>
+  </scm>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <attach>true</attach>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration> <!-- add this to disable checking -->
+                                    <attach>true</attach>
+                                    <doclint>none</doclint>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.coderplus.maven.plugins</groupId>
+                        <artifactId>copy-rename-maven-plugin</artifactId>
+                        <version>1.0.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-license-file</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <sourceFile>${project.basedir}/LICENSE</sourceFile>
+                                    <destinationFile>${project.build.outputDirectory}/META-INF/LICENSE-fluxtion-service-starter
+                                    </destinationFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>3.0.0-M1</version>
+                        <configuration>
+                            <useReleaseProfile>false</useReleaseProfile>
+                            <releaseProfiles>publication,gpg</releaseProfiles>
+                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                            <tagNameFormat>v@{project.version}</tagNameFormat>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.8</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>local-deploy</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>local-snapshot</id>
+                    <url>file://${local.repository.path}/snapshot</url>
+                </snapshotRepository>
+                <repository>
+                    <id>local-release</id>
+                    <url>file://${local.repository.path}/release</url>
+                </repository>
+            </distributionManagement>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${local.repository.path}</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>generate-repository-directories</id>
+                                <phase>generate-sources</phase>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="${local.repository.path}/snapshot" />
+                                        <mkdir dir="${local.repository.path}/release" />
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
 
     <dependencies>
         <dependency>
@@ -75,17 +272,5 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>oss.sonatype.org-snapshot</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
 </project>

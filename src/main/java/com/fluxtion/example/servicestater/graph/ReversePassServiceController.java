@@ -36,7 +36,7 @@ import static com.fluxtion.example.servicestater.graph.FluxtionServiceManager.to
  *   <li> </li>
  *   <li> </li>
  *   <li>Change notifications to parent {@link ServiceController} nodes</li>
- * </ul
+ * </ul>
  */
 public class ReversePassServiceController extends ServiceController {
     public ReversePassServiceController(String serviceName, TaskWrapperPublisher taskWrapperPublisher, ServiceStatusRecordCache serviceStatusRecordCache) {
