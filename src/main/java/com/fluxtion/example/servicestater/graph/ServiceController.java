@@ -46,7 +46,7 @@ public abstract class ServiceController extends EventLogNode implements Named {
     }
 
 
-    public void addDependency(ServiceController dependency) {
+    void addDependency(ServiceController dependency) {
         dependencies.add(dependency);
     }
 

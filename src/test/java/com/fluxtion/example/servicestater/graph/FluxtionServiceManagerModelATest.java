@@ -95,6 +95,18 @@ class FluxtionServiceManagerModelATest {
     }
 
     @Test
+    void startingAggABThenNotifyPersisterStartCompiled() {
+//        ADD_AUDIT_LOG = true;
+        COMPILED = true;
+        var serviceManager = startAService(ServiceModels.AGG_AB);
+        var statusMap = mapWithStatus(Status.STATUS_UNKNOWN);
+        serviceManager.serviceStarted(ServiceModels.PERSISTER);
+        updateStatus(statusMap, ServiceModels.AGG_AB, Status.STARTING);
+        updateStatus(statusMap, ServiceModels.PERSISTER, Status.STARTED);
+        checkStatusMatch(statusMap);
+    }
+
+    @Test
     void stopAll(){
         ADD_AUDIT_LOG = true;
         FluxtionServiceManager fluxtionServiceManager = ServiceModels.buildModelA(ADD_AUDIT_LOG, COMPILED);
