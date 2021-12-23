@@ -7,6 +7,7 @@ import com.fluxtion.runtim.annotations.Initialise;
 import com.fluxtion.runtim.annotations.PushReference;
 import com.fluxtion.runtim.audit.EventLogNode;
 import com.fluxtion.runtim.partition.LambdaReflection;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,11 +27,15 @@ import static com.fluxtion.example.servicestater.Service.Status.STATUS_UNKNOWN;
  * If a Service command can be executed because the dependency requirements are met then the command to execute will
  * be published {@link TaskWrapperPublisher}, for a client app to execute after the graph cycle has completed.
  */
+@ToString
 public abstract class ServiceController extends EventLogNode implements Named {
 
     protected final String serviceName;
     protected final transient String controllerName;
-    private List<ServiceController> dependencies = new ArrayList<>();
+    /**
+     * services that depend up on this instance
+     */
+    private List<ServiceController> dependents = new ArrayList<>();
     @PushReference
     private final TaskWrapperPublisher taskWrapperPublisher;
     @PushReference
@@ -45,17 +50,19 @@ public abstract class ServiceController extends EventLogNode implements Named {
         this.serviceStatusRecordCache = serviceStatusRecordCache;
     }
 
+    void addDependent(ServiceController dependency) {
+        if(!dependents.contains(dependency)){
+            dependents.add(dependency);
+        }
 
-    public void addDependency(ServiceController dependency) {
-        dependencies.add(dependency);
     }
 
-    public final void setDependencies(List<ServiceController> dependencies) {
-        this.dependencies = dependencies;
+    public final void setDependents(List<ServiceController> dependents) {
+        this.dependents = dependents;
     }
 
-    public final List<ServiceController> getDependencies() {
-        return Collections.unmodifiableList(dependencies);
+    public final List<ServiceController> getDependents() {
+        return Collections.unmodifiableList(dependents);
     }
 
     public final Service.Status getStatus() {
@@ -93,19 +100,19 @@ public abstract class ServiceController extends EventLogNode implements Named {
     }
 
     protected boolean areAllParentsStarted() {
-        return getDependencies().stream().map(ServiceController::getStatus).allMatch(Service.Status.STARTED::equals);
+        return getDependents().stream().map(ServiceController::getStatus).allMatch(Service.Status.STARTED::equals);
     }
 
     protected boolean areAllParentsStopped() {
-        return getDependencies().stream().map(ServiceController::getStatus).allMatch(Service.Status.STOPPED::equals);
+        return getDependents().stream().map(ServiceController::getStatus).allMatch(Service.Status.STOPPED::equals);
     }
 
     protected boolean hasParents() {
-        return getDependencies().size() > 0;
+        return getDependents().size() > 0;
     }
 
     protected EnumSet<Service.Status> getParentStatusSet() {
-        return getDependencies().stream()
+        return getDependents().stream()
                 .map(ServiceController::getStatus)
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(Service.Status.class)));
     }

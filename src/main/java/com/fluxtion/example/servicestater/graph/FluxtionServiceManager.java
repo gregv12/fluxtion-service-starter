@@ -189,21 +189,38 @@ public class FluxtionServiceManager implements ServiceManager {
 
     private void setServiceDependencies(Service service) {
         ServiceController controller = managedStartServices.get(toStartServiceName(service.getName()));
-        controller.setDependencies(
+        controller.setDependents(
                 service.getServicesThatRequireMe().stream()
                         .map(Service::getName)
                         .map(FluxtionServiceManager::toStartServiceName)
                         .map(managedStartServices::get)
                         .collect(Collectors.toList())
         );
+        //assign dependencies
+        final ServiceController startController = controller;
+        service.getRequiredServices().stream()
+                .map(Service::getName)
+                .map(FluxtionServiceManager::toStartServiceName)
+                .map(managedStartServices::get)
+                .forEach(s -> s.addDependent(startController));
 
+
+        //reverse controller
         controller = managedStartServices.get(toStopServiceName(service.getName()));
         final ServiceController stopController = controller;
+        service.getRequiredServices().stream()
+                .map(Service::getName)
+                .map(FluxtionServiceManager::toStopServiceName)
+                .map(managedStartServices::get)
+                .forEach(stopController::addDependent);
+
+
+        //
         service.getServicesThatRequireMe().stream()
                 .map(Service::getName)
                 .map(FluxtionServiceManager::toStopServiceName)
                 .map(managedStartServices::get)
-                .forEach(s -> s.addDependency(stopController));
+                .forEach(s -> s.addDependent(stopController));
     }
 
     private void serviceStarter(SEPConfig cfg) {

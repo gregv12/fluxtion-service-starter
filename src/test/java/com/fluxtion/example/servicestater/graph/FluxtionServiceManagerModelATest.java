@@ -53,9 +53,9 @@ class FluxtionServiceManagerModelATest {
      */
 
 
-    private boolean ADD_AUDIT_LOG = false;
-    private boolean COMPILED = false;
-    private final List<ServiceStatusRecord> statusList = new ArrayList<>();
+    protected boolean ADD_AUDIT_LOG = false;
+    protected boolean COMPILED = false;
+    protected final List<ServiceStatusRecord> statusList = new ArrayList<>();
 
     @BeforeEach
     public void beforeTest() {
@@ -86,6 +86,18 @@ class FluxtionServiceManagerModelATest {
     void startingAggABThenNotifyPersisterStart() {
 //        ADD_AUDIT_LOG = true;
 //        COMPILED = true;
+        var serviceManager = startAService(ServiceModels.AGG_AB);
+        var statusMap = mapWithStatus(Status.STATUS_UNKNOWN);
+        serviceManager.serviceStarted(ServiceModels.PERSISTER);
+        updateStatus(statusMap, ServiceModels.AGG_AB, Status.STARTING);
+        updateStatus(statusMap, ServiceModels.PERSISTER, Status.STARTED);
+        checkStatusMatch(statusMap);
+    }
+
+    @Test
+    void startingAggABThenNotifyPersisterStartCompiled() {
+//        ADD_AUDIT_LOG = true;
+        COMPILED = true;
         var serviceManager = startAService(ServiceModels.AGG_AB);
         var statusMap = mapWithStatus(Status.STATUS_UNKNOWN);
         serviceManager.serviceStarted(ServiceModels.PERSISTER);
@@ -126,11 +138,11 @@ class FluxtionServiceManagerModelATest {
         return fluxtionServiceManager;
     }
 
-    private void checkStatusMatch(List<ServiceStatusRecord> statusMap) {
+    protected void checkStatusMatch(List<ServiceStatusRecord> statusMap) {
         assertThat(statusList, Matchers.containsInAnyOrder(statusMap.toArray()));
     }
 
-    private void checkStatusMatch(Map<String, ServiceStatusRecord> statusMap) {
+    protected void checkStatusMatch(Map<String, ServiceStatusRecord> statusMap) {
         assertThat(statusList, Matchers.containsInAnyOrder(statusMap.values().toArray()));
     }
 

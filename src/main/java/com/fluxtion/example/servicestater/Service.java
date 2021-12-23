@@ -6,6 +6,7 @@ import com.fluxtion.runtim.Named;
 import com.fluxtion.runtim.partition.LambdaReflection.SerializableRunnable;
 import lombok.Builder;
 import lombok.NonNull;
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -22,6 +23,7 @@ import java.util.List;
  * </ul>
  */
 @Builder(builderMethodName = "hiddenBuilder")
+@ToString
 public class Service implements Named {
 
     public enum Status {
@@ -38,10 +40,8 @@ public class Service implements Named {
     private final String name;
     @Nullable
     private final List<Service> servicesThatRequireMe;
-
     @Nullable
-    private final Service[] servicesThatRequireMeArray;
-
+    private final List<Service> requiredServices;
     @Nullable
     private final SerializableRunnable startTask;
     @Nullable
@@ -53,6 +53,10 @@ public class Service implements Named {
 
     public List<Service> getServicesThatRequireMe() {
         return servicesThatRequireMe ==null?Collections.emptyList(): servicesThatRequireMe;
+    }
+
+    public List<Service> getRequiredServices() {
+        return requiredServices ==null?Collections.emptyList(): requiredServices;
     }
 
     @Nullable
