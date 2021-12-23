@@ -74,7 +74,8 @@
                                 </goals>
                                 <configuration> <!-- add this to disable checking -->
                                     <attach>true</attach>
-                                    <doclint>none</doclint>                                </configuration>
+                                    <doclint>none</doclint>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -115,7 +116,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>central</serverId>
-                            <nexusUrl>${nexus.url}</nexusUrl>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
@@ -205,6 +206,18 @@
             </build>
         </profile>
     </profiles>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
 
     <dependencies>
         <dependency>
