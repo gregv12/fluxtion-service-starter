@@ -35,7 +35,7 @@ import static com.fluxtion.example.servicestater.Service.Status.WAITING_FOR_PARE
  *   <li></li>
  *   <li> </li>
  *   <li>Change notifications to parent {@link ServiceController} nodes</li>
- * </ul
+ * </ul>
  */
 public class ForwardPassServiceController extends ServiceController {
     public ForwardPassServiceController(String serviceName, TaskWrapperPublisher taskWrapperPublisher, ServiceStatusRecordCache serviceStatusRecordCache) {
