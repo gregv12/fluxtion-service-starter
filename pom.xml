@@ -74,7 +74,7 @@
                                 </goals>
                                 <configuration> <!-- add this to disable checking -->
                                     <attach>true</attach>
-                                    <failOnError>false</failOnError>
+                                    <doclint>none</doclint>
                                 </configuration>
                             </execution>
                         </executions>
