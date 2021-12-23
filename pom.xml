@@ -4,7 +4,7 @@
 
     <groupId>com.fluxtion.extension</groupId>
     <artifactId>service-starter</artifactId>
-    <version>0.1.4</version>
+    <version>0.1.5-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
