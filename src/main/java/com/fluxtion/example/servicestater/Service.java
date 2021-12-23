@@ -67,6 +67,8 @@ public class Service implements Named {
         return hiddenBuilder().name(name);
     }
 
+    public static class ServiceBuilder{}
+
     public List<Service> getServicesThatRequireMe() {
         return servicesThatRequireMe ==null?Collections.emptyList(): servicesThatRequireMe;
     }
