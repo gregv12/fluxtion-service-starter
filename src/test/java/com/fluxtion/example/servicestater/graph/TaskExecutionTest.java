@@ -18,8 +18,9 @@ public class TaskExecutionTest {
     static CountDownLatch countDownLatch;
     static ExecutorService executorService;
 
+    //TODO add assert for this test
     @Test
-    @Disabled("does not actually test only demonstrates, needs to be updated")
+//    @Disabled("does not actually test only demonstrates, needs to be updated")
     public void testSynchronousTaskExecution() throws InterruptedException {
         FluxtionServiceManagerModelATest.auditOn(false);
         countDownLatch = new CountDownLatch(1);
@@ -59,7 +60,7 @@ public class TaskExecutionTest {
     @SneakyThrows
     public static void parallel_2_sleep_3_seconds(){
         log.info("PARALLEL_2::sleeping");
-        Thread.sleep(3_000);
+        Thread.sleep(100);
         log.info("PARALLEL_2::completed");
         executorService.submit(() ->server.serviceStarted("parallel_2"));
     }
