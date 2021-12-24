@@ -1,6 +1,6 @@
 theme: jekyll-theme-cayman
-title: Fluxtion streaming
-description: Documentation for Fluxtion event processor
+title: Fluxtion service starter
+description: Documentation for Fluxtion service starter
 remote_theme: pmarsceill/just-the-docs
 aux_links:
   "release 0.1.5:
