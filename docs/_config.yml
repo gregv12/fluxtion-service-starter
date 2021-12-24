@@ -1,10 +1,29 @@
+#theme: jekyll-theme-cayman
+#title: Fluxtion service starter
+#description: Documentation for Fluxtion service starter
+#remote_theme: pmarsceill/just-the-docs
+#aux_links:
+#  "release 0.1.5:
+#    - "//github.com/gregv12/fluxtion-service-starter/tree/v0.1.5"
+#heading_anchors: true
+#
+#compress_html:
+#  ignore:
+#    envs: all
+#
+#kramdown:
+#  syntax_highlighter_opts:
+#    block:
+#      line_numbers: true
+
+
 theme: jekyll-theme-cayman
 title: Fluxtion service starter
 description: Documentation for Fluxtion service starter
 remote_theme: pmarsceill/just-the-docs
 aux_links:
-  "release 0.1.5:
-    - "//github.com/gregv12/fluxtion-service-starter/tree/v0.1.5"
+  "release 2.11.0":
+    - "//github.com/v12technology/fluxtion/tree/2.11.0"
 heading_anchors: true
 
 compress_html:
@@ -15,5 +34,10 @@ kramdown:
   syntax_highlighter_opts:
     block:
       line_numbers: true
+
+fluxtion_version: 2.11.0
+
+ga_tracking: G-NGDV621P1P
+ga_tracking_anonymize_ip: true # Use GDPR compliant Google Analytics settings (true by default)
 
 logo: "/images/fluxtion_logo_small.png"
