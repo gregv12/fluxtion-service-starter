@@ -14,7 +14,7 @@ services or all services can be started or stopped interactively.
 
 The topological order of managed services is calculated by the service starter to determine the execution order of tasks.
 
-## Overview
+## The problem service starter solves
 In many systems services execute independently but need to co-ordinate their lifecycle with each other. A service
 may require all downstream services to be started before starting and becoming available to accept upstream requests. If
 this is order is not respected then unpredictable behaviour can occur, possibly resulting in application errors. 
