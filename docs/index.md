@@ -30,6 +30,8 @@ may rely upon.
 Service starter is a utility that manages the lifecycle of independent services, executing start and stop tasks 
 associated with a particular service at the correct time.
 
+# Programming model
+
 ## Component  description
 There are three main components within service starter that user code integrates with.
 - **[Service](https://github.com/gregv12/fluxtion-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/Service.java#L20)** - 
@@ -54,8 +56,8 @@ to one mapping between an external service and a definition. The Service descrip
   is available as an alternate execution strategy. The set of tasks generated are independent and can safely be executed in
   parallel.
 
-## Programming model
-There are two phases when using the service starter, building and execution.
+## Integration
+There are two phases to consider when integrating the service starter into client applications, building and execution.
 
 ### Building
 Users model individual services and create a set of all services to be controlled. The set of services is passed to the static builder methods in 
@@ -67,25 +69,25 @@ The dependency graph of services is calculated within the builder method.
 #### Programming example, building a ServiceManager
 
 ```java
-        //two tasks that are auto triggered to run in parallel
-        //The first task will trigger a dependent service to start
-        //The second parallel task is slow the system will not process the dependent start until both parallel tasks have completed
-        Service inputService = Service.builder("inputService")
-                .startTask(TaskExecutionTest::releaseTest)
-                .build();
-        Service parallel_2 = Service.builder("parallel_2")
-                .startTask(TaskExecutionTest::parallel_2_sleep_3_seconds)
-                .servicesThatRequireMe(List.of(finishService))
-                .build();
-        Service parallel_1 = Service.builder("parallel_1")
-                .startTask(TaskExecutionTest::parallel_1_immediate)
-                .servicesThatRequireMe(List.of(finishService))
-                .build();
-        Service rootService = Service.builder("rootService")
-                .startTask(TaskExecutionTest::triggerBothParallels)
-                .servicesThatRequireMe(List.of(parallel_1, parallel_2))
-                .build();
-        server = ServiceManager.interpretedServiceManager(rootService, parallel_1, parallel_2, inputService);
+//two tasks that are auto triggered to run in parallel
+//The first task will trigger a dependent service to start
+//The second parallel task is slow the system will not process the dependent start until both parallel tasks have completed
+Service inputService = Service.builder("inputService")
+        .startTask(TaskExecutionTest::releaseTest)
+        .build();
+Service parallel_2 = Service.builder("parallel_2")
+        .startTask(TaskExecutionTest::parallel_2_sleep_3_seconds)
+        .servicesThatRequireMe(List.of(inputService))
+        .build();
+Service parallel_1 = Service.builder("parallel_1")
+        .startTask(TaskExecutionTest::parallel_1_immediate)
+        .servicesThatRequireMe(List.of(inputService))
+        .build();
+Service rootService = Service.builder("rootService")
+        .startTask(TaskExecutionTest::triggerBothParallels)
+        .servicesThatRequireMe(List.of(parallel_1, parallel_2))
+        .build();
+server = ServiceManager.interpretedServiceManager(rootService, parallel_1, parallel_2, inputService);
 ```
 
 ### Execution
@@ -108,7 +110,7 @@ task list for execution.
         server.serviceStarted("parallel_2");
 ```
 
-## Monitoring
+# Monitoring
 Monitoring the state of the model can be a useful source of information for visualisation tools. Service manager provides
 two types of monitoring:
 - **Status callback:** user code registers a status listener that receives callbacks whenever the state of service changes. 
