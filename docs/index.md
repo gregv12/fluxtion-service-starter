@@ -102,11 +102,11 @@ task list for execution.
 #### Programming example, interacting with services
 
 ```java
-//start the inputService - will cause all the sub tasks to be running before starting
+//start the inputService - will cause all the sub-tasks to be running before starting
 server.startService("inputService");
 
 
-//some time later, notify ServerManager that parallel_3 has started
+//some time later, notify ServerManager that parallel_2 has started
 server.serviceStarted("parallel_2");
 ```
 
