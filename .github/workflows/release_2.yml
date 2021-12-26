@@ -24,6 +24,7 @@ jobs:
       - name: merge to master and develop
         run: |
           echo pushing branches and tags
+          git fetch
           git checkout master 
           git merge release_test
           git checkout develop 
