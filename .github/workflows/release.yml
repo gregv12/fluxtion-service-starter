@@ -44,11 +44,7 @@ jobs:
           MAVEN_CENTRAL_TOKEN: ${{ secrets.OSSRH_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
-  merge-branch:
-    runs-on: ubuntu-latest
-    steps:
       - uses: actions/checkout@master
-
       - name: Merge release -> master
         uses: devmasx/merge-branch@master
         with:
