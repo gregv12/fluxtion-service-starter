@@ -1,7 +1,7 @@
 [![MavenCI](https://github.com/gregv12/fluxtion-service-starter/actions/workflows/main.yml/badge.svg)](https://github.com/gregv12/fluxtion-service-starter/actions/workflows/main.yml)
 [![Release to maven central](https://github.com/gregv12/fluxtion-service-starter/actions/workflows/release.yml/badge.svg)](https://github.com/gregv12/fluxtion-service-starter/actions/workflows/release.yml)
 # Fluxtion service starter
-A server for managing the deterministic execution of start and stop tasks for a set of interdependent services. Implemented
+A java utility for managing the deterministic execution of start and stop tasks for a set of interdependent services. Implemented
 with [Fluxtion](https://github.com/v12technology/fluxtion) to manage the underlying directed acyclic graph of services.
 
 Documentation available on **[GitHub pages](https://gregv12.github.io/fluxtion-service-starter/)** 
@@ -14,6 +14,7 @@ Similarly, if a downstream service becomes unavailable all upstream services wil
 actions. 
 
 As systems grow a complex graph of interdependent services quickly arises, the difficulty in correctly managing 
-lifecycle overwhelms a handwritten manual solution. Service starter provides an automated utility for managing the lifecycle of independent services, executing
-start and stop tasks associated with a particular service at the correct time.
+lifecycle overwhelms a handwritten manual solution. Service starter provides an automated utility for managing the 
+lifecycle of independent services, executing start and stop tasks associated with a particular service at the correct 
+time.
 
