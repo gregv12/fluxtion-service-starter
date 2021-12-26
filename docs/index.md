@@ -105,8 +105,7 @@ The callbacks are delivered as a list of
 [ServiceStatusRecord](//github.com/gregv12/fluxtion-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/ServiceStatusRecord.java)'s
 - **Audit log:** a detailed log delivered as a set of yaml documents, sample:
 
-```text
-
+```yaml
 20:45:48.618 [main] INFO  c.f.e.s.graph.FluxtionServiceManager - start all
 20:45:48.618 [main] INFO  c.f.e.s.h.PublishServiceStatusRecordToLog - Current status:
 (service='aggAB', status=STARTED)
