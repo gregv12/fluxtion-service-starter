@@ -4,6 +4,7 @@ has_children: false
 nav_order: 4
 published: true
 ---
+#Examples
 
 ### Example Cli test client
 To help understand the behaviour of the service controller a cli example has been created. The example builds a predetermined
