@@ -56,19 +56,22 @@ to one mapping between an external service and a definition. The Service descrip
 
 ## Programming model
 There are two phases when using the service starter, building and execution.
+
 ### Building
 Users model individual services and create a set of all services to be controlled. The set of services is passed to the static builder methods in 
 [ServiceManager](//github.com/gregv12/fluxtion-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/ServiceManager.java)
-  and an instance of a ServiceManager is returned for the user code to integrate with. The dependency graph is calculated 
-within the builder method ready for execution.
+  and an instance of a ServiceManager is returned for the user code to integrate with. 
+
+The dependency graph of services is calculated within the builder method.
+
 ### Execution
 The ServiceManager is an event driven controller. Services are expected to change state in an unpredictable fashion, the 
 ServiceManager reacts to state events delivered by the client application. As the status of each service changes the underlying model
-recalculates the tasks that can be now be executed. If new tasks can safely be executed a task list is published to the
-registered TaskExecutor](https://github.com/gregv12/fluxtion-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/TaskWrapper.java#L37).
+recalculates the tasks that can now be executed and published as a list to the
+registered [TaskExecutor](https://github.com/gregv12/fluxtion-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/TaskWrapper.java#L37).
 
 Services can be stopped or started interactively, for example by an admin gui. This will result in the publication of a 
-tak list for execution.
+task list for execution.
 
 ### Programming example
 
