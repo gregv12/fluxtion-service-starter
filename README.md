@@ -4,6 +4,8 @@
 A server for managing the deterministic execution of start and stop tasks for a set of interdependent services. Implemented
 with [Fluxtion](https://github.com/v12technology/fluxtion) to manage the underlying directed acyclic graph of services.
 
+**[Documentation](https://gregv12.github.io/fluxtion-service-starter/)** 
+
 ### Overview
 In many systems services execute independently but need to co-ordinate their lifecycle with each other. A service
 may require all downstream services to be started before starting and becoming available to accept upstream requests.
