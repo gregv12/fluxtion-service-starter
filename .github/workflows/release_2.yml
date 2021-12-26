@@ -25,8 +25,8 @@ jobs:
         run: |
           echo pushing branches and tags
           git fetch
-          git checkout master 
-          git merge release_test
-          git checkout develop 
-          git merge release_test
+          git checkout origin/master 
+          git merge origin/release_test
+          git checkout origin/develop 
+          git merge origin/release_test
           echo pushed branches and tags
