@@ -1,4 +1,4 @@
-name: Release with release plugin
+name: Testing github actions
 
 on:
   push:

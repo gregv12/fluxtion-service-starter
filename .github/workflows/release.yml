@@ -1,4 +1,4 @@
-name: Release with release plugin
+name: Release with maven-release plugin
 
 on:
   push:
