@@ -64,16 +64,7 @@ Users model individual services and create a set of all services to be controlle
 
 The dependency graph of services is calculated within the builder method.
 
-### Execution
-The ServiceManager is an event driven controller. Services are expected to change state in an unpredictable fashion, the 
-ServiceManager reacts to state events delivered by the client application. As the status of each service changes the underlying model
-recalculates the tasks that can now be executed and published as a list to the
-registered [TaskExecutor](https://github.com/gregv12/fluxtion-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/TaskWrapper.java#L37).
-
-Services can be stopped or started interactively, for example by an admin gui. This will result in the publication of a 
-task list for execution.
-
-### Programming example
+#### Programming example, building a ServiceManager
 
 ```java
         //two tasks that are auto triggered to run in parallel
@@ -95,9 +86,26 @@ task list for execution.
                 .servicesThatRequireMe(List.of(parallel_1, parallel_2))
                 .build();
         server = ServiceManager.interpretedServiceManager(rootService, parallel_1, parallel_2, inputService);
+```
+
+### Execution
+The ServiceManager is an event driven controller. Services are expected to change state in an unpredictable fashion, the 
+ServiceManager reacts to state events delivered by the client application. As the status of each service changes the underlying model
+recalculates the tasks that can now be executed and published as a list to the
+registered [TaskExecutor](https://github.com/gregv12/fluxtion-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/TaskWrapper.java#L37).
+
+Services can be stopped or started interactively, for example by an admin gui. This will result in the publication of a 
+task list for execution.
+
+#### Programming example, interacting with services
+
+```java
         //start the inputService - will cause all the sub tasks to be running before starting
         server.startService("inputService");
 
+
+        //some time later, notify ServerManager that parallel_3 has started
+        server.serviceStarted("parallel_2");
 ```
 
 ## Monitoring
