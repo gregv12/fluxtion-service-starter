@@ -26,7 +26,9 @@ jobs:
           echo pushing branches and tags
           git pull
           git checkout origin/master 
+          git pull
           git merge origin/release_test
           git checkout origin/develop 
+          git pull
           git merge origin/release_test
           echo pushed branches and tags
