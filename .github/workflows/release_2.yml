@@ -11,9 +11,22 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - name: Merge staging -> master
+      - name: Merge release -> master
         uses: devmasx/merge-branch@master
         with:
           type: now
           target_branch: master
+          github_token: ${{ github.token }}
+
+  sync-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Merge master -> development
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          from_branch: master
+          target_branch: development
           github_token: ${{ github.token }}
