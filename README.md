@@ -1,3 +1,5 @@
+[![MavenCI](https://github.com/gregv12/fluxtion-service-starter/actions/workflows/main.yml/badge.svg)](https://github.com/gregv12/fluxtion-service-starter/actions/workflows/main.yml)
+
 # Fluxtion service starter
 A server for managing the deterministic execution of start and stop tasks for a set of interdependent services. Implemented
 with [Fluxtion](https://github.com/v12technology/fluxtion) to manage the underlying directed acyclic graph of services.
