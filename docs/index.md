@@ -8,7 +8,7 @@ published: true
 # Introduction
 Welcome to Fluxtion service starter, hope you enjoy exploring :)
 
-The service starter manages the deterministic execution of start and stop tasks for a set of interdependent services. 
+The service starter manages the deterministic execution of start and stop tasks for a directed acyclic graph of interdependent services. 
 Tasks are triggered on services as parent services are successfully completed. 
 
 ## Overview
