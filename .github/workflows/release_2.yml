@@ -1,4 +1,4 @@
-name: Testing github actions
+name: Testing github merging
 
 on:
   push:
