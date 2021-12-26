@@ -43,44 +43,57 @@ public class CliTestClient {
                 case "b": {
                     buildGraph(false);
                 }
+                break;
                 case "compile":
                 case "c":
                     buildGraph(true);
+                    break;
                 case "ss":
                 case "status":
                     printStatus();
+                    break;
                 case "sa":
                 case "startall":
                     startAll();
+                    break;
                 case "ha":
                 case "stopall":
                     stopAll();
+                    break;
                 case "s":
                 case "start":
                     startByName(scanner);
+                    break;
                 case "h":
                 case "stop":
                     stopByName(scanner);
+                    break;
                 case "ns":
                     notifiedStartedByName(scanner);
+                    break;
                 case "nh":
                     notifiedStoppedByName(scanner);
+                    break;
                 case "aon":
                 case "auditon":
                     auditOn(true);
+                    break;
                 case "auditoff":
                 case "aoff":
                     auditOn(false);
+                    break;
                 case "printtree":
-                    printTree();
                 case "pt":
                     printTree();
+                    break;
                 case "e":
                 case "exit":
                     run = false;
+                    break;
                 case "?":
                 case "help":
                     printHelp();
+                    break;
                 default:
                     System.out.println("unknown command:" + command + " ? for command list");
             }
