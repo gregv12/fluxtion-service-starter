@@ -8,7 +8,7 @@ This section covers the programming model and concepts a developer needs to unde
 A ServerManager is the central class of the service starter, it is the instance client code integrates with after 
 building a model. 
 
-##Service 
+## Service 
 
 ### Service lifecycle
 The service starter manages a set of services with the following behaviour

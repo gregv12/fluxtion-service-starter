@@ -7,14 +7,14 @@ published: true
 This section covers the programming model and concepts a developer needs to understand when controlling running services
 through the ServiceManager.
 
-#### Executing a model
+### Executing a model
 Once the server has been successfully built client code interacts in with the server:
 - Starting/stopping individual services by name
 - Starting/stopping all services
 - When a service changes state, notify the server with the appropriate method and service name
 
 
-#### Threading
+### Threading
 ServiceManagerServer is threadsafe, all methods return immediately and a request is placed onto a queue for execution.
 A single thread pulls the request from the queue and then reads/writes the underlying model.
 
