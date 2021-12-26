@@ -18,10 +18,9 @@ jobs:
           target_branch: master
           github_token: ${{ github.token }}
 
-      - name: Merge master -> development
+      - name: Merge release -> development
         uses: devmasx/merge-branch@master
         with:
           type: now
-          from_branch: master
           target_branch: development
           github_token: ${{ github.token }}
