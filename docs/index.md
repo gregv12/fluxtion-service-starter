@@ -43,9 +43,9 @@ To start **A** ServiceManager produces the following outputs, and processes stat
 - ServiceManager produces task list with **B** and **C** start tasks
 - **B** completes task and sends a notification **B** has started successfully to the ServiceManager
 - Service manager does nothing, as **C** has not started
-- C completes task and sends a notification **C** has started successfully to the ServiceManager
+- **C** completes task and sends a notification **C** has started successfully to the ServiceManager
 - ServiceManager produces task list with start task for **A**
-- A completes task and sends a notification **A** has started successfully to the ServiceManager
+- **A** completes task and sends a notification **A** has started successfully to the ServiceManager
 - ServiceManager produces no task list as there are no dependents on **A** to start
 
 
@@ -155,7 +155,6 @@ The callbacks are delivered as a list of
         - commandPublisher: { method: publishCommands}
     endTime: 1640551548618
 ---
-20:45:48.618 [main] INFO  fluxtion.eventLog - eventLogRecord: 
     eventTime: 1640551548618
     logTime: 1640551548618
     groupingId: null
