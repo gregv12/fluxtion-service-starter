@@ -119,15 +119,6 @@ The callbacks are delivered as a list of
 - **Audit log:** a detailed log delivered as a set of yaml documents, sample:
 
 ```yaml
-20:45:48.618 [main] INFO  c.f.e.s.graph.FluxtionServiceManager - start all
-20:45:48.618 [main] INFO  c.f.e.s.h.PublishServiceStatusRecordToLog - Current status:
-(service='aggAB', status=STARTED)
-(service='handlerC', status=WAITING_FOR_PARENTS_TO_START)
-(service='handlerB', status=WAITING_FOR_PARENTS_TO_START)
-(service='handlerA', status=WAITING_FOR_PARENTS_TO_START)
-(service='persister', status=STARTED)
-(service='calcC', status=WAITING_FOR_PARENTS_TO_START)
-20:45:48.618 [main] INFO  fluxtion.eventLog - eventLogRecord: 
     eventTime: 1640551548618
     logTime: 1640551548618
     groupingId: null
@@ -146,9 +137,7 @@ The callbacks are delivered as a list of
         - serviceStatusCache: { method: publishStatus}
         - commandPublisher: { method: publishCommands}
     endTime: 1640551548618
-20:45:48.618 [main] INFO  fluxtion.eventLog - 
 ---
-
 20:45:48.618 [main] INFO  fluxtion.eventLog - eventLogRecord: 
     eventTime: 1640551548618
     logTime: 1640551548618
@@ -163,18 +152,8 @@ The callbacks are delivered as a list of
         - handlerB_stop: { method: publishStartTasks, initialStatus: WAITING_FOR_PARENTS_TO_START, setStatus: STARTING}
         - handlerC_stop: { method: publishStartTasks}
         - commandPublisher: { method: publishCommands}
-    endTime: 1640551548618
-20:45:48.618 [main] INFO  fluxtion.eventLog - 
+    endTime: 1640551548618 
 ---
-
-20:45:48.618 [main] INFO  c.f.e.s.h.PublishServiceStatusRecordToLog - Current status:
-(service='aggAB', status=STARTED)
-(service='handlerC', status=WAITING_FOR_PARENTS_TO_START)
-(service='handlerB', status=STARTING)
-(service='handlerA', status=STARTING)
-(service='persister', status=STARTED)
-(service='calcC', status=STARTING)
-20:45:48.618 [main] INFO  fluxtion.eventLog - eventLogRecord: 
     eventTime: 1640551548618
     logTime: 1640551548618
     groupingId: null
@@ -184,7 +163,6 @@ The callbacks are delivered as a list of
         - serviceStatusCache: { method: publishCurrentStatus}
         - commandPublisher: { method: publishCommands}
     endTime: 1640551548618
-20:45:48.618 [main] INFO  fluxtion.eventLog - 
 ---
 
 ```
