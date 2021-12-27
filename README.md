@@ -26,7 +26,7 @@ may rely upon.
 Service starter is a utility that manages the lifecycle of independent services, executing start and stop tasks
 associated with a particular service at the correct time.
 
-## Sample graph
+## Sample service graph
 An application is an event driven system with independent processes **A,B,C and D** providing application functionality.  When the 
 application is running events flow from **A** to **B** and **C** in parallel, then events are pushed to **D** 
 from both **B** and **C**. For **A** to function correctly **B,C and D** must be running.
