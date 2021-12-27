@@ -37,13 +37,13 @@ For the example above all services are in a stopped state and a request is made 
 
 To start **A** ServiceManager produces the following outputs, and processes state change inputs from the application:
 
-- ServiceManager produces task list with start task for **D**
-- **D** completes task and sends a notification **D** has started successfully to the ServiceManager
-- ServiceManager produces task list with **B** and **C** start tasks
-- **B** completes task and sends a notification **B** has started successfully to the ServiceManager
-- Service manager does nothing, as **C** has not started
-- **C** completes task and sends a notification **C** has started successfully to the ServiceManager
-- ServiceManager produces task list with start task for **A**
-- **A** completes task and sends a notification **A** has started successfully to the ServiceManager
-- ServiceManager produces no task list as there are no dependents on **A** to start
+1. ServiceManager produces task list with start task for **D**
+1. **D** completes task and sends a notification **D** has started successfully to the ServiceManager
+1. ServiceManager produces task list with **B** and **C** start tasks
+1. **B** completes task and sends a notification **B** has started successfully to the ServiceManager
+1. Service manager does nothing, as **C** has not started
+1. **C** completes task and sends a notification **C** has started successfully to the ServiceManager
+1. ServiceManager produces task list with start task for **A**
+1. **A** completes task and sends a notification **A** has started successfully to the ServiceManager
+1. ServiceManager produces no task list as there are no dependents on **A** to start
 
