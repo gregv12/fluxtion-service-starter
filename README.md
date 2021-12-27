@@ -7,8 +7,8 @@ interdependent services.
 Developer Guide available on **[GitHub pages](https://gregv12.github.io/fluxtion-service-starter/)** 
 
 Tasks are triggered on a service when all its dependencies have successfully executed their tasks. Either an individual
-services or all services can be started or stopped interactively. The topological order of managed services is 
-calculated by the service starter to determine the execution order of tasks.
+service or all services can be started or stopped interactively. The topological order of managed services is 
+calculated by the service starter to determine the correct execution order of tasks.
 
 ## The problem service starter solves
 In many systems services execute independently but need to co-ordinate their lifecycle with each other. A service
