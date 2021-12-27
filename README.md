@@ -29,7 +29,7 @@ associated with a particular service at the correct time.
 ## Sample graph
 An application is an event driven system with independent processes **A,B,C and D** providing application functionality.  When the 
 application is running events flow from **A** to **B** and **C** in parallel, then events are pushed to **D** 
-from both **B** and **C**. **B,C and D** must be running for A to function correctly.
+from both **B** and **C**. For **A** to function correctly **B,C and D** must be running.
 
 ![](docs/images/GraphExample1.png)
 
