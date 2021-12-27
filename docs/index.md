@@ -30,9 +30,7 @@ may rely upon.
 Service starter is a utility that manages the lifecycle of independent services, executing start and stop tasks 
 associated with a particular service at the correct time.
 
-# Programming model
-
-## Component  description
+# Service starter components
 There are three main components within service starter that user code integrates with.
 - **[Service](https://github.com/gregv12/fluxtion-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/Service.java#L20)** - 
   An external service is described with a Service definition and registered with a ServiceManager. There should be one 
@@ -56,17 +54,17 @@ to one mapping between an external service and a definition. The Service descrip
   is available as an alternate execution strategy. The set of tasks generated are independent and can safely be executed in
   parallel.
 
-## Integration
+# Integrating into client code
 There are two phases to consider when integrating the service starter into client applications, building and execution.
 
-### Building
+## Building
 Users model individual services and create a set of all services to be controlled. The set of services is passed to the static builder methods in 
 [ServiceManager](//github.com/gregv12/fluxtion-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/ServiceManager.java)
   and an instance of a ServiceManager is returned for the user code to integrate with. 
 
 The dependency graph of services is calculated within the builder method.
 
-#### Programming example, building a ServiceManager
+### Programming example, building a ServiceManager
 
 ```java
 //two tasks that are auto triggered to run in parallel
@@ -90,7 +88,7 @@ Service rootService = Service.builder("rootService")
 server = ServiceManager.interpretedServiceManager(rootService, parallel_1, parallel_2, inputService);
 ```
 
-### Execution
+## Execution
 The ServiceManager is an event driven controller. Services are expected to change state in an unpredictable fashion, the 
 ServiceManager reacts to state events delivered by the client application. As the status of each service changes the underlying model
 recalculates the tasks that can now be executed and published as a list to the
