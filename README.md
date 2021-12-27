@@ -1,20 +1,14 @@
 [![MavenCI](https://github.com/gregv12/fluxtion-service-starter/actions/workflows/main.yml/badge.svg)](https://github.com/gregv12/fluxtion-service-starter/actions/workflows/main.yml)
 [![Release to maven central](https://github.com/gregv12/fluxtion-service-starter/actions/workflows/release.yml/badge.svg)](https://github.com/gregv12/fluxtion-service-starter/actions/workflows/release.yml)
 # Fluxtion service starter
-A java utility for managing the deterministic execution of start and stop tasks for a set of interdependent services. Implemented
-with [Fluxtion](https://github.com/v12technology/fluxtion) to manage the underlying directed acyclic graph of services.
+A java utility for managing the deterministic execution of start and stop tasks for a directed acyclic graph  of 
+interdependent services. 
 
-Documentation available on **[GitHub pages](https://gregv12.github.io/fluxtion-service-starter/)** 
+Developer Guide available on **[GitHub pages](https://gregv12.github.io/fluxtion-service-starter/)** 
 
-
-# Introduction
-Welcome to Fluxtion service starter, hope you enjoy exploring :)
-
-Service starter manages the deterministic execution of start and stop tasks for a directed acyclic graph of interdependent services.
 Tasks are triggered on a service when all its dependencies have successfully executed their tasks. Either an individual
-services or all services can be started or stopped interactively.
-
-The topological order of managed services is calculated by the service starter to determine the execution order of tasks.
+services or all services can be started or stopped interactively. The topological order of managed services is 
+calculated by the service starter to determine the execution order of tasks.
 
 ## The problem service starter solves
 In many systems services execute independently but need to co-ordinate their lifecycle with each other. A service
