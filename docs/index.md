@@ -30,6 +30,25 @@ may rely upon.
 Service starter is a utility that manages the lifecycle of independent services, executing start and stop tasks 
 associated with a particular service at the correct time.
 
+### Sample graph
+![](images/GraphExample1.png)
+
+For the example above all services are in a stopped state and a request is made to start **A**. When the application is  running 
+events flow from **A** to **B** and **C** in parallel, then events are pushed to **D** from both **B** and **C**. 
+
+To start **A** ServiceManager produces the following outputs, and processes state change inputs from the application:
+
+- ServiceManager produces task list with start task for **D**
+- **D** completes task and sends a notification **D** has started successfully to the ServiceManager
+- ServiceManager produces task list with **B** and **C** start tasks
+- **B** completes task and sends a notification **B** has started successfully to the ServiceManager
+- Service manager does nothing, as **C** has not started
+- C completes task and sends a notification **C** has started successfully to the ServiceManager
+- ServiceManager produces task list with start task for **A**
+- A completes task and sends a notification **A** has started successfully to the ServiceManager
+- ServiceManager produces no task list as there are no dependents on **A** to start
+
+
 # Service starter components
 There are three main components within service starter that user code integrates with.
 - **[Service](https://github.com/gregv12/fluxtion-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/Service.java#L20)** - 
