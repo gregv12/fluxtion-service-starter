@@ -49,13 +49,13 @@ public interface ServiceModels {
         Service handlerB = Service.builder(HANDLER_B).build();
         Service handlerC = Service.builder(HANDLER_C).build();
         Service aggAB = Service.builder(AGG_AB)
-                .servicesThatRequireMe(List.of(handlerA, handlerB))
+                .serviceListThatRequireMe(List.of(handlerA, handlerB))
                 .build();
         Service calcC = Service.builder(CALC_C)
-                .servicesThatRequireMe(List.of(handlerC))
+                .serviceListThatRequireMe(List.of(handlerC))
                 .build();
         Service persister = Service.builder(PERSISTER)
-                .servicesThatRequireMe(List.of(aggAB, calcC))
+                .serviceListThatRequireMe(List.of(aggAB, calcC))
                 .build();
         //build and register outputs
         return new FluxtionServiceManager()
