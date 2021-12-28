@@ -9,9 +9,6 @@ This section covers the runtime monitoring of the ServiceManager. It can be help
 internal model of the ServiceManager and what decisions it took to make a state change.
 
 # Service states
-Each service has a state described 
+Each service has a state described [here](controllingServices.md#service-lifecycle)
 
-[Here]({{ site.baseurl }}{% link controllingServices.md %})
-
-[Deep link]({{ site.baseurl }}{% link controllingServices.md %}#Service lifecycle)
 
