@@ -19,6 +19,16 @@ package com.fluxtion.example.servicestater.graph;
 import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.example.servicestater.TaskWrapper;
 
+/**
+ * Wraps a {@link TaskWrapper} and if the task executes without exception notifies the {@link ServiceManager} that the service
+ * has stopped or started with either:
+ * <ul>
+ *     <li>{@link ServiceManager#serviceStarted(String)}</li>
+ *     <li>{@link ServiceManager#serviceStopped(String)}</li>
+ * </ul>
+ *
+ * {@link TaskWrapper#isStartTask()} determines which notification to send to the {@link ServiceManager}
+ */
 class NotifyOnSuccessTaskWrapper extends TaskWrapper {
     private final ServiceManager serviceManager;
 

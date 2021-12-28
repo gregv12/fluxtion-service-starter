@@ -153,5 +153,16 @@ public interface ServiceManager {
      */
     void triggerDependentsOnNotification(boolean triggerDependents);
 
+    /**
+     * Flag to trigger automatic notification to the {@link ServiceManager} if a start/stop task is present and executes
+     * without an exception. Calling either:
+     * <ul>
+     *     <li>{@link ServiceManager#serviceStarted(String)}</li>
+     *     <li>{@link ServiceManager#serviceStopped(String)}</li>
+     * </ul>
+     *
+     * otherwise no notification is sent to the {@link ServiceManager}
+     * @param triggerNotificationOnSuccessfulTaskExecution flag controlling automatic start/stop notification
+     */
     void triggerNotificationOnSuccessfulTaskExecution(boolean triggerNotificationOnSuccessfulTaskExecution);
 }
