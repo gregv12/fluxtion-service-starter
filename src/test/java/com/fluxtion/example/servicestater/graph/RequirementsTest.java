@@ -20,22 +20,44 @@ public class RequirementsTest extends FluxtionServiceManagerModelATest{
         Service svcRoot = Service.builder(SVC_ROOT)
                 .build();
         Service svcInput = Service.builder(SVC_INPUT)
-                .requiredServices(List.of(svcRoot))
+                .requiredServiceList(List.of(svcRoot))
                 .build();
-        serviceManager = ServiceManager.interpretedServiceManager(svcRoot, svcInput);
+        serviceManager = ServiceManager.build(svcRoot, svcInput);
         validateStartInOrder(svcInput, svcRoot);
     }
 
+    @Test
+    public void testRequirementsSettingWithVarArgs(){
+        Service svcRoot = Service.builder(SVC_ROOT)
+                .build();
+        Service svcInput = Service.builder(SVC_INPUT)
+                .requiredServices(svcRoot)
+                .build();
+        serviceManager = ServiceManager.build(svcRoot, svcInput);
+        validateStartInOrder(svcInput, svcRoot);
+    }
 
     @Test
     public void testDependentSetting(){
         Service svcInput = Service.builder(SVC_INPUT)
                 .build();
         Service svcRoot = Service.builder(SVC_ROOT)
-                .servicesThatRequireMe(List.of(svcInput))
+                .serviceListThatRequireMe(List.of(svcInput))
                 .build();
 
-        serviceManager = ServiceManager.interpretedServiceManager(svcRoot, svcInput);
+        serviceManager = ServiceManager.build(svcRoot, svcInput);
+        validateStartInOrder(svcInput, svcRoot);
+    }
+
+    @Test
+    public void testDependentSettingWithVarArgs(){
+        Service svcInput = Service.builder(SVC_INPUT)
+                .build();
+        Service svcRoot = Service.builder(SVC_ROOT)
+                .servicesThatRequireMe(svcInput)
+                .build();
+
+        serviceManager = ServiceManager.build(svcRoot, svcInput);
         validateStartInOrder(svcInput, svcRoot);
     }
 

@@ -39,7 +39,7 @@ public class ThreadingTests {
                 .startTask(ThreadingTests::start1Task)
                 .build();
         Service svc_2 = Service.builder("svc_2")
-                .servicesThatRequireMe(List.of(svc_1))
+                .serviceListThatRequireMe(List.of(svc_1))
                 .startTask(ThreadingTests::start2Task)
                 .build();
         svcManager = new FluxtionServiceManager();
@@ -60,7 +60,7 @@ public class ThreadingTests {
                 .startTask(ThreadingTests::asynchSvc1Task)
                 .build();
         Service svc_2 = Service.builder("svc_2")
-                .servicesThatRequireMe(List.of(svc_1))
+                .serviceListThatRequireMe(List.of(svc_1))
                 .startTask(ThreadingTests::blockSvc2Task)
                 .build();
         svcManager = new FluxtionServiceManager();
