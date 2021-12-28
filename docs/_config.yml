@@ -3,7 +3,7 @@ title: Fluxtion service starter
 description: Documentation for Fluxtion service starter
 remote_theme: pmarsceill/just-the-docs
 aux_links:
-  "release 0.1.15":
+  "release 0.1.16":
     - "//github.com/gregv12/fluxtion-service-starter/tree/v0.1.16"
 heading_anchors: true
 
