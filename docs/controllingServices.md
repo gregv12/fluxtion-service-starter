@@ -80,14 +80,14 @@ svcManager.serviceStopped("svc_2");
 # Service lifecycle
 
 The service starter manages a set of services with the following behaviour
-1. A service can be started if all its dependents are in a STARTED state
-2. A service can be started if it has no dependents
-3. A call to `ServiceManager.startService(String serviceName)` will start any services that have no dependents connected to the named service
+1. A service can be started if all its dependencies are in a STARTED state
+2. A service can be started if it has no dependencies
+3. A call to `ServiceManager.startService(String serviceName)` will start any services connected to the named service and that have no dependencies
 4. Any service the ServiceManager starts will move to the STARTING state. If a service has a start task it will be published to the TaskExecutor
-5. Any dependencies of a STARTING service will move to WAITING_FOR_PARENTS_TO_START state
+5. Any dependents of a STARTING service will move to WAITING_FOR_PARENTS_TO_START state
 6. A service moves to STARTED state when a client application calls `svcManager.serviceStarted(String serviceName)`
 7. When all dependencies of a WAITING_FOR_PARENTS_TO_START service have STARTED state this service will be started, see (4) above
-9. Continues down the dependency tree until the target services are started
+8. Continues up the dependency tree until the target service(s) are started
 
 Stopping has the same behaviour but for the reverse topological order.
 
