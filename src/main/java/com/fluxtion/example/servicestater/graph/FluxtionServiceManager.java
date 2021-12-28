@@ -70,6 +70,8 @@ public class FluxtionServiceManager implements ServiceManager {
     private EventProcessor startProcessor;
     private boolean addAudit = true;
     private boolean compile = true;
+    private boolean triggerDependentsOnStartNotification = false;
+    private boolean triggerDependentsOnStopNotification = false;
     private final DelegatingTaskExecutor taskExecutor = new DelegatingTaskExecutor();
 
     public FluxtionServiceManager buildServiceController(Service... serviceList) {
@@ -169,6 +171,10 @@ public class FluxtionServiceManager implements ServiceManager {
         log.info("notified service started;'{}'", serviceName);
         GraphEvent.NotifyServiceStarted notifyServiceStarted = new GraphEvent.NotifyServiceStarted(serviceName);
         log.debug(notifyServiceStarted.toString());
+        if (triggerDependentsOnStartNotification) {
+            log.info("triggering start for dependencies");
+            startService(serviceName);
+        }
         startProcessor.onEvent(notifyServiceStarted);
         taskExecutor.publishTasksToDelegate();
     }
@@ -176,10 +182,35 @@ public class FluxtionServiceManager implements ServiceManager {
     @Override
     public void serviceStopped(String serviceName) {
         log.info("notified service stopped;'{}'", serviceName);
-        GraphEvent.NotifyServiceStopped notifyServiceStarted = new GraphEvent.NotifyServiceStopped(serviceName);
-        log.info(notifyServiceStarted.toString());
-        startProcessor.onEvent(notifyServiceStarted);
+        GraphEvent.NotifyServiceStopped notifyServiceStopped = new GraphEvent.NotifyServiceStopped(serviceName);
+        log.info(notifyServiceStopped.toString());
+        if (triggerDependentsOnStopNotification) {
+            log.info("triggering stop for dependencies");
+            stopService(serviceName);
+        }
+        startProcessor.onEvent(notifyServiceStopped);
         taskExecutor.publishTasksToDelegate();
+    }
+
+    @Override
+    public void triggerDependentsOnStartNotification(boolean triggerDependentsOnStart) {
+        this.triggerDependentsOnStartNotification = triggerDependentsOnStart;
+    }
+
+    @Override
+    public void triggerDependentsOnStopNotification(boolean triggerDependentsOnStop) {
+        this.triggerDependentsOnStopNotification = triggerDependentsOnStop;
+    }
+
+    @Override
+    public void triggerDependentsOnNotification(boolean triggerDependents) {
+        triggerDependentsOnStartNotification(triggerDependents);
+        triggerDependentsOnStopNotification(triggerDependents);
+    }
+
+    @Override
+    public void triggerNotificationOnSuccessfulTaskExecution(boolean triggerNotificationOnSuccessfulTaskExecution) {
+        taskExecutor.setTriggerNotificationOnSuccessfulTaskExecution(triggerNotificationOnSuccessfulTaskExecution);
     }
 
     public FluxtionServiceManager addAuditLog(boolean addAudit) {
@@ -289,9 +320,10 @@ public class FluxtionServiceManager implements ServiceManager {
     }
 
 
-    static class DelegatingTaskExecutor implements TaskWrapper.TaskExecutor {
+    class DelegatingTaskExecutor implements TaskWrapper.TaskExecutor {
         private TaskWrapper.TaskExecutor delegate;
         private transient final List<TaskWrapper> tasks = new ArrayList<>();
+        private boolean triggerNotificationOnSuccessfulTaskExecution = false;
 
         public DelegatingTaskExecutor() {
             delegate = new SynchronousTaskExecutor();
@@ -302,6 +334,10 @@ public class FluxtionServiceManager implements ServiceManager {
             this.delegate = delegate;
         }
 
+        public void setTriggerNotificationOnSuccessfulTaskExecution(boolean triggerNotificationOnSuccessfulTaskExecution) {
+            this.triggerNotificationOnSuccessfulTaskExecution = triggerNotificationOnSuccessfulTaskExecution;
+        }
+
         @Override
         public void close() throws Exception {
             delegate.close();
@@ -310,7 +346,15 @@ public class FluxtionServiceManager implements ServiceManager {
         @Override
         public void accept(List<TaskWrapper> taskWrappers) {
             tasks.clear();
-            tasks.addAll(taskWrappers);
+            if (triggerNotificationOnSuccessfulTaskExecution) {
+                tasks.addAll(
+                        taskWrappers.stream()
+                                .map(t -> new NotifyOnSuccessTaskWrapper(t, FluxtionServiceManager.this))
+                                .collect(Collectors.toList())
+                );
+            } else {
+                tasks.addAll(taskWrappers);
+            }
         }
 
         public void publishTasksToDelegate() {

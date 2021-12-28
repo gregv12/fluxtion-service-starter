@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 
 /**
  * Publishes commands for a service that are for execution by client code, a client application registers a command executor
- * by calling {@link ServiceManager#registerTaskExecutor(TaskWrapper.TaskExecutor)} )}
+ * by calling {@link ServiceManager#registerTaskExecutor(TaskWrapper.TaskExecutor)}
  *
  * The task list of events can be executed in parallel.
  */
