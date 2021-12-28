@@ -16,7 +16,6 @@
 
 package com.fluxtion.example.servicestater;
 
-import com.fluxtion.example.servicestater.graph.TaskWrapperPublisher;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
