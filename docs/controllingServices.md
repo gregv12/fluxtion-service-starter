@@ -91,6 +91,7 @@ The service starter manages a set of services with the following behaviour
 
 Stopping has the same behaviour but for the reverse topological order.
 
+## Service states
 
 | Service state                | Notes                                                                                   |
 |:-----------------------------|:----------------------------------------------------------------------------------------|
