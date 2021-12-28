@@ -64,7 +64,7 @@ of the ServiceManager uses a [SynchronousTaskExecutor](https://github.com/gregv1
 that executes all tasks on the caller's thread.
 
 ## Asynchronous task execution
-An [ASynchronousTaskExecutor](https://github.com/gregv12/fluxtion-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/helpers/ASynchronousTaskExecutor.java)
+An [ASynchronousTaskExecutor](https://github.com/gregv12/fluxtion-service-starter/blob/master/src/main/java/com/fluxtion/example/servicestater/helpers/AsynchronousTaskExecutor.java)
 can be registered with an instance of the ServiceManager:
 
 ```java

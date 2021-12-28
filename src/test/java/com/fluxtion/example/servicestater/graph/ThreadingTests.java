@@ -1,7 +1,7 @@
 package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
-import com.fluxtion.example.servicestater.helpers.ASynchronousTaskExecutorCaseChange;
+import com.fluxtion.example.servicestater.helpers.AsynchronousTaskExecutor;
 import com.fluxtion.example.servicestater.helpers.SynchronousTaskExecutor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +65,7 @@ public class ThreadingTests {
                 .build();
         svcManager = new FluxtionServiceManager();
         svcManager.compiled(false);
-        svcManager.registerTaskExecutor(new ASynchronousTaskExecutorCaseChange());
+        svcManager.registerTaskExecutor(new AsynchronousTaskExecutor());
         svcManager.buildServiceController(svc_1, svc_2);
         svcManager.registerStatusListener(FluxtionServiceManagerModelATest::logStatus);
         svcManager.startService("svc_1");

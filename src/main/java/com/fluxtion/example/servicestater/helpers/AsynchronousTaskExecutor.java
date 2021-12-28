@@ -25,12 +25,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.LongAdder;
 
 @Slf4j
-public class ASynchronousTaskExecutorCaseChange implements TaskWrapper.TaskExecutor {
+public class AsynchronousTaskExecutor implements TaskWrapper.TaskExecutor {
 
     private final ExecutorService executorService;
     private static final LongAdder COUNT = new LongAdder();
 
-    public ASynchronousTaskExecutorCaseChange() {
+    public AsynchronousTaskExecutor() {
         executorService = Executors.newCachedThreadPool(this::namedThreadFactory);
     }
 
