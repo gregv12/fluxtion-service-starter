@@ -11,7 +11,7 @@ internal model of the ServiceManager and what decisions it took to make a state 
 # Service states
 Each service has a state described 
 
-[Here]({{ site.baseurl }}{% link docs/controllingServices.md %})
+[Here]({{ site.baseurl }}{% link controllingServices.md %})
 
-[Deep link]({{ site.baseurl }}{% link docs/controllingServices.md %}#Service lifecycle)
+[Deep link]({{ site.baseurl }}{% link controllingServices.md %}#Service lifecycle)
 
