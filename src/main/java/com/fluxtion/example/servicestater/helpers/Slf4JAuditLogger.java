@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Sends Fluxtion audit records to slf4j registered logger
  */
-@Slf4j(topic = "fluxtion.eventLog")
+@Slf4j(topic = "fluxtion.service-starter.eventLog")
 public class Slf4JAuditLogger implements LogRecordListener {
 
     @Override
