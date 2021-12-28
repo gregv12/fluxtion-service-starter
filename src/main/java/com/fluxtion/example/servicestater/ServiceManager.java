@@ -152,4 +152,6 @@ public interface ServiceManager {
      * @param triggerDependents flag to control start/stop task triggering behaviour
      */
     void triggerDependentsOnNotification(boolean triggerDependents);
+
+    void triggerNotificationOnSuccessfulTaskExecution(boolean triggerNotificationOnSuccessfulTaskExecution);
 }

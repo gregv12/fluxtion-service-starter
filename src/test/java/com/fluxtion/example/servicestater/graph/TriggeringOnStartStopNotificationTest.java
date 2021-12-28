@@ -7,14 +7,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 
-public class TriggeringStartStopTest extends FluxtionServiceManagerModelATest {
+public class TriggeringOnStartStopNotificationTest extends FluxtionServiceManagerModelATest {
 
-    private Service svcA;
-    private Service svcB;
-    private Service svcC;
-    private Service svcD;
-    private ServiceManager serviceManager;
-    private HashMap<String, ServiceStatusRecord> statusMap;
+    protected Service svcA;
+    protected Service svcB;
+    protected Service svcC;
+    protected Service svcD;
+    protected ServiceManager serviceManager;
+    protected HashMap<String, ServiceStatusRecord> statusMap;
 
     @Test
     public void triggerOnStartNotification(){
@@ -167,7 +167,7 @@ public class TriggeringStartStopTest extends FluxtionServiceManagerModelATest {
         updateStatus(statusMap, svcA.getName(), Service.Status.STOPPED);
     }
 
-    private void buildGraph(){
+    protected void buildGraph(){
         svcA = Service.builder("A").build();
         svcB = Service.builder("B").servicesThatRequireMe(svcA).build();
         svcC = Service.builder("C").servicesThatRequireMe(svcA).build();
