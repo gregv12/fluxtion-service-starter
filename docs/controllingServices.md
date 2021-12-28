@@ -17,9 +17,22 @@ It is important to understand that start and stop tasks work through the service
 works from the most downstream service to the highest upstream services. Stopping works from the highest upstream service
 to the furthest downstream service.
 
-# Service control
+# Client feedback
+A service within a ServiceManager is only a representation of an external service. The client application must feed back 
+the initial state of services and when a service move between STOPPED and STARTED states. The ServiceManager needs 
+these updates to know when new tasks lists can be published to the TaskExecutor for execution.
 
-## Service lifecycle
+## Notifying started
+```java
+svcManager.serviceStarted("svc_2");
+```
+
+## Notifying stopped
+```java
+svcManager.serviceStopped("svc_2");
+```
+
+# Service lifecycle
 
 The service starter manages a set of services with the following behaviour
 1. A service can be started if all its dependencies are in a STARTED state
