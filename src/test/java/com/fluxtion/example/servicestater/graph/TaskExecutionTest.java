@@ -4,7 +4,6 @@ import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.ServiceManager;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -33,17 +32,17 @@ public class TaskExecutionTest {
                 .build();
         Service parallel_2 = Service.builder("parallel_2")
                 .startTask(TaskExecutionTest::parallel_2_sleep_3_seconds)
-                .servicesThatRequireMe(List.of(finishService))
+                .serviceListThatRequireMe(List.of(finishService))
                 .build();
         Service parallel_1 = Service.builder("parallel_1")
                 .startTask(TaskExecutionTest::parallel_1_immediate)
-                .servicesThatRequireMe(List.of(finishService))
+                .serviceListThatRequireMe(List.of(finishService))
                 .build();
         Service rootService = Service.builder("rootService")
                 .startTask(TaskExecutionTest::triggerBothParallels)
-                .servicesThatRequireMe(List.of(parallel_1, parallel_2))
+                .serviceListThatRequireMe(List.of(parallel_1, parallel_2))
                 .build();
-        server = ServiceManager.interpretedServiceManager(rootService, parallel_1, parallel_2, finishService);
+        server = ServiceManager.build(rootService, parallel_1, parallel_2, finishService);
 //        server.registerStatusListener(FluxtionServiceManagerModelATest::logStatus);
         //kick off the tasks - will cause all the sub tasks to be running before starting
         server.startService("finishService");

@@ -23,10 +23,16 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- *
+ * Controls a set of {@link Service}'s
  */
 public interface ServiceManager {
 
+    /**
+     * Build a compiled version of the service manager. A non-transient service manager that can be used in another
+     * process.
+     * @param serviceList the services to manage
+     * @return ServiceManager controlling client services
+     */
     static ServiceManager compiledServiceManager(Service... serviceList){
         FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
         fluxtionServiceManager.compiled(true);
@@ -34,13 +40,23 @@ public interface ServiceManager {
         return fluxtionServiceManager;
     }
 
-    static ServiceManager interpretedServiceManager(Service... serviceList){
+    /**
+     * Build a transient ServiceManager, when this process ends the {@link ServiceManager} will disappear
+     * @param serviceList the services to manage
+     * @return ServiceManager controlling client services
+     */
+    static ServiceManager build(Service... serviceList){
         FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
         fluxtionServiceManager.compiled(false);
         fluxtionServiceManager.buildServiceController(serviceList);
         return fluxtionServiceManager;
     }
 
+    /**
+     * Wraps a {@link ServiceManager} in a server thread
+     * @param serviceManager the wrapped {@link ServiceManager}
+     * @return A wrapped serviceManager
+     */
     static ServiceManagerServer asServer(ServiceManager serviceManager){
         return new ServiceManagerServer(serviceManager);
     }

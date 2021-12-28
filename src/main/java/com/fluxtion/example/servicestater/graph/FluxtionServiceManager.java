@@ -206,7 +206,7 @@ public class FluxtionServiceManager implements ServiceManager {
     private void setServiceDependencies(Service service) {
         ServiceController controller = managedStartServices.get(toStartServiceName(service.getName()));
         controller.setDependents(
-                service.getServicesThatRequireMe().stream()
+                service.getServiceListThatRequireMe().stream()
                         .map(Service::getName)
                         .map(FluxtionServiceManager::toStartServiceName)
                         .map(managedStartServices::get)
@@ -214,7 +214,7 @@ public class FluxtionServiceManager implements ServiceManager {
         );
         //assign dependencies
         final ServiceController startController = controller;
-        service.getRequiredServices().stream()
+        service.getRequiredServiceList().stream()
                 .map(Service::getName)
                 .map(FluxtionServiceManager::toStartServiceName)
                 .map(managedStartServices::get)
@@ -224,7 +224,7 @@ public class FluxtionServiceManager implements ServiceManager {
         //reverse controller
         controller = managedStartServices.get(toStopServiceName(service.getName()));
         final ServiceController stopController = controller;
-        service.getRequiredServices().stream()
+        service.getRequiredServiceList().stream()
                 .map(Service::getName)
                 .map(FluxtionServiceManager::toStopServiceName)
                 .map(managedStartServices::get)
@@ -232,7 +232,7 @@ public class FluxtionServiceManager implements ServiceManager {
 
 
         //
-        service.getServicesThatRequireMe().stream()
+        service.getServiceListThatRequireMe().stream()
                 .map(Service::getName)
                 .map(FluxtionServiceManager::toStopServiceName)
                 .map(managedStartServices::get)

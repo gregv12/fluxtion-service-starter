@@ -26,8 +26,10 @@ import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A representation of an external service and its dependencies. This service will be wrapped in the graph and controlled
@@ -55,9 +57,9 @@ public class Service implements Named {
     @NonNull
     private final String name;
     @Nullable
-    private final List<Service> servicesThatRequireMe;
+    private final List<Service> serviceListThatRequireMe;
     @Nullable
-    private final List<Service> requiredServices;
+    private final List<Service> requiredServiceList;
     @Nullable
     private final SerializableRunnable startTask;
     @Nullable
@@ -67,14 +69,25 @@ public class Service implements Named {
         return hiddenBuilder().name(name);
     }
 
-    public static class ServiceBuilder{}
+    public static class ServiceBuilder{
 
-    public List<Service> getServicesThatRequireMe() {
-        return servicesThatRequireMe ==null?Collections.emptyList(): servicesThatRequireMe;
+        public ServiceBuilder servicesThatRequireMe(Service... services){
+            Objects.requireNonNull(services, "Requiring me service list cannot be null");
+            return this.serviceListThatRequireMe(Arrays.asList(services));
+        }
+
+        public ServiceBuilder requiredServices(Service... services){
+            Objects.requireNonNull(services, "Requiring me service list cannot be null");
+            return this.requiredServiceList(Arrays.asList(services));
+        }
     }
 
-    public List<Service> getRequiredServices() {
-        return requiredServices ==null?Collections.emptyList(): requiredServices;
+    public List<Service> getServiceListThatRequireMe() {
+        return serviceListThatRequireMe ==null?Collections.emptyList(): serviceListThatRequireMe;
+    }
+
+    public List<Service> getRequiredServiceList() {
+        return requiredServiceList ==null?Collections.emptyList(): requiredServiceList;
     }
 
     @Nullable

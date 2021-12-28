@@ -1,7 +1,7 @@
 package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
-import com.fluxtion.example.servicestater.helpers.ASynchronousTaskExecutor;
+import com.fluxtion.example.servicestater.helpers.AsynchronousTaskExecutor;
 import com.fluxtion.example.servicestater.helpers.SynchronousTaskExecutor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class ThreadingTests {
                 .startTask(ThreadingTests::start1Task)
                 .build();
         Service svc_2 = Service.builder("svc_2")
-                .servicesThatRequireMe(List.of(svc_1))
+                .serviceListThatRequireMe(List.of(svc_1))
                 .startTask(ThreadingTests::start2Task)
                 .build();
         svcManager = new FluxtionServiceManager();
@@ -60,12 +60,12 @@ public class ThreadingTests {
                 .startTask(ThreadingTests::asynchSvc1Task)
                 .build();
         Service svc_2 = Service.builder("svc_2")
-                .servicesThatRequireMe(List.of(svc_1))
+                .serviceListThatRequireMe(List.of(svc_1))
                 .startTask(ThreadingTests::blockSvc2Task)
                 .build();
         svcManager = new FluxtionServiceManager();
         svcManager.compiled(false);
-        svcManager.registerTaskExecutor(new ASynchronousTaskExecutor());
+        svcManager.registerTaskExecutor(new AsynchronousTaskExecutor());
         svcManager.buildServiceController(svc_1, svc_2);
         svcManager.registerStatusListener(FluxtionServiceManagerModelATest::logStatus);
         svcManager.startService("svc_1");

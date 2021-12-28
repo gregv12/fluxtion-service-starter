@@ -43,44 +43,57 @@ public class CliTestClient {
                 case "b": {
                     buildGraph(false);
                 }
+                break;
                 case "compile":
                 case "c":
                     buildGraph(true);
+                    break;
                 case "ss":
                 case "status":
                     printStatus();
+                    break;
                 case "sa":
                 case "startall":
                     startAll();
+                    break;
                 case "ha":
                 case "stopall":
                     stopAll();
+                    break;
                 case "s":
                 case "start":
                     startByName(scanner);
+                    break;
                 case "h":
                 case "stop":
                     stopByName(scanner);
+                    break;
                 case "ns":
                     notifiedStartedByName(scanner);
+                    break;
                 case "nh":
                     notifiedStoppedByName(scanner);
+                    break;
                 case "aon":
                 case "auditon":
                     auditOn(true);
+                    break;
                 case "auditoff":
                 case "aoff":
                     auditOn(false);
+                    break;
                 case "printtree":
-                    printTree();
                 case "pt":
                     printTree();
+                    break;
                 case "e":
                 case "exit":
                     run = false;
+                    break;
                 case "?":
                 case "help":
                     printHelp();
+                    break;
                 default:
                     System.out.println("unknown command:" + command + " ? for command list");
             }
@@ -197,21 +210,21 @@ public class CliTestClient {
         Service handlerB = Service.builder(HANDLER_B).build();
         Service handlerC = Service.builder(HANDLER_C).build();
         Service aggAB = Service.builder(AGG_AB)
-                .servicesThatRequireMe(List.of(handlerA, handlerB))
+                .serviceListThatRequireMe(List.of(handlerA, handlerB))
                 .startTask(CliTestClient::notifyStartedAggAB)
                 .build();
         Service calcC = Service.builder(CALC_C)
-                .servicesThatRequireMe(List.of(handlerC))
+                .serviceListThatRequireMe(List.of(handlerC))
                 .build();
         Service persister = Service.builder(PERSISTER)
-                .servicesThatRequireMe(List.of(aggAB, calcC))
+                .serviceListThatRequireMe(List.of(aggAB, calcC))
                 .startTask(CliTestClient::notifyStartedPersister)
                 .build();
 
         if (compile) {
             serviceManagerServer = ServiceManager.compiledServiceManager(persister, aggAB, calcC, handlerA, handlerB, handlerC);
         } else {
-            serviceManagerServer = ServiceManager.interpretedServiceManager(persister, aggAB, calcC, handlerA, handlerB, handlerC);
+            serviceManagerServer = ServiceManager.build(persister, aggAB, calcC, handlerA, handlerB, handlerC);
         }
         serviceManagerServer.registerStatusListener(new PublishServiceStatusRecordToLog());
     }
