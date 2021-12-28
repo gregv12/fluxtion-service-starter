@@ -12,7 +12,8 @@ through the ServiceManager. Once a ServiceManager is built clients invoke method
 - Notify when a service has stopped or started
 - Add a task executor
 - Add a status listener
-- Triggering start/stop tasks on a notification
+- Control triggering of start/stop tasks on a notification
+- Control automatic start/stop notification on successful start/stop task execution
 
 It is important to understand that start and stop tasks work through the service graph in opposite directions. Starting
 works from the most downstream service to the highest upstream services. Stopping works from the highest upstream service
@@ -63,7 +64,7 @@ services have STOPPED, new task lists are published for execution. This continue
 WAITING_FOR_PARENTS_TO_STOP have started, or until a stop call is issued.
 
 
-# Service notifications
+# Service state notifications
 A service within a ServiceManager is only a representation of an external service. The client application must feed back 
 the initial state of services and when a service move between STOPPED and STARTED states. The ServiceManager needs 
 these updates to know when new tasks lists can be published to the TaskExecutor for execution.
@@ -101,6 +102,24 @@ serviceManager.triggerDependentsOnNotification(true);
 When flag is true:
 - serviceStarted notification is equivalent to calling startService followed by serviceStarted
 - serviceStopped notification is equivalent to calling stopService followed by serviceStopped
+
+# Triggering notification on a successful task execution
+The ServiceManager supports automatic triggering of service status notifications when a task has successfully executed. 
+With default ServiceManager behaviour the client must call `ServiceManager.serviceStarted` or 
+`ServiceManager.serviceStopped` to update service status and initiate publication of a new task list. 
+
+Setting the `triggerNotificationOnSuccessfulTaskExecution` flag will cause the
+ServiceManager to send the correct notification if the task executes without throwing an exception. This causes a cascade
+of tasks through the service graph until all connected services are started or stopped without requiring the client 
+application to update the status of an individual service.
+
+If the task throws an exception during execution or there is no start/stop task associated with a service the propagation
+stops at that service.
+
+**trigger notifications on task execution**
+```java
+serviceManager.triggerNotificationOnSuccessfulTaskExecution(true);
+```
 
 # Service lifecycle
 
