@@ -107,7 +107,7 @@ public interface ServiceManager {
     void startAllServices();
 
     /**
-     * A request from the client to staatop rt all services.The {@link ServiceManager} will publish task
+     * A request from the client to stop all services.The {@link ServiceManager} will publish task
      * lists to execute associated with the stopping of each connected managed service. Services are stopped in
      * topological order the most upstream services first
      */
@@ -127,4 +127,29 @@ public interface ServiceManager {
 
     void registerStatusListener(Consumer<List<ServiceStatusRecord>> statusUpdateListener);
 
+    /**
+     * Flag to control triggering of start tasks for a service if an unsolicited start notification is received.
+     * When set to true, {@link this#serviceStarted(String)} is equivalent to calling {@link this#startService(String)}
+     * @param triggerDependentsOnStart flag to control start triggering behaviour
+     */
+    void triggerDependentsOnStartNotification(boolean triggerDependentsOnStart);
+
+    /**
+     * Flag to control triggering of stop tasks for a service if an unsolicited stop notification is received.
+     * When set to true, {@link this#serviceStopped(String)} is equivalent to calling {@link this#stopService(String)}
+     * @param triggerDependentsOnStop flag to control start triggering behaviour
+     */
+    void triggerDependentsOnStopNotification(boolean triggerDependentsOnStop);
+
+    /**
+     * Flag to control triggering of start and stop tasks for a service if an unsolicited notification is received.
+     * When set to true:
+     * <ul>
+     *     <li>{@link this#serviceStarted(String)} is equivalent to calling {@link this#startService(String)}</li>
+     *     <li>{@link this#serviceStopped(String)} is equivalent to calling {@link this#stopService(String)}  </li>
+     * </li>
+     *
+     * @param triggerDependents flag to control start/stop task triggering behaviour
+     */
+    void triggerDependentsOnNotification(boolean triggerDependents);
 }
