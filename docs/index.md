@@ -116,7 +116,7 @@ registered [TaskExecutor](https://github.com/gregv12/fluxtion-service-starter/bl
 Services can be stopped or started interactively, for example by an admin gui. This will result in the publication of a 
 task list for execution.
 
-#### Programming example, interacting with services
+### Programming example, interacting with services
 
 ```java
 //start the inputService - will cause all the sub-tasks to be running before starting
