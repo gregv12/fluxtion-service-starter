@@ -16,7 +16,7 @@
 
 package com.fluxtion.example.servicestater;
 
-import com.fluxtion.example.servicestater.graph.TaskWrapperPublisher;
+import lombok.Data;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 /**
  * Encapsulates a task that a service has provided during registration.
  */
-@Value
+@Data
 @Slf4j
 public class TaskWrapper implements Callable<TaskWrapper.TaskExecutionResult> {
 
@@ -36,9 +36,9 @@ public class TaskWrapper implements Callable<TaskWrapper.TaskExecutionResult> {
      */
     public interface TaskExecutor extends Consumer<List<TaskWrapper>>, AutoCloseable{}
 
-    String serviceName;
-    boolean startTask;
-    Runnable task;
+    private final String serviceName;
+    private final boolean startTask;
+    private final Runnable task;
 
     @Override
     public String toString() {

@@ -123,7 +123,7 @@ task list for execution.
 server.startService("inputService");
 
 
-//some time later, notify ServerManager that parallel_2 has started
+//some time later, notify ServiceManager that parallel_2 has started
 server.serviceStarted("parallel_2");
 ```
 

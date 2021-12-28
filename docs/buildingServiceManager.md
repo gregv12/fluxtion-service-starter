@@ -1,12 +1,12 @@
 ---
-title: Building a ServerManager
+title: Building a ServiceManager
 has_children: false
 nav_order: 2
 published: true
 ---
-# Building a ServerManager
-This section covers the programming model and concepts a developer needs to understand when building a ServerManager.
-A ServerManager is the central class of the service starter, it is the instance client code integrates with after 
+# Building a ServiceManager
+This section covers the programming model and concepts a developer needs to understand when building a ServiceManager.
+A ServiceManager is the central class of the service starter, it is the instance client code integrates with after 
 building a model. 
 
 A ServiceManager is constructed with a set of services supplied by the client:
@@ -47,8 +47,8 @@ ServiceManager serviceManager = ServiceManager.build(serviceProcessOrder, servic
 ### What is the dependency relationship between services?
 To provide relationship information Service provides two mutators that describe the dependency requirements for
 a Service. ServiceManager reads these member variables and builds a model for the whole system. 
-- setServicesThatRequireMe
-- setRequiredServices
+- **requiredServices** A service specifies downstream services dependencies
+- **servicesThatRequireMe** A downstream service specifies which upstream services require it
 
 Both mutators are optional and give the same information from different perspectives. 
 
@@ -77,8 +77,8 @@ Service serviceProcessOrder = Service.builder("ServiceProcessOrder")
 ###  What tasks should be executed when starting and stopping a service?
 
 Tasks are optionally added to Service definition using builder methods. 
-- A start task executes when entering the STARTING state 
-- A stop task executes when the service enters the STOPPING state.
+- A start task executes when entering the [STARTING](controllingServices.md#service-states) state 
+- A stop task executes when the service enters the [STOPPING](controllingServices.md#service-states) state.
 
 Using the `ServiceProcessOrder` example we want to make the service the primary input when it starts, when stopping 
 we want to ensure all orders are flushed to downstream systems.

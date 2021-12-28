@@ -9,14 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RequirementsTest extends FluxtionServiceManagerModelATest{
+public class RequirementsTest extends FluxtionServiceManagerModelATest {
 
     public static final String SVC_INPUT = "svcInput";
     public static final String SVC_ROOT = "svcRoot";
     private ServiceManager serviceManager;
 
     @Test
-    public void testRequirementsSetting(){
+    public void testRequirementsSetting() {
         Service svcRoot = Service.builder(SVC_ROOT)
                 .build();
         Service svcInput = Service.builder(SVC_INPUT)
@@ -27,7 +27,7 @@ public class RequirementsTest extends FluxtionServiceManagerModelATest{
     }
 
     @Test
-    public void testRequirementsSettingWithVarArgs(){
+    public void testRequirementsSettingWithVarArgs() {
         Service svcRoot = Service.builder(SVC_ROOT)
                 .build();
         Service svcInput = Service.builder(SVC_INPUT)
@@ -38,7 +38,7 @@ public class RequirementsTest extends FluxtionServiceManagerModelATest{
     }
 
     @Test
-    public void testDependentSetting(){
+    public void testDependentSetting() {
         Service svcInput = Service.builder(SVC_INPUT)
                 .build();
         Service svcRoot = Service.builder(SVC_ROOT)
@@ -50,7 +50,7 @@ public class RequirementsTest extends FluxtionServiceManagerModelATest{
     }
 
     @Test
-    public void testDependentSettingWithVarArgs(){
+    public void testDependentSettingWithVarArgs() {
         Service svcInput = Service.builder(SVC_INPUT)
                 .build();
         Service svcRoot = Service.builder(SVC_ROOT)
