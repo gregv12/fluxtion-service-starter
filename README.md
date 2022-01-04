@@ -1,10 +1,12 @@
+# Fluxtion service starter
+
 [![MavenCI](https://github.com/gregv12/fluxtion-service-starter/actions/workflows/main.yml/badge.svg)](https://github.com/gregv12/fluxtion-service-starter/actions/workflows/main.yml)
 [![Release to maven central](https://github.com/gregv12/fluxtion-service-starter/actions/workflows/release.yml/badge.svg)](https://github.com/gregv12/fluxtion-service-starter/actions/workflows/release.yml)
-# Fluxtion service starter
+
+### **[Developer guide](https://gregv12.github.io/fluxtion-service-starter/)** 
+
 A java utility for managing the deterministic execution of start and stop tasks for a directed acyclic graph  of 
 interdependent services. 
-
-Developer Guide available on **[GitHub pages](https://gregv12.github.io/fluxtion-service-starter/)** 
 
 Tasks are triggered on a service when all its dependencies have successfully executed their tasks. Either an individual
 service or all services can be started or stopped interactively. The topological order of managed services is 
