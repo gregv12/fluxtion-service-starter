@@ -155,7 +155,8 @@ public abstract class ServiceController extends EventLogNode implements Named {
 
     @Initialise
     public final void initialise() {
-        setStatus(STATUS_UNKNOWN);
+        serviceStatusRecordCache.setServiceStatus(getServiceName(), STATUS_UNKNOWN);
+//        setStatus(STATUS_UNKNOWN);
     }
 
 }
