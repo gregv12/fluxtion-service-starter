@@ -90,6 +90,14 @@ public class FluxtionServiceManager implements ServiceManager {
         return this;
     }
 
+    public FluxtionServiceManager useProcessor(EventProcessor processor){
+        startProcessor = processor;
+        startProcessor.init();
+        startProcessor.onEvent(new EventLogControlEvent(new Slf4JAuditLogger()));
+        startProcessor.onEvent(new RegisterCommandProcessor(taskExecutor));
+        return this;
+    }
+
     @Override
     @Synchronized
     public void shutdown() {

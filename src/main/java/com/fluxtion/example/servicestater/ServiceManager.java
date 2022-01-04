@@ -18,6 +18,7 @@ package com.fluxtion.example.servicestater;
 
 import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
 import com.fluxtion.example.servicestater.graph.ServiceManagerServer;
+import com.fluxtion.runtim.EventProcessor;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -26,6 +27,19 @@ import java.util.function.Consumer;
  * Controls a set of {@link Service}'s
  */
 public interface ServiceManager {
+
+    /**
+     * Build a transient ServiceManager, when this process ends the {@link ServiceManager} will disappear
+     *
+     * @param serviceList the services to manage
+     * @return ServiceManager controlling client services
+     */
+    static ServiceManager build(Service... serviceList) {
+        FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
+        fluxtionServiceManager.compiled(false);
+        fluxtionServiceManager.buildServiceController(serviceList);
+        return fluxtionServiceManager;
+    }
 
     /**
      * Build a compiled version of the service manager. A non-transient service manager that can be used in another
@@ -42,15 +56,14 @@ public interface ServiceManager {
     }
 
     /**
-     * Build a transient ServiceManager, when this process ends the {@link ServiceManager} will disappear
-     *
-     * @param serviceList the services to manage
+     * Load an {@link EventProcessor} and wrap as a ServiceManager, this method is for use when a service manager
+     * has been compiled aot.
+     * @param processor the {@link EventProcessor} to wrap as a SserviceManager
      * @return ServiceManager controlling client services
      */
-    static ServiceManager build(Service... serviceList) {
+    static ServiceManager fromProcessor(EventProcessor processor){
         FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
-        fluxtionServiceManager.compiled(false);
-        fluxtionServiceManager.buildServiceController(serviceList);
+        fluxtionServiceManager.useProcessor(processor);
         return fluxtionServiceManager;
     }
 
