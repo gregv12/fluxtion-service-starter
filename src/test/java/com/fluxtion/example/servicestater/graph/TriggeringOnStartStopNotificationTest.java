@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 
-public class TriggeringOnStartStopNotificationTest extends FluxtionServiceManagerModelATest {
+public class TriggeringOnStartStopNotificationTest extends BaseServiceStarterTest {
 
     protected Service svcA;
     protected Service svcB;

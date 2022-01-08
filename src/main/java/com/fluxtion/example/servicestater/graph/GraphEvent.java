@@ -16,8 +16,8 @@
 
 package com.fluxtion.example.servicestater.graph;
 
-import com.fluxtion.runtim.Named;
-import com.fluxtion.runtim.event.Event;
+import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.event.Event;
 import lombok.ToString;
 
 /**

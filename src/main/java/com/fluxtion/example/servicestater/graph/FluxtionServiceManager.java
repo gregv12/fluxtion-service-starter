@@ -17,15 +17,15 @@
 package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.compiler.Fluxtion;
-import com.fluxtion.compiler.builder.node.SEPConfig;
+import com.fluxtion.compiler.SEPConfig;
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.example.servicestater.ServiceStatusRecord;
 import com.fluxtion.example.servicestater.TaskWrapper;
 import com.fluxtion.example.servicestater.helpers.Slf4JAuditLogger;
 import com.fluxtion.example.servicestater.helpers.SynchronousTaskExecutor;
-import com.fluxtion.runtim.EventProcessor;
-import com.fluxtion.runtim.audit.EventLogControlEvent;
+import com.fluxtion.runtime.EventProcessor;
+import com.fluxtion.runtime.audit.EventLogControlEvent;
 import lombok.Synchronized;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;

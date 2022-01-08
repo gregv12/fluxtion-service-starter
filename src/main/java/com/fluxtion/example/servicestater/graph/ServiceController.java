@@ -18,11 +18,11 @@ package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.TaskWrapper;
-import com.fluxtion.runtim.Named;
-import com.fluxtion.runtim.annotations.Initialise;
-import com.fluxtion.runtim.annotations.PushReference;
-import com.fluxtion.runtim.audit.EventLogNode;
-import com.fluxtion.runtim.partition.LambdaReflection;
+import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.PushReference;
+import com.fluxtion.runtime.audit.EventLogNode;
+import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public abstract class ServiceController extends EventLogNode implements Named {
     }
 
     void addDependent(ServiceController dependency) {
-        if(!dependents.contains(dependency)){
+        if (!dependents.contains(dependency)) {
             dependents.add(dependency);
         }
 

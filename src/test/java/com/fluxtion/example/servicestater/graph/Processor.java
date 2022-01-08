@@ -16,10 +16,10 @@
  */
 package com.fluxtion.example.servicestater.graph;
 
-import com.fluxtion.runtim.StaticEventProcessor;
-import com.fluxtion.runtim.lifecycle.BatchHandler;
-import com.fluxtion.runtim.lifecycle.Lifecycle;
-import com.fluxtion.runtim.EventProcessor;
+import com.fluxtion.runtime.StaticEventProcessor;
+import com.fluxtion.runtime.lifecycle.BatchHandler;
+import com.fluxtion.runtime.lifecycle.Lifecycle;
+import com.fluxtion.runtime.EventProcessor;
 
 import com.fluxtion.example.servicestater.graph.FluxtionServiceManager.RegisterCommandProcessor;
 import com.fluxtion.example.servicestater.graph.FluxtionServiceManager.RegisterStatusListener;
@@ -37,12 +37,12 @@ import com.fluxtion.example.servicestater.graph.LoadAotCompiledTest;
 import com.fluxtion.example.servicestater.graph.ReversePassServiceController;
 import com.fluxtion.example.servicestater.graph.ServiceStatusRecordCache;
 import com.fluxtion.example.servicestater.graph.TaskWrapperPublisher;
-import com.fluxtion.runtim.audit.Auditor;
-import com.fluxtion.runtim.audit.EventLogControlEvent;
-import com.fluxtion.runtim.audit.EventLogManager;
-import com.fluxtion.runtim.event.Event;
-import com.fluxtion.runtim.time.Clock;
-import com.fluxtion.runtim.time.ClockStrategy.ClockStrategyEvent;
+import com.fluxtion.runtime.audit.Auditor;
+import com.fluxtion.runtime.audit.EventLogControlEvent;
+import com.fluxtion.runtime.audit.EventLogManager;
+import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.time.Clock;
+import com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -60,7 +60,7 @@ public class Processor implements EventProcessor, StaticEventProcessor, BatchHan
   //Node declarations
   public final Clock clock = new Clock();
   private final TaskWrapperPublisher commandPublisher = new TaskWrapperPublisher();
-  public final EventLogManager eventLogger = new EventLogManager();
+  public final EventLogManager eventLogger = new EventLogManager(l ->{});
   private final ServiceStatusRecordCache serviceStatusCache = new ServiceStatusRecordCache();
   private final ReversePassServiceController A_stop =
       new ReversePassServiceController("A", commandPublisher, serviceStatusCache);
@@ -89,7 +89,7 @@ public class Processor implements EventProcessor, StaticEventProcessor, BatchHan
     B_stop.setStartTask(LoadAotCompiledTest::startB);
     eventLogger.trace = (boolean) true;
     eventLogger.printEventToString = (boolean) true;
-    eventLogger.traceLevel = com.fluxtion.runtim.audit.EventLogControlEvent.LogLevel.INFO;
+    eventLogger.traceLevel = com.fluxtion.runtime.audit.EventLogControlEvent.LogLevel.INFO;
     eventLogger.clock = clock;
     //node auditors
     initialiseAuditor(eventLogger);
