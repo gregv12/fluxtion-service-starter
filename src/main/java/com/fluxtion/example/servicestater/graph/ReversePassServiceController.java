@@ -17,8 +17,8 @@
 package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEvent;
 
 import static com.fluxtion.example.servicestater.Service.Status.*;
 import static com.fluxtion.example.servicestater.graph.FluxtionServiceManager.toStopServiceName;

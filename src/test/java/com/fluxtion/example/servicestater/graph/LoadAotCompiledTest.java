@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 
-public class LoadAotCompiledTest extends FluxtionServiceManagerModelATest {
+public class LoadAotCompiledTest extends BaseServiceStarterTest {
     private static boolean Astarted = false;
     private static boolean Bstarted = false;
 
