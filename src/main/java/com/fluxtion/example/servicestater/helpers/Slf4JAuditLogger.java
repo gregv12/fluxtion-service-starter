@@ -16,8 +16,8 @@
 
 package com.fluxtion.example.servicestater.helpers;
 
-import com.fluxtion.runtim.audit.LogRecord;
-import com.fluxtion.runtim.audit.LogRecordListener;
+import com.fluxtion.runtime.audit.LogRecord;
+import com.fluxtion.runtime.audit.LogRecordListener;
 import lombok.extern.slf4j.Slf4j;
 
 /**

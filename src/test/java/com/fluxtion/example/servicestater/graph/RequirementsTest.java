@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RequirementsTest extends FluxtionServiceManagerModelATest {
+public class RequirementsTest extends BaseServiceStarterTest {
 
     public static final String SVC_INPUT = "svcInput";
     public static final String SVC_ROOT = "svcRoot";

@@ -46,7 +46,7 @@ public class ThreadingTests {
         svcManager.compiled(false);
         svcManager.registerTaskExecutor(new SynchronousTaskExecutor());
         svcManager.buildServiceController(svc_1, svc_2);
-        svcManager.registerStatusListener(FluxtionServiceManagerModelATest::logStatus);
+        svcManager.registerStatusListener(BaseServiceStarterTest::logStatus);
         svcManager.startService("svc_1");
         assertThat(threadNames.size(), is(2));
         assertThat(Thread.currentThread(), is(threadNames.get(0)));
@@ -67,7 +67,7 @@ public class ThreadingTests {
         svcManager.compiled(false);
         svcManager.registerTaskExecutor(new AsynchronousTaskExecutor());
         svcManager.buildServiceController(svc_1, svc_2);
-        svcManager.registerStatusListener(FluxtionServiceManagerModelATest::logStatus);
+        svcManager.registerStatusListener(BaseServiceStarterTest::logStatus);
         svcManager.startService("svc_1");
         assertThat(adder.intValue(), is(0));
         log.info("countDownLatch.countDown");
