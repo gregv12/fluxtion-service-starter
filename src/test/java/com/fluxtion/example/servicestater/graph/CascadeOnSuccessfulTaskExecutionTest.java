@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 
-public class CascadeOnSuccessfulTaskExecutionTest extends FluxtionServiceManagerModelATest {
+public class CascadeOnSuccessfulTaskExecutionTest extends BaseServiceStarterTest {
 
     protected Service svcA;
     protected Service svcB;

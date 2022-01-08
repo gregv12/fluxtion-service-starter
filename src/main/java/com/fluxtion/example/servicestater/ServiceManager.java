@@ -18,7 +18,7 @@ package com.fluxtion.example.servicestater;
 
 import com.fluxtion.example.servicestater.graph.FluxtionServiceManager;
 import com.fluxtion.example.servicestater.graph.ServiceManagerServer;
-import com.fluxtion.runtim.EventProcessor;
+import com.fluxtion.runtime.EventProcessor;
 
 import java.util.List;
 import java.util.function.Consumer;

@@ -18,8 +18,9 @@ package com.fluxtion.example.servicestater;
 
 import com.fluxtion.example.servicestater.graph.ForwardPassServiceController;
 import com.fluxtion.example.servicestater.graph.ReversePassServiceController;
-import com.fluxtion.runtim.Named;
-import com.fluxtion.runtim.partition.LambdaReflection.SerializableRunnable;
+import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.partition.LambdaReflection.SerializableRunnable;
+import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.ToString;

@@ -21,7 +21,7 @@ public class TaskExecutionTest {
     @Test
 //    @Disabled("does not actually test only demonstrates, needs to be updated")
     public void testSynchronousTaskExecution() throws InterruptedException {
-        FluxtionServiceManagerModelATest.auditOn(false);
+        BaseServiceStarterTest.auditOn(false);
         countDownLatch = new CountDownLatch(1);
         executorService = Executors.newCachedThreadPool();
         //two tasks that are auto triggered to run in parallel

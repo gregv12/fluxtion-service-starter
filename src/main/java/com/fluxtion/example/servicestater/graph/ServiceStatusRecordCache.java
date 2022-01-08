@@ -18,10 +18,10 @@ package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.ServiceStatusRecord;
-import com.fluxtion.runtim.Named;
-import com.fluxtion.runtim.annotations.EventHandler;
-import com.fluxtion.runtim.annotations.Initialise;
-import com.fluxtion.runtim.annotations.OnEvent;
+import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnEvent;
 
 import java.util.HashMap;
 import java.util.List;
