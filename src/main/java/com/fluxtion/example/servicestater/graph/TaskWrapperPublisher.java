@@ -20,7 +20,7 @@ import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.example.servicestater.TaskWrapper;
 import com.fluxtion.runtime.Named;
 import com.fluxtion.runtime.annotations.AfterEvent;
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class TaskWrapperPublisher implements Named {
     private Consumer<List<TaskWrapper>> commandPublisher = (command -> {});
     private final List<TaskWrapper> commandList = new ArrayList<>();
 
-    @EventHandler(propagate = false)
+    @OnEventHandler(propagate = false)
     public void registerCommandProcessor(FluxtionServiceManager.RegisterCommandProcessor registerCommandProcessor) {
         this.commandPublisher = registerCommandProcessor.getConsumer();
     }

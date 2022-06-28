@@ -23,6 +23,8 @@ import java.util.Scanner;
 public class CliTestClient {
 
     private static ServiceManager serviceManagerServer;
+    private static PublishServiceStatusRecordToLog statusUpdateListener;
+
 
     @SneakyThrows
     public static void main(String[] args) {
@@ -35,6 +37,7 @@ public class CliTestClient {
         boolean run = true;
         Thread.sleep(100);//give the threads time to start and publish help message at end
         printHelp();
+        printTree();
         while (run) {
             System.out.print(">");
             String command = scanner.next().toLowerCase(Locale.ROOT);
@@ -42,37 +45,46 @@ public class CliTestClient {
                 case "build":
                 case "b": {
                     buildGraph(false);
+                    printTree();
                 }
                 break;
                 case "compile":
                 case "c":
                     buildGraph(true);
+                    printTree();
                     break;
                 case "ss":
                 case "status":
                     printStatus();
+                    printTree();
                     break;
                 case "sa":
                 case "startall":
                     startAll();
+                    printTree();
                     break;
                 case "ha":
                 case "stopall":
                     stopAll();
+                    printTree();
                     break;
                 case "s":
                 case "start":
                     startByName(scanner);
+                    printTree();
                     break;
                 case "h":
                 case "stop":
                     stopByName(scanner);
+                    printTree();
                     break;
                 case "ns":
                     notifiedStartedByName(scanner);
+                    printTree();
                     break;
                 case "nh":
                     notifiedStoppedByName(scanner);
+                    printTree();
                     break;
                 case "aon":
                 case "auditon":
@@ -125,7 +137,14 @@ public class CliTestClient {
     }
 
     private static void printTree() {
-        System.out.println(asciiArtDAG);
+        System.out.printf((asciiArtDAG),
+                statusUpdateListener.getStatus(HANDLER_C),
+                statusUpdateListener.getStatus(HANDLER_A),
+                statusUpdateListener.getStatus(HANDLER_B),
+                statusUpdateListener.getStatus(CALC_C),
+                statusUpdateListener.getStatus(AGG_AB),
+                statusUpdateListener.getStatus(PERSISTER)
+        );
     }
 
     public static void startAll() {
@@ -141,6 +160,7 @@ public class CliTestClient {
     private static void printStatus() {
         checkControllerIsBuilt();
         serviceManagerServer.publishSystemStatus();
+//        printTree();
     }
 
     private static void checkControllerIsBuilt() {
@@ -226,7 +246,8 @@ public class CliTestClient {
         } else {
             serviceManagerServer = ServiceManager.build(persister, aggAB, calcC, handlerA, handlerB, handlerC);
         }
-        serviceManagerServer.registerStatusListener(new PublishServiceStatusRecordToLog());
+        statusUpdateListener = new PublishServiceStatusRecordToLog();
+        serviceManagerServer.registerStatusListener(statusUpdateListener);
     }
 
     public static void notifyStartedPersister() {
@@ -242,11 +263,12 @@ public class CliTestClient {
     public static final String asciiArtDAG = "" +
             "    Tree view of model\n" +
             "               \n" +
+            "                %-30s     %-30s %s\n" +
             "                +-------------+                      +------------+              +-----------+      |\n" +
             "                |             |                      |            |              |           |      |\n" +
             "                |  handler_c  |                      | handler_a  |              | handler_b |      |\n" +
             "                +---+---------+                      +----+-------+              +-----+-----+      |\n" +
-            "                    |                                     |                            |            |\n" +
+            "                    |     %-30s  |          %-30s |\n" +
             "                    |    +---------+                      |        +-------+           |            |   DIRECTION OF\n" +
             "                    |    |         |                      |        |       |           |            |   EVENT FLOW\n" +
             "                    +----+ calc_c  |                      +--------+agg_AB +-----------+            |\n" +
@@ -258,6 +280,6 @@ public class CliTestClient {
             "                              +----------------+ persister +-----------+                            |\n" +
             "                                               |           |                                        |\n" +
             "                                               +-----------+                                        v\n" +
-            "               \n" +
-            "                        ";
+            "                                                %s\n" +
+            "\n\n";
 }
