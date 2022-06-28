@@ -19,9 +19,9 @@ package com.fluxtion.example.servicestater.graph;
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.ServiceStatusRecord;
 import com.fluxtion.runtime.Named;
-import com.fluxtion.runtime.annotations.EventHandler;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnTrigger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +57,7 @@ public class ServiceStatusRecordCache implements Named {
      *
      * @param listener contains the status listener
      */
-    @EventHandler(propagate = false)
+    @OnEventHandler(propagate = false)
     public void registerStatusListener(FluxtionServiceManager.RegisterStatusListener listener) {
         statusListener = listener.getStatusListener();
         publishStatus();
@@ -70,7 +70,7 @@ public class ServiceStatusRecordCache implements Named {
      *
      * @param publishStatusRequest contains the status listener
      */
-    @EventHandler(propagate = false)
+    @OnEventHandler(propagate = false)
     public void publishCurrentStatus(GraphEvent.PublishStatus publishStatusRequest) {
         publishStatus();
     }
@@ -80,7 +80,7 @@ public class ServiceStatusRecordCache implements Named {
      *
      * @return flag indicating this node has changed and should notify child nodes of the change
      */
-    @OnEvent
+    @OnTrigger
     public boolean publishStatus() {
         statusListener.accept(
                 serviceStatusMap.entrySet().stream()
