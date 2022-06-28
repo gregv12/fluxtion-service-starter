@@ -20,7 +20,9 @@ import com.fluxtion.example.servicestater.ServiceStatusRecord;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -29,10 +31,18 @@ import java.util.stream.Collectors;
 @ToString
 public class PublishServiceStatusRecordToLog implements Consumer<List<ServiceStatusRecord>> {
 
+    private final Map<String, String> statusMap = new HashMap<>();
+
     @Override
     public void accept(List<ServiceStatusRecord> status) {
+        status.forEach(s -> statusMap.put(s.getServiceName(), s.getStatus().name()));
         log.info("Current status:\n" + status.stream()
                 .map(Objects::toString)
                 .collect(Collectors.joining("\n")));
     }
+
+    public String getStatus(String serviceName){
+        return statusMap.getOrDefault(serviceName, "STATUS_UNKNOWN");
+    }
+
 }

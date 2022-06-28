@@ -17,8 +17,8 @@
 package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 
 import static com.fluxtion.example.servicestater.graph.FluxtionServiceManager.toStartServiceName;
 import static com.fluxtion.example.servicestater.Service.Status.STARTED;
@@ -42,12 +42,12 @@ public class ForwardPassServiceController extends ServiceController {
         super(serviceName, toStartServiceName(serviceName), taskWrapperPublisher, serviceStatusRecordCache);
     }
 
-    @EventHandler
+    @OnEventHandler
     public boolean startAllServices(GraphEvent.RequestStartAll startAll){
         return startServiceRequest();
     }
 
-    @EventHandler(filterVariable = "serviceName")
+    @OnEventHandler(filterVariable = "serviceName")
     public boolean startThisService(GraphEvent.RequestServiceStart startSingleService) {
         return startServiceRequest();
     }
@@ -71,14 +71,14 @@ public class ForwardPassServiceController extends ServiceController {
         return changed;
     }
 
-    @EventHandler(propagate = false)
+    @OnEventHandler(propagate = false)
     public void publishStartTasks(GraphEvent.PublishStopTask publishStartTask) {
         if (getStatus() == Service.Status.WAITING_FOR_PARENTS_TO_STOP && (!hasParents() || areAllParentsStopped())) {
             stopService();
         }
     }
 
-    @EventHandler(filterVariable = "serviceName")
+    @OnEventHandler(filterVariable = "serviceName")
     public boolean notifyServiceStopped(GraphEvent.NotifyServiceStopped statusUpdate) {
         boolean changed = getStatus() != Service.Status.STOPPED;
         if (changed) {
@@ -87,7 +87,7 @@ public class ForwardPassServiceController extends ServiceController {
         return changed;
     }
 
-    @OnEvent
+    @OnTrigger
     public boolean recalculateStatusForStart() {
         if (getStatus() == Service.Status.WAITING_FOR_PARENTS_TO_STOP &&  areAllParentsStopped() ) {
             stopService();

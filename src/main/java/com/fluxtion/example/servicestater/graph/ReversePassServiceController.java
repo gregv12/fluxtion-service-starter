@@ -17,8 +17,8 @@
 package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
-import com.fluxtion.runtime.annotations.EventHandler;
-import com.fluxtion.runtime.annotations.OnEvent;
+import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.annotations.OnTrigger;
 
 import static com.fluxtion.example.servicestater.Service.Status.*;
 import static com.fluxtion.example.servicestater.graph.FluxtionServiceManager.toStopServiceName;
@@ -45,12 +45,12 @@ public class ReversePassServiceController extends ServiceController {
 
     private boolean justStarted = false;
 
-    @EventHandler
+    @OnEventHandler
     public boolean stopAllServices(GraphEvent.RequestStopAll startAll){
         return stopServiceRequest();
     }
 
-    @EventHandler(filterVariable = "serviceName")
+    @OnEventHandler(filterVariable = "serviceName")
     public boolean stopThisService(GraphEvent.RequestServiceStop serviceStopRequest){
         return stopServiceRequest();
     }
@@ -74,14 +74,14 @@ public class ReversePassServiceController extends ServiceController {
         return changed;
     }
 
-    @EventHandler(propagate = false)
+    @OnEventHandler(propagate = false)
     public void publishStartTasks(GraphEvent.PublishStartTask publishStartTask) {
         if (getStatus() == Service.Status.WAITING_FOR_PARENTS_TO_START && (!hasParents() || areAllParentsStarted())) {
             startService();
         }
     }
 
-    @EventHandler(filterVariable = "serviceName")
+    @OnEventHandler(filterVariable = "serviceName")
     public boolean notifyServiceStarted(GraphEvent.NotifyServiceStarted statusUpdate) {
         boolean changed = getStatus() != Service.Status.STARTED;
         if (changed) {
@@ -92,7 +92,7 @@ public class ReversePassServiceController extends ServiceController {
     }
 
 
-    @OnEvent
+    @OnTrigger
     public boolean recalculateStatusForStop() {
         if (getStatus() == Service.Status.WAITING_FOR_PARENTS_TO_START && areAllParentsStarted() ) {
             startService();
