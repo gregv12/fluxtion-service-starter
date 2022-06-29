@@ -17,7 +17,7 @@
 package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.compiler.Fluxtion;
-import com.fluxtion.compiler.SEPConfig;
+import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.example.servicestater.ServiceStatusRecord;
@@ -278,7 +278,7 @@ public class FluxtionServiceManager implements ServiceManager {
                 .forEach(s -> s.addDependent(stopController));
     }
 
-    private void serviceStarter(SEPConfig cfg) {
+    private void serviceStarter(EventProcessorConfig cfg) {
         managedStartServices.values().forEach(cfg::addNode);
         cfg.addNode(taskWrapperPublisher);
         if (addAudit) {
