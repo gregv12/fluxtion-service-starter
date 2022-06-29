@@ -2,3 +2,4 @@
 /target/
 /src/main/resources/com/fluxtion/example/servicestater/
 /.idea/
+/fluxtion-service-starter.iml
