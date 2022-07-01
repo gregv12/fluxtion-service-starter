@@ -4,7 +4,7 @@
 
     <groupId>com.fluxtion.extension</groupId>
     <artifactId>service-starter</artifactId>
-    <version>0.1.23-SNAPSHOT</version>
+    <version>0.1.24-SNAPSHOT</version>
     <name>fluxtion.extension :: service-starter</name>
     <description>A task manager to control the start and stop tasks for a directed acyclic graph of services</description>
     <url>https://github.com/gregv12/fluxtion-service-starter</url>
@@ -12,8 +12,8 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <fluxtion.version>6.0.2</fluxtion.version>
-        <logback.version>1.2.10</logback.version>
+        <fluxtion.version>6.0.3</fluxtion.version>
+        <logback.version>1.2.11</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <nexus.url>https://oss.sonatype.org</nexus.url>
         <local.repository.path>target/deploy-sample</local.repository.path>
@@ -202,14 +202,20 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-core</artifactId>
+            <version>1.5.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.32</version>
+            <version>1.7.36</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
+            <version>1.18.24</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
