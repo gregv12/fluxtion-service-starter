@@ -27,6 +27,17 @@ public class RequirementsTest extends BaseServiceStarterTest {
     }
 
     @Test
+    public void testRequirementsSettingAfterBuild() {
+        Service svcRoot = Service.builder(SVC_ROOT)
+                .build();
+        Service svcInput = Service.builder(SVC_INPUT)
+                .build();
+        svcInput.addRequiredService(svcRoot);
+        serviceManager = ServiceManager.build(svcRoot, svcInput);
+        validateStartInOrder(svcInput, svcRoot);
+    }
+
+    @Test
     public void testRequirementsSettingWithVarArgs() {
         Service svcRoot = Service.builder(SVC_ROOT)
                 .build();
@@ -44,6 +55,18 @@ public class RequirementsTest extends BaseServiceStarterTest {
         Service svcRoot = Service.builder(SVC_ROOT)
                 .serviceListThatRequireMe(List.of(svcInput))
                 .build();
+
+        serviceManager = ServiceManager.build(svcRoot, svcInput);
+        validateStartInOrder(svcInput, svcRoot);
+    }
+
+    @Test
+    public void testDependentSettingAfterBuild() {
+        Service svcInput = Service.builder(SVC_INPUT)
+                .build();
+        Service svcRoot = Service.builder(SVC_ROOT)
+                .build();
+        svcRoot.addServiceThatNeedsMe(svcInput);
 
         serviceManager = ServiceManager.build(svcRoot, svcInput);
         validateStartInOrder(svcInput, svcRoot);

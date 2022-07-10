@@ -20,15 +20,14 @@ import com.fluxtion.example.servicestater.graph.ForwardPassServiceController;
 import com.fluxtion.example.servicestater.graph.ReversePassServiceController;
 import com.fluxtion.runtime.Named;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableRunnable;
-import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,38 +56,52 @@ public class Service implements Named {
 
     @NonNull
     private final String name;
-    @Nullable
+    @NonNull
     private final List<Service> serviceListThatRequireMe;
-    @Nullable
+    @NonNull
     private final List<Service> requiredServiceList;
     @Nullable
     private final SerializableRunnable startTask;
     @Nullable
     private final SerializableRunnable stopTask;
 
-    public static ServiceBuilder builder(String name){
-        return hiddenBuilder().name(name);
+    public static ServiceBuilder builder(String name) {
+        return hiddenBuilder().name(name)
+                .serviceListThatRequireMe(new ArrayList<>())
+                .requiredServiceList(new ArrayList<>());
     }
 
-    public static class ServiceBuilder{
+    public static class ServiceBuilder {
 
-        public ServiceBuilder servicesThatRequireMe(Service... services){
+        public ServiceBuilder servicesThatRequireMe(Service... services) {
             Objects.requireNonNull(services, "Requiring me service list cannot be null");
             return this.serviceListThatRequireMe(Arrays.asList(services));
         }
 
-        public ServiceBuilder requiredServices(Service... services){
+        public ServiceBuilder requiredServices(Service... services) {
             Objects.requireNonNull(services, "Requiring me service list cannot be null");
             return this.requiredServiceList(Arrays.asList(services));
         }
     }
 
+    @NotNull
     public List<Service> getServiceListThatRequireMe() {
-        return serviceListThatRequireMe ==null?Collections.emptyList(): serviceListThatRequireMe;
+        return serviceListThatRequireMe;
     }
 
+    @NotNull
     public List<Service> getRequiredServiceList() {
-        return requiredServiceList ==null?Collections.emptyList(): requiredServiceList;
+        return requiredServiceList;
+    }
+
+    public Service addRequiredService(Service requireService) {
+        Objects.requireNonNull(requiredServiceList).add(requireService);
+        return this;
+    }
+
+    public Service addServiceThatNeedsMe(Service requireService) {
+        Objects.requireNonNull(serviceListThatRequireMe).add(requireService);
+        return this;
     }
 
     @Nullable
