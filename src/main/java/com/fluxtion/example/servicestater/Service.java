@@ -18,7 +18,7 @@ package com.fluxtion.example.servicestater;
 
 import com.fluxtion.example.servicestater.graph.ForwardPassServiceController;
 import com.fluxtion.example.servicestater.graph.ReversePassServiceController;
-import com.fluxtion.runtime.Named;
+import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableRunnable;
 import lombok.Builder;
 import lombok.NonNull;
@@ -42,7 +42,7 @@ import java.util.Objects;
  */
 @Builder(builderMethodName = "hiddenBuilder")
 @ToString
-public class Service implements Named {
+public class Service implements NamedNode {
 
     public enum Status {
         STATUS_UNKNOWN,

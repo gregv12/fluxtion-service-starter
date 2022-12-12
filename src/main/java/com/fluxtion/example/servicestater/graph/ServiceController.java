@@ -18,10 +18,10 @@ package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.TaskWrapper;
-import com.fluxtion.runtime.Named;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.PushReference;
 import com.fluxtion.runtime.audit.EventLogNode;
+import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.partition.LambdaReflection;
 import lombok.ToString;
 
@@ -44,18 +44,18 @@ import static com.fluxtion.example.servicestater.Service.Status.STATUS_UNKNOWN;
  * be published {@link TaskWrapperPublisher}, for a client app to execute after the graph cycle has completed.
  */
 @ToString
-public abstract class ServiceController extends EventLogNode implements Named {
+public abstract class ServiceController extends EventLogNode implements NamedNode {
 
     protected final String serviceName;
     protected final transient String controllerName;
-    /**
-     * services that depend up on this instance
-     */
-    private List<ServiceController> dependents = new ArrayList<>();
     @PushReference
     private final TaskWrapperPublisher taskWrapperPublisher;
     @PushReference
     private final ServiceStatusRecordCache serviceStatusRecordCache;
+    /**
+     * services that depend up on this instance
+     */
+    private List<ServiceController> dependents = new ArrayList<>();
     private LambdaReflection.SerializableRunnable startTask;
     private LambdaReflection.SerializableRunnable stopTask;
 
@@ -73,26 +73,26 @@ public abstract class ServiceController extends EventLogNode implements Named {
 
     }
 
-    public final void setDependents(List<ServiceController> dependents) {
-        this.dependents = dependents;
-    }
-
     public final List<ServiceController> getDependents() {
         return Collections.unmodifiableList(dependents);
+    }
+
+    public final void setDependents(List<ServiceController> dependents) {
+        this.dependents = dependents;
     }
 
     public final Service.Status getStatus() {
         return serviceStatusRecordCache.getStatus(getServiceName());
     }
 
-    public String getServiceName() {
-        return serviceName;
-    }
-
     protected void setStatus(Service.Status status) {
         auditLog.info("initialStatus", getStatus());
         auditLog.info("setStatus", status);
         serviceStatusRecordCache.setServiceStatus(getServiceName(), status);
+    }
+
+    public String getServiceName() {
+        return serviceName;
     }
 
     public LambdaReflection.SerializableRunnable getStartTask() {

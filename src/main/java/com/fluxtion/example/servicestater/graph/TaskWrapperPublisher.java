@@ -18,9 +18,9 @@ package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.example.servicestater.TaskWrapper;
-import com.fluxtion.runtime.Named;
 import com.fluxtion.runtime.annotations.AfterEvent;
 import com.fluxtion.runtime.annotations.OnEventHandler;
+import com.fluxtion.runtime.node.NamedNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,26 +29,27 @@ import java.util.function.Consumer;
 /**
  * Publishes commands for a service that are for execution by client code, a client application registers a command executor
  * by calling {@link ServiceManager#registerTaskExecutor(TaskWrapper.TaskExecutor)}
- *
+ * <p>
  * The task list of events can be executed in parallel.
  */
-public class TaskWrapperPublisher implements Named {
+public class TaskWrapperPublisher implements NamedNode {
 
-    private Consumer<List<TaskWrapper>> commandPublisher = (command -> {});
     private final List<TaskWrapper> commandList = new ArrayList<>();
+    private Consumer<List<TaskWrapper>> commandPublisher = (command -> {
+    });
 
     @OnEventHandler(propagate = false)
     public void registerCommandProcessor(FluxtionServiceManager.RegisterCommandProcessor registerCommandProcessor) {
         this.commandPublisher = registerCommandProcessor.getConsumer();
     }
 
-    public void publishCommand(TaskWrapper command){
+    public void publishCommand(TaskWrapper command) {
         commandList.add(command);
     }
 
     @AfterEvent
     public void publishCommands() {
-        if(!commandList.isEmpty()){
+        if (!commandList.isEmpty()) {
             commandPublisher.accept(new ArrayList<>(commandList));
             commandList.clear();
         }

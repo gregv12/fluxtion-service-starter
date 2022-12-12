@@ -16,8 +16,8 @@
 
 package com.fluxtion.example.servicestater.graph;
 
-import com.fluxtion.runtime.Named;
 import com.fluxtion.runtime.event.Event;
+import com.fluxtion.runtime.node.NamedNode;
 import lombok.ToString;
 
 /**
@@ -29,7 +29,7 @@ public interface GraphEvent {
      * A base event class that provides filtering functionality, allows routing of an event to a specific
      * {@link ServiceController} and method. The filter should be the name of the service.
      */
-    class FilteredGraphEvent implements Named, Event {
+    class FilteredGraphEvent implements NamedNode, Event {
         private final String name;
 
         public FilteredGraphEvent(String name) {
