@@ -18,10 +18,10 @@ package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.ServiceStatusRecord;
-import com.fluxtion.runtime.Named;
-import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
+import com.fluxtion.runtime.node.NamedNode;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,11 +36,11 @@ import java.util.stream.Collectors;
  * <p>
  * A client application can listen to status updates by calling {@link FluxtionServiceManager#registerStatusListener(Consumer)}
  */
-public class ServiceStatusRecordCache implements Named {
-
-    private Consumer<List<ServiceStatusRecord>> statusListener = (strings -> {});
+public class ServiceStatusRecordCache implements NamedNode {
 
     private final Map<String, Service.Status> serviceStatusMap = new HashMap<>();
+    private Consumer<List<ServiceStatusRecord>> statusListener = (strings -> {
+    });
 
     public Service.Status getStatus(String name) {
         return serviceStatusMap.get(name);
