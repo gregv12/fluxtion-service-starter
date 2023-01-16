@@ -4,7 +4,7 @@
 
     <groupId>com.fluxtion.extension</groupId>
     <artifactId>service-starter</artifactId>
-    <version>0.1.30-SNAPSHOT</version>
+    <version>0.1.31-SNAPSHOT</version>
     <name>fluxtion.extension :: service-starter</name>
     <description>A task manager to control the start and stop tasks for a directed acyclic graph of services</description>
     <url>https://github.com/gregv12/fluxtion-service-starter</url>
