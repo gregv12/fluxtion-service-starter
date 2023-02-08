@@ -17,6 +17,8 @@
 package com.fluxtion.example.servicestater.helpers;
 
 import com.fluxtion.example.servicestater.TaskWrapper;
+import com.fluxtion.example.servicestater.TaskWrapper.TaskExecutionResult;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -24,14 +26,30 @@ import java.util.List;
 @Slf4j
 public class SynchronousTaskExecutor implements TaskWrapper.TaskExecutor {
 
+    private boolean failOnException;
+
+    public SynchronousTaskExecutor(boolean failOnException) {
+        this.failOnException = failOnException;
+    }
+
+    public void failFast(boolean failFastFlag) {
+        this.failOnException = failFastFlag;
+    }
+
     @Override
     public void close() {
         //do nothing
     }
 
+    @SneakyThrows
     @Override
     public void accept(List<TaskWrapper> taskWrapper) {
-        taskWrapper.forEach(TaskWrapper::call);
+        for (TaskWrapper wrapper : taskWrapper) {
+            TaskExecutionResult taskExecutionResult = wrapper.call();
+            if(failOnException && taskExecutionResult.isExceptionThrown()){
+                throw taskExecutionResult.getException();
+            }
+        }
     }
 
 }

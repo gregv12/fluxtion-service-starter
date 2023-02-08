@@ -31,11 +31,6 @@ import java.util.function.Consumer;
 @Slf4j
 public class TaskWrapper implements Callable<TaskWrapper.TaskExecutionResult> {
 
-    /**
-     * Processes {@link TaskWrapper} published by the {@link ServiceManager}
-     */
-    public interface TaskExecutor extends Consumer<List<TaskWrapper>>, AutoCloseable{}
-
     private final String serviceName;
     private final boolean startTask;
     private final Runnable task;
@@ -51,16 +46,25 @@ public class TaskWrapper implements Callable<TaskWrapper.TaskExecutionResult> {
     @Override
     public TaskExecutionResult call() {
         TaskExecutionResult result;
-        try{
+        try {
             log.info("executing {}", this);
             task.run();
-            result = new TaskExecutionResult(true, isStartTask(), getServiceName());
-        }catch (Exception e){
+            result = new TaskExecutionResult(true, isStartTask(), getServiceName(), false, null);
+        } catch (Exception e) {
             log.warn("problem executing task", e);
-            result = new TaskExecutionResult(false,  isStartTask(), getServiceName());
+            result = new TaskExecutionResult(false, isStartTask(), getServiceName(), true, e);
         }
         log.debug("completed executing: {}", result);
         return result;
+    }
+
+    /**
+     * Processes {@link TaskWrapper} published by the {@link ServiceManager}
+     */
+    public interface TaskExecutor extends Consumer<List<TaskWrapper>>, AutoCloseable {
+
+        default void failFast(boolean failFastFlag) {
+        }
     }
 
     @Value
@@ -68,5 +72,7 @@ public class TaskWrapper implements Callable<TaskWrapper.TaskExecutionResult> {
         boolean success;
         boolean startTask;
         String serviceName;
+        boolean exceptionThrown;
+        Throwable exception;
     }
 }

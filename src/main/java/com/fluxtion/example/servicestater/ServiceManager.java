@@ -77,7 +77,6 @@ public interface ServiceManager {
         return new ServiceManagerServer(serviceManager);
     }
 
-
     /**
      * Request from the client to start a service and its dependencies. The {@link ServiceManager} will publish task
      * lists to execute associated with the starting of each connected managed service. Services are started in reverse
@@ -127,10 +126,30 @@ public interface ServiceManager {
     void stopAllServices();
 
     /**
+     * By detault any excetion that is thrown in start/stop task will be re-thrown by the default {@link com.fluxtion.example.servicestater.TaskWrapper.TaskExecutor}
+     * Setting this flag to false will cause the exceptions to be swallowed and the ServiceManager will still be in a
+     * good state after an exception has been thrown.
+     *
+     * @param failFastFlag
+     */
+    void failFastOnTaskException(boolean failFastFlag);
+
+    /**
      * Publishes the current state of {@link Service}'s managed by this {@link ServiceManager} to the registered
      * status listener, see {@link this#registerStatusListener(Consumer)}
      */
     void publishSystemStatus();
+
+    /**
+     * Add services to an already running graph, only supported on interpreted graphs. Compiled graph will throw an
+     * {@link UnsupportedOperationException}. Returns a reference to a new grpah with all the previous states preservec,
+     * new service are in {@link com.fluxtion.example.servicestater.Service.Status#STATUS_UNKNOWN} on completion of this
+     * method
+     *
+     * @param serviceList The services to add to the Service
+     * @return A reference to the new {@link ServiceManager} that holds the updated graph
+     */
+    ServiceManager addService(Service... serviceList);
 
     void shutdown();
 

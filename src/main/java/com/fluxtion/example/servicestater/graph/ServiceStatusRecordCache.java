@@ -42,12 +42,18 @@ public class ServiceStatusRecordCache implements NamedNode {
     private Consumer<List<ServiceStatusRecord>> statusListener = (strings -> {
     });
 
+    private boolean rebuild;
+
     public Service.Status getStatus(String name) {
         return serviceStatusMap.get(name);
     }
 
     public void setServiceStatus(String name, Service.Status status) {
-        serviceStatusMap.put(name, status);
+        if(rebuild){
+            serviceStatusMap.putIfAbsent(name, status);
+        }else{
+            serviceStatusMap.put(name, status);
+        }
     }
 
     /**
@@ -97,5 +103,13 @@ public class ServiceStatusRecordCache implements NamedNode {
     @Override
     public String getName() {
         return "serviceStatusCache";
+    }
+
+    public void rebuildingMode(){
+        rebuild = true;
+    }
+
+    public void normalMode(){
+        rebuild = false;
     }
 }
