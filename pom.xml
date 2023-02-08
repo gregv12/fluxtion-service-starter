@@ -4,7 +4,7 @@
 
     <groupId>com.fluxtion.extension</groupId>
     <artifactId>service-starter</artifactId>
-    <version>0.1.31-SNAPSHOT</version>
+    <version>0.1.32-SNAPSHOT</version>
     <name>fluxtion.extension :: service-starter</name>
     <description>A task manager to control the start and stop tasks for a directed acyclic graph of services</description>
     <url>https://github.com/gregv12/fluxtion-service-starter</url>
@@ -12,7 +12,7 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <fluxtion.version>7.0.6</fluxtion.version>
+        <fluxtion.version>7.0.9</fluxtion.version>
         <logback.version>1.2.11</logback.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <nexus.url>https://oss.sonatype.org</nexus.url>
