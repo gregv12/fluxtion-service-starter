@@ -44,7 +44,7 @@ public class ThreadingTests {
                 .build();
         svcManager = new FluxtionServiceManager();
         svcManager.compiled(false);
-        svcManager.registerTaskExecutor(new SynchronousTaskExecutor());
+        svcManager.registerTaskExecutor(new SynchronousTaskExecutor(true));
         svcManager.buildServiceController(svc_1, svc_2);
         svcManager.registerStatusListener(BaseServiceStarterTest::logStatus);
         svcManager.startService("svc_1");
