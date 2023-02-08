@@ -74,6 +74,24 @@ public class FluxtionServiceManager implements ServiceManager {
     private boolean triggerDependentsOnStopNotification = false;
     private final DelegatingTaskExecutor taskExecutor = new DelegatingTaskExecutor();
 
+    @Override
+    public FluxtionServiceManager addService(Service... serviceList){
+        Objects.requireNonNull(startProcessor);
+        Objects.requireNonNull(serviceList);
+        if(compile){
+            throw new UnsupportedOperationException("only imterpreted service graphs can be added to after initial build");
+        }
+        serviceStatusRecordCache.rebuildingMode();
+        Arrays.stream(serviceList).forEach(this::addServicesToMap);//change to recursive lookup
+        Arrays.stream(serviceList).forEach(this::setServiceDependencies);//use the recursive list here
+        startProcessor = new SynchronizedEventProcessor(Fluxtion.interpret(this::serviceStarter));
+        startProcessor.init();
+        startProcessor.onEvent(new EventLogControlEvent(new Slf4JAuditLogger()));
+        startProcessor.onEvent(new RegisterCommandProcessor(taskExecutor));
+        serviceStatusRecordCache.normalMode();
+        return this;
+    }
+
     public FluxtionServiceManager buildServiceController(Service... serviceList) {
         Objects.requireNonNull(serviceList);
         managedStartServices.clear();
@@ -167,6 +185,11 @@ public class FluxtionServiceManager implements ServiceManager {
     @Override
     public void registerStatusListener(Consumer<List<ServiceStatusRecord>> statusUpdateListener) {
         startProcessor.onEvent(new RegisterStatusListener(statusUpdateListener));
+    }
+
+    @Override
+    public void failFastOnTaskException(boolean failFastFlag){
+        taskExecutor.failFast(failFastFlag);
     }
 
     @Override
@@ -332,14 +355,16 @@ public class FluxtionServiceManager implements ServiceManager {
         private TaskWrapper.TaskExecutor delegate;
         private transient final List<TaskWrapper> tasks = new ArrayList<>();
         private boolean triggerNotificationOnSuccessfulTaskExecution = false;
+        private boolean failFastFlag = true;
 
         public DelegatingTaskExecutor() {
-            delegate = new SynchronousTaskExecutor();
+            delegate = new SynchronousTaskExecutor(failFastFlag);
         }
 
         public void setDelegate(TaskWrapper.TaskExecutor delegate) {
             Objects.requireNonNull(delegate);
             this.delegate = delegate;
+            delegate.failFast(failFastFlag);
         }
 
         public void setTriggerNotificationOnSuccessfulTaskExecution(boolean triggerNotificationOnSuccessfulTaskExecution) {
@@ -371,6 +396,12 @@ public class FluxtionServiceManager implements ServiceManager {
                 tasks.clear();
                 delegate.accept(tempTasks);
             }
+        }
+
+        @Override
+        public void failFast(boolean failFastFlag) {
+            this.failFastFlag = failFastFlag;
+            delegate.failFast(failFastFlag);
         }
     }
 }
