@@ -18,7 +18,9 @@ package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.TaskWrapper;
+import com.fluxtion.example.servicestater.graph.GraphEvent.RemoveService;
 import com.fluxtion.runtime.annotations.Initialise;
+import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.PushReference;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.node.NamedNode;
@@ -71,6 +73,12 @@ public abstract class ServiceController extends EventLogNode implements NamedNod
             dependents.add(dependency);
         }
 
+    }
+
+    @OnEventHandler(propagate = false)
+    public boolean removeDependent(RemoveService removeServiceEvent){
+        dependents.removeIf(removeServiceEvent::serviceMatch);
+        return false;
     }
 
     public final List<ServiceController> getDependents() {
