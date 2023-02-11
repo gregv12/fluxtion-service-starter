@@ -16,12 +16,13 @@
 
 package com.fluxtion.example.servicestater.graph;
 
-import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.compiler.EventProcessorConfig;
+import com.fluxtion.compiler.Fluxtion;
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.example.servicestater.ServiceStatusRecord;
 import com.fluxtion.example.servicestater.TaskWrapper;
+import com.fluxtion.example.servicestater.graph.GraphEvent.RemoveService;
 import com.fluxtion.example.servicestater.helpers.Slf4JAuditLogger;
 import com.fluxtion.example.servicestater.helpers.SynchronousTaskExecutor;
 import com.fluxtion.runtime.EventProcessor;
@@ -30,7 +31,12 @@ import lombok.Synchronized;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -67,24 +73,52 @@ public class FluxtionServiceManager implements ServiceManager {
     private final Map<String, ServiceController> managedStartServices = new HashMap<>();
     private final TaskWrapperPublisher taskWrapperPublisher = new TaskWrapperPublisher();
     private final ServiceStatusRecordCache serviceStatusRecordCache = new ServiceStatusRecordCache();
+    private final DelegatingTaskExecutor taskExecutor = new DelegatingTaskExecutor();
     private EventProcessor startProcessor;
     private boolean addAudit = true;
     private boolean compile = true;
     private boolean triggerDependentsOnStartNotification = false;
     private boolean triggerDependentsOnStopNotification = false;
-    private final DelegatingTaskExecutor taskExecutor = new DelegatingTaskExecutor();
+
+    public static String toStartServiceName(String serviceName) {
+        return serviceName + START_SUFFIX;
+    }
+
+    public static String toStopServiceName(String serviceName) {
+        return serviceName + STOP_SUFFIX;
+    }
 
     @Override
-    public FluxtionServiceManager addService(Service... serviceList){
+    public FluxtionServiceManager addService(Service... serviceToAdd) {
         Objects.requireNonNull(startProcessor);
-        Objects.requireNonNull(serviceList);
-        if(compile){
-            throw new UnsupportedOperationException("only imterpreted service graphs can be added to after initial build");
+        Objects.requireNonNull(serviceToAdd);
+        if (compile) {
+            throw new UnsupportedOperationException("only interpreted service graphs can be added to after initial build");
         }
         serviceStatusRecordCache.rebuildingMode();
-        Arrays.stream(serviceList).forEach(this::addServicesToMap);//change to recursive lookup
-        Arrays.stream(serviceList).forEach(this::setServiceDependencies);//use the recursive list here
+        Arrays.stream(serviceToAdd).forEach(this::addServicesToMap);//change to recursive lookup
+        Arrays.stream(serviceToAdd).forEach(this::setServiceDependencies);//use the recursive list here
         startProcessor = new SynchronizedEventProcessor(Fluxtion.interpret(this::serviceStarter));
+        startProcessor.init();
+        startProcessor.onEvent(new EventLogControlEvent(new Slf4JAuditLogger()));
+        startProcessor.onEvent(new RegisterCommandProcessor(taskExecutor));
+        serviceStatusRecordCache.normalMode();
+        return this;
+    }
+
+    @Override
+    public FluxtionServiceManager removeService(String... servicesToRemove) {
+        Objects.requireNonNull(startProcessor);
+        Objects.requireNonNull(servicesToRemove);
+        if (compile) {
+            throw new UnsupportedOperationException("only interpreted service graphs can be removed from after initial build");
+        }
+        Arrays.stream(servicesToRemove).forEach(this::stopService);
+        Arrays.stream(servicesToRemove).map(RemoveService::new).forEach(startProcessor::onEvent);
+        Arrays.stream(servicesToRemove).map(FluxtionServiceManager::toStartServiceName).forEach(managedStartServices::remove);
+        Arrays.stream(servicesToRemove).map(FluxtionServiceManager::toStopServiceName).forEach(managedStartServices::remove);
+        startProcessor = new SynchronizedEventProcessor(Fluxtion.interpret(this::serviceStarter));
+        serviceStatusRecordCache.rebuildingMode();
         startProcessor.init();
         startProcessor.onEvent(new EventLogControlEvent(new Slf4JAuditLogger()));
         startProcessor.onEvent(new RegisterCommandProcessor(taskExecutor));
@@ -108,7 +142,7 @@ public class FluxtionServiceManager implements ServiceManager {
         return this;
     }
 
-    public FluxtionServiceManager useProcessor(EventProcessor processor){
+    public FluxtionServiceManager useProcessor(EventProcessor processor) {
         startProcessor = processor;
         startProcessor.init();
         startProcessor.onEvent(new EventLogControlEvent(new Slf4JAuditLogger()));
@@ -188,7 +222,7 @@ public class FluxtionServiceManager implements ServiceManager {
     }
 
     @Override
-    public void failFastOnTaskException(boolean failFastFlag){
+    public void failFastOnTaskException(boolean failFastFlag) {
         taskExecutor.failFast(failFastFlag);
     }
 
@@ -309,14 +343,6 @@ public class FluxtionServiceManager implements ServiceManager {
         }
     }
 
-    public static String toStartServiceName(String serviceName) {
-        return serviceName + START_SUFFIX;
-    }
-
-    public static String toStopServiceName(String serviceName) {
-        return serviceName + STOP_SUFFIX;
-    }
-
     @Value
     public static class RegisterCommandProcessor {
         Consumer<List<TaskWrapper>> consumer;
@@ -352,8 +378,8 @@ public class FluxtionServiceManager implements ServiceManager {
 
 
     class DelegatingTaskExecutor implements TaskWrapper.TaskExecutor {
-        private TaskWrapper.TaskExecutor delegate;
         private transient final List<TaskWrapper> tasks = new ArrayList<>();
+        private TaskWrapper.TaskExecutor delegate;
         private boolean triggerNotificationOnSuccessfulTaskExecution = false;
         private boolean failFastFlag = true;
 

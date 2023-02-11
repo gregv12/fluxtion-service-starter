@@ -18,6 +18,7 @@ package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.ServiceStatusRecord;
+import com.fluxtion.example.servicestater.graph.GraphEvent.RemoveService;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
@@ -93,6 +94,12 @@ public class ServiceStatusRecordCache implements NamedNode {
                         .map(e -> new ServiceStatusRecord(e.getKey(), e.getValue()))
                         .collect(Collectors.toList())
         );
+        return false;
+    }
+
+    @OnEventHandler(propagate = false)
+    public boolean removeDependent(RemoveService removeServiceEvent){
+        serviceStatusMap.remove(removeServiceEvent.getServiceName());
         return false;
     }
 

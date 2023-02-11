@@ -16,6 +16,7 @@
 
 package com.fluxtion.example.servicestater.graph;
 
+import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.node.NamedNode;
 import lombok.ToString;
@@ -98,5 +99,26 @@ public interface GraphEvent {
 
     @ToString
     class RequestStopAll {
+    }
+
+    @ToString
+    class RemoveService {
+        private final String serviceName;
+
+        public RemoveService(Service service){
+            this(service.getName());
+        }
+
+        public RemoveService(String serviceName) {
+            this.serviceName = serviceName;
+        }
+
+        public String getServiceName() {
+            return serviceName;
+        }
+
+        public boolean serviceMatch(ServiceController service){
+            return service.getServiceName().equals(serviceName);
+        }
     }
 }
