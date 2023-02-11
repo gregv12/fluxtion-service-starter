@@ -151,6 +151,8 @@ public interface ServiceManager {
      */
     ServiceManager addService(Service... serviceList);
 
+    FluxtionServiceManager removeService(String... servicesToRemove);
+
     void shutdown();
 
     void traceMethodCalls(boolean traceOn);
