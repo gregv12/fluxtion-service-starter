@@ -111,6 +111,7 @@ public class CascadeOnSuccessfulTaskExecutionTest extends BaseServiceStarterTest
         serviceManager.triggerNotificationOnSuccessfulTaskExecution(true);
         ADD_AUDIT_LOG = true;
 
+        serviceManager.failFastOnTaskException(false);
         serviceManager.startService(svcA.getName());
         updateStatus(statusMap, svcA.getName(), Service.Status.WAITING_FOR_PARENTS_TO_START);
         updateStatus(statusMap, svcB.getName(), Service.Status.STARTING);
@@ -185,6 +186,7 @@ public class CascadeOnSuccessfulTaskExecutionTest extends BaseServiceStarterTest
         updateStatus(statusMap, svcD.getName(), Service.Status.STARTED);
         checkStatusMatch(statusMap);
 
+        serviceManager.failFastOnTaskException(false);
         serviceManager.stopAllServices();
         updateStatus(statusMap, svcA.getName(), Service.Status.STOPPED);
         updateStatus(statusMap, svcB.getName(), Service.Status.STOPPED);
