@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -95,14 +96,17 @@ public class FluxtionServiceManager implements ServiceManager {
         if (compile) {
             throw new UnsupportedOperationException("only interpreted service graphs can be added to after initial build");
         }
-        serviceStatusRecordCache.rebuildingMode();
-        Arrays.stream(serviceToAdd).forEach(this::addServicesToMap);//change to recursive lookup
-        Arrays.stream(serviceToAdd).forEach(this::setServiceDependencies);//use the recursive list here
-        startProcessor = new SynchronizedEventProcessor(Fluxtion.interpret(this::serviceStarter));
-        startProcessor.init();
-        startProcessor.onEvent(new EventLogControlEvent(new Slf4JAuditLogger()));
-        startProcessor.onEvent(new RegisterCommandProcessor(taskExecutor));
-        serviceStatusRecordCache.normalMode();
+        Set<Service> services = Arrays.stream(serviceToAdd).collect(Collectors.toSet());
+        if(!services.isEmpty()){
+            serviceStatusRecordCache.rebuildingMode();
+            services.forEach(this::addServicesToMap);//change to recursive lookup
+            services.forEach(this::setServiceDependencies);//use the recursive list here
+            startProcessor = new SynchronizedEventProcessor(Fluxtion.interpret(this::serviceStarter));
+            startProcessor.init();
+            startProcessor.onEvent(new EventLogControlEvent(new Slf4JAuditLogger()));
+            startProcessor.onEvent(new RegisterCommandProcessor(taskExecutor));
+            serviceStatusRecordCache.normalMode();
+        }
         return this;
     }
 

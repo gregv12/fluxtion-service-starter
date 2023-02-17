@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.fluxtion.example.servicestater.Service.Status.STATUS_UNKNOWN;
@@ -166,4 +167,16 @@ public abstract class ServiceController extends EventLogNode implements NamedNod
         serviceStatusRecordCache.setServiceStatus(getServiceName(), STATUS_UNKNOWN);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ServiceController that = (ServiceController) o;
+        return serviceName.equals(that.serviceName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(serviceName);
+    }
 }
