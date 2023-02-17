@@ -105,6 +105,24 @@ public class DynamicGraphTest {
     }
 
     @Test
+    public void addSameServiceMultipleTimesAfterStart() {
+        List<ServiceStatusRecord> statusList = new ArrayList<>();
+        Service root = simpleService("root-1").build();
+        Service a1 = simpleService("A1").requiredServices(root).build();
+
+        ServiceManager serviceManager = ServiceManager.build(root, a1);
+        serviceManager.registerStatusListener(c -> c.forEach(statusList::add));
+        serviceManager.triggerNotificationOnSuccessfulTaskExecution(true);
+        serviceManager.startAllServices();
+
+        Service newService = simpleService("after-thefact").requiredServices(root).build();
+        serviceManager.addService(newService);
+
+        newService = simpleService("after-thefact").requiredServices(root).build();
+        serviceManager.addService(newService);
+    }
+
+    @Test
     public void removeServiceAfterStart() {
         Service root = simpleService("root-1").build();
         Service a1 = simpleService("A1").requiredServices(root).build();
