@@ -34,7 +34,7 @@ import java.util.function.Consumer;
  */
 public class TaskWrapperPublisher implements NamedNode {
 
-    private final List<TaskWrapper> commandList = new ArrayList<>();
+    private transient final List<TaskWrapper> commandList = new ArrayList<>();
     private Consumer<List<TaskWrapper>> commandPublisher = (command -> {
     });
 
