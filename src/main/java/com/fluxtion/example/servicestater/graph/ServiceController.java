@@ -22,6 +22,7 @@ import com.fluxtion.example.servicestater.graph.GraphEvent.RemoveService;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.PushReference;
+import com.fluxtion.runtime.annotations.builder.ExcludeNode;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.partition.LambdaReflection;
@@ -59,8 +60,8 @@ public abstract class ServiceController extends EventLogNode implements NamedNod
      * services that depend up on this instance
      */
     private List<ServiceController> dependents = new ArrayList<>();
-    private LambdaReflection.SerializableRunnable startTask;
-    private LambdaReflection.SerializableRunnable stopTask;
+    private transient LambdaReflection.SerializableRunnable startTask;
+    private transient LambdaReflection.SerializableRunnable stopTask;
 
     public ServiceController(String serviceName, String controllerName, TaskWrapperPublisher taskWrapperPublisher, ServiceStatusRecordCache serviceStatusRecordCache) {
         this.serviceName = serviceName;
