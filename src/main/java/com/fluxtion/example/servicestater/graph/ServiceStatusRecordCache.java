@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  */
 public class ServiceStatusRecordCache implements NamedNode {
 
-    private final Map<String, Service.Status> serviceStatusMap = new HashMap<>();
+    private transient final Map<String, Service.Status> serviceStatusMap = new HashMap<>();
     private Consumer<List<ServiceStatusRecord>> statusListener = (strings -> {
     });
 
