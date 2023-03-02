@@ -17,6 +17,7 @@
 package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
+import com.fluxtion.example.servicestater.graph.GraphEvent.PublishStopTask;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 
@@ -72,10 +73,11 @@ public class ForwardPassServiceController extends ServiceController {
     }
 
     @OnEventHandler(propagate = false)
-    public void publishStartTasks(GraphEvent.PublishStopTask publishStartTask) {
+    public boolean publishStartTasks(PublishStopTask publishStartTask) {
         if (getStatus() == Service.Status.WAITING_FOR_PARENTS_TO_STOP && (!hasParents() || areAllParentsStopped())) {
             stopService();
         }
+        return false;
     }
 
     @OnEventHandler(filterVariable = "serviceName")

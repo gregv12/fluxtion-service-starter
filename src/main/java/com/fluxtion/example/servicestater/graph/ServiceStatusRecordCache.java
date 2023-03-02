@@ -18,6 +18,8 @@ package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.example.servicestater.ServiceStatusRecord;
+import com.fluxtion.example.servicestater.graph.FluxtionServiceManager.RegisterStatusListener;
+import com.fluxtion.example.servicestater.graph.GraphEvent.PublishStatus;
 import com.fluxtion.example.servicestater.graph.GraphEvent.RemoveService;
 import com.fluxtion.runtime.annotations.Initialise;
 import com.fluxtion.runtime.annotations.OnEventHandler;
@@ -63,11 +65,13 @@ public class ServiceStatusRecordCache implements NamedNode {
      * Upon registration the service status is published
      *
      * @param listener contains the status listener
+     * @return
      */
     @OnEventHandler(propagate = false)
-    public void registerStatusListener(FluxtionServiceManager.RegisterStatusListener listener) {
+    public boolean registerStatusListener(RegisterStatusListener listener) {
         statusListener = listener.getStatusListener();
         publishStatus();
+        return false;
     }
 
     /**
@@ -76,10 +80,12 @@ public class ServiceStatusRecordCache implements NamedNode {
      * On receiving the event the instance will publish the current service status
      *
      * @param publishStatusRequest contains the status listener
+     * @return
      */
     @OnEventHandler(propagate = false)
-    public void publishCurrentStatus(GraphEvent.PublishStatus publishStatusRequest) {
+    public boolean publishCurrentStatus(PublishStatus publishStatusRequest) {
         publishStatus();
+        return false;
     }
 
     /**
