@@ -18,6 +18,7 @@ package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.ServiceManager;
 import com.fluxtion.example.servicestater.TaskWrapper;
+import com.fluxtion.example.servicestater.graph.FluxtionServiceManager.RegisterCommandProcessor;
 import com.fluxtion.runtime.annotations.AfterEvent;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.node.NamedNode;
@@ -39,8 +40,9 @@ public class TaskWrapperPublisher implements NamedNode {
     });
 
     @OnEventHandler(propagate = false)
-    public void registerCommandProcessor(FluxtionServiceManager.RegisterCommandProcessor registerCommandProcessor) {
+    public boolean registerCommandProcessor(RegisterCommandProcessor registerCommandProcessor) {
         this.commandPublisher = registerCommandProcessor.getConsumer();
+        return false;
     }
 
     public void publishCommand(TaskWrapper command) {

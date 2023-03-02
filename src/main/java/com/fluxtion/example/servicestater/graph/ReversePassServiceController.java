@@ -17,6 +17,7 @@
 package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
+import com.fluxtion.example.servicestater.graph.GraphEvent.PublishStartTask;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 
@@ -75,10 +76,11 @@ public class ReversePassServiceController extends ServiceController {
     }
 
     @OnEventHandler(propagate = false)
-    public void publishStartTasks(GraphEvent.PublishStartTask publishStartTask) {
+    public boolean publishStartTasks(PublishStartTask publishStartTask) {
         if (getStatus() == Service.Status.WAITING_FOR_PARENTS_TO_START && (!hasParents() || areAllParentsStarted())) {
             startService();
         }
+        return false;
     }
 
     @OnEventHandler(filterVariable = "serviceName")
