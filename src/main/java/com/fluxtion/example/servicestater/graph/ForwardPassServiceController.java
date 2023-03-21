@@ -21,9 +21,8 @@ import com.fluxtion.example.servicestater.graph.GraphEvent.PublishStopTask;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
 
+import static com.fluxtion.example.servicestater.Service.Status.*;
 import static com.fluxtion.example.servicestater.graph.FluxtionServiceManager.toStartServiceName;
-import static com.fluxtion.example.servicestater.Service.Status.STARTED;
-import static com.fluxtion.example.servicestater.Service.Status.WAITING_FOR_PARENTS_TO_START;
 
 /**
  * A controller for notifying services in the graph, based upon the topological order of the nodes in the graph. The
@@ -56,6 +55,10 @@ public class ForwardPassServiceController extends ServiceController {
     private boolean startServiceRequest() {
         boolean changed = false;
         Service.Status startStatus = getStatus();
+        auditLog.info("nullStatus", startStatus == null);
+        if(startStatus == null){
+            startStatus = STATUS_UNKNOWN;
+        }
         switch (startStatus) {
             case STATUS_UNKNOWN:
             case WAITING_FOR_PARENTS_TO_STOP:
