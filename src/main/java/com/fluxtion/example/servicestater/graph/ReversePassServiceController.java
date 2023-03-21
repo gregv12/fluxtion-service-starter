@@ -59,6 +59,10 @@ public class ReversePassServiceController extends ServiceController {
     private boolean stopServiceRequest() {
         boolean changed = false;
         Service.Status initialStatus = getStatus();
+        auditLog.info("nullStatus", initialStatus == null);
+        if(initialStatus == null){
+            initialStatus = STATUS_UNKNOWN;
+        }
         switch (initialStatus) {
             case STATUS_UNKNOWN:
             case WAITING_FOR_PARENTS_TO_START:
