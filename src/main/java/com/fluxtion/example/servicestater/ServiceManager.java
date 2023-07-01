@@ -126,7 +126,7 @@ public interface ServiceManager {
     void stopAllServices();
 
     /**
-     * By detault any excetion that is thrown in start/stop task will be re-thrown by the default {@link com.fluxtion.example.servicestater.TaskWrapper.TaskExecutor}
+     * By default, any exception that is thrown in start/stop task will be re-thrown by the default {@link com.fluxtion.example.servicestater.TaskWrapper.TaskExecutor}
      * Setting this flag to false will cause the exceptions to be swallowed and the ServiceManager will still be in a
      * good state after an exception has been thrown.
      *
@@ -199,4 +199,17 @@ public interface ServiceManager {
      * @param triggerNotificationOnSuccessfulTaskExecution flag controlling automatic start/stop notification
      */
     void triggerNotificationOnSuccessfulTaskExecution(boolean triggerNotificationOnSuccessfulTaskExecution);
+
+    /**
+     * Flag to trigger automatic notification to the {@link ServiceManager} if a start/stop task is present and executes
+     * either with or without an exception. Calling either:
+     * <ul>
+     *     <li>{@link ServiceManager#serviceStarted(String)}</li>
+     *     <li>{@link ServiceManager#serviceStopped(String)}</li>
+     * </ul>
+     *
+     * otherwise no notification is sent to the {@link ServiceManager}
+     * @param triggerNotificationAfterTaskExecution flag controlling automatic start/stop notification
+     */
+    void triggerNotificationAfterTaskExecution(boolean triggerNotificationAfterTaskExecution);
 }

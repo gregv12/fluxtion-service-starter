@@ -282,6 +282,13 @@ public class FluxtionServiceManager implements ServiceManager {
         taskExecutor.setTriggerNotificationOnSuccessfulTaskExecution(triggerNotificationOnSuccessfulTaskExecution);
     }
 
+    public void triggerNotificationAfterTaskExecution(boolean triggerNotificationAfterTaskExecution){
+        if(triggerNotificationAfterTaskExecution){
+            failFastOnTaskException(false);
+        }
+        taskExecutor.setTriggerNotificationAfterTaskExecution(triggerNotificationAfterTaskExecution);
+    }
+
     public FluxtionServiceManager addAuditLog(boolean addAudit) {
         this.addAudit = addAudit;
         return this;
@@ -385,6 +392,7 @@ public class FluxtionServiceManager implements ServiceManager {
         private transient final List<TaskWrapper> tasks = new ArrayList<>();
         private TaskWrapper.TaskExecutor delegate;
         private boolean triggerNotificationOnSuccessfulTaskExecution = false;
+        private boolean triggerNotificationAfterTaskExecution = false;
         private boolean failFastFlag = true;
 
         public DelegatingTaskExecutor() {
@@ -401,6 +409,14 @@ public class FluxtionServiceManager implements ServiceManager {
             this.triggerNotificationOnSuccessfulTaskExecution = triggerNotificationOnSuccessfulTaskExecution;
         }
 
+        public void setTriggerNotificationAfterTaskExecution(boolean triggerNotificationAfterTaskExecution) {
+            if(triggerNotificationAfterTaskExecution){
+                failFastFlag = false;
+                triggerNotificationOnSuccessfulTaskExecution = true;
+            }
+            this.triggerNotificationAfterTaskExecution = triggerNotificationAfterTaskExecution;
+        }
+
         @Override
         public void close() throws Exception {
             delegate.close();
@@ -412,7 +428,7 @@ public class FluxtionServiceManager implements ServiceManager {
             if (triggerNotificationOnSuccessfulTaskExecution) {
                 tasks.addAll(
                         taskWrappers.stream()
-                                .map(t -> new NotifyOnSuccessTaskWrapper(t, FluxtionServiceManager.this))
+                                .map(t -> new NotifyOnSuccessTaskWrapper(t, FluxtionServiceManager.this, triggerNotificationAfterTaskExecution))
                                 .collect(Collectors.toList())
                 );
             } else {

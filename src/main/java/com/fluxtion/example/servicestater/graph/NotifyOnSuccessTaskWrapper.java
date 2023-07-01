@@ -31,18 +31,20 @@ import com.fluxtion.example.servicestater.TaskWrapper;
  */
 class NotifyOnSuccessTaskWrapper extends TaskWrapper {
     private final ServiceManager serviceManager;
+    private final boolean ignoreException;
 
-    public NotifyOnSuccessTaskWrapper(TaskWrapper taskWrapper, ServiceManager serviceManager) {
+    public NotifyOnSuccessTaskWrapper(TaskWrapper taskWrapper, ServiceManager serviceManager, boolean ignoreException) {
         super(taskWrapper.getServiceName(), taskWrapper.isStartTask(), taskWrapper.getTask());
         this.serviceManager = serviceManager;
+        this.ignoreException = ignoreException;
     }
 
     @Override
     public TaskExecutionResult call() {
         TaskExecutionResult result = super.call();
-        if (result.isSuccess() && isStartTask()) {
+        if ((ignoreException || result.isSuccess()) && isStartTask()) {
             serviceManager.serviceStarted(getServiceName());
-        } else if (result.isSuccess() && !isStartTask()) {
+        } else if ((ignoreException || result.isSuccess()) && !isStartTask()) {
             serviceManager.serviceStopped(getServiceName());
         }
         return result;
