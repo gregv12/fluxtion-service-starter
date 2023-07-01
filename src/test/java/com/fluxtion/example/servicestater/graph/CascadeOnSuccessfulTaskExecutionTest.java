@@ -195,6 +195,45 @@ public class CascadeOnSuccessfulTaskExecutionTest extends BaseServiceStarterTest
         checkStatusMatch(statusMap);
     }
 
+    @Test
+    public void startAllServiceThenStopAllWithExceptionInC_StopTask_AndIgnoreException(){
+        svcA = Service.builder("A")
+                .startTask(this::success)
+                .stopTask(this::success)
+                .build();
+        svcB = Service.builder("B").servicesThatRequireMe(svcA)
+                .startTask(this::success)
+                .stopTask(this::success)
+                .build();
+        svcC = Service.builder("C").servicesThatRequireMe(svcA)
+                .startTask(this::success)
+                .stopTask(this::fail)
+                .build();
+        svcD = Service.builder("D").servicesThatRequireMe(svcB, svcC)
+                .startTask(this::success)
+                .stopTask(this::success)
+                .build();
+        buildGraph();
+        serviceManager.triggerNotificationOnSuccessfulTaskExecution(true);
+        ADD_AUDIT_LOG = true;
+        auditOn(true);
+
+        serviceManager.startAllServices();
+        updateStatus(statusMap, svcA.getName(), Service.Status.STARTED);
+        updateStatus(statusMap, svcB.getName(), Service.Status.STARTED);
+        updateStatus(statusMap, svcC.getName(), Service.Status.STARTED);
+        updateStatus(statusMap, svcD.getName(), Service.Status.STARTED);
+        checkStatusMatch(statusMap);
+
+        serviceManager.triggerNotificationAfterTaskExecution(true);
+        serviceManager.stopAllServices();
+        updateStatus(statusMap, svcA.getName(), Service.Status.STOPPED);
+        updateStatus(statusMap, svcB.getName(), Service.Status.STOPPED);
+        updateStatus(statusMap, svcC.getName(), Service.Status.STOPPED);
+        updateStatus(statusMap, svcD.getName(), Service.Status.STOPPED);
+        checkStatusMatch(statusMap);
+    }
+
     protected void buildGraph(){
 
 
