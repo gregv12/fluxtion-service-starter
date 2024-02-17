@@ -17,9 +17,13 @@
 package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
+import com.fluxtion.example.servicestater.ServiceOrderRecord;
 import com.fluxtion.example.servicestater.graph.GraphEvent.PublishStartTask;
+import com.fluxtion.runtime.annotations.NoPropagateFunction;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
+
+import java.util.function.Consumer;
 
 import static com.fluxtion.example.servicestater.Service.Status.*;
 import static com.fluxtion.example.servicestater.graph.FluxtionServiceManager.toStopServiceName;
@@ -87,6 +91,12 @@ public class ReversePassServiceController extends ServiceController {
         return false;
     }
 
+    @Override
+    @NoPropagateFunction
+    public void startOrder(Consumer<ServiceOrderRecord<?>> serviceConsumer) {
+        serviceConsumer.accept(new ServiceOrderRecord<>(getServiceName(), getWrappedInstance(), getStatus()));
+    }
+
     @OnEventHandler(filterVariable = "serviceName")
     public boolean notifyServiceStarted(GraphEvent.NotifyServiceStarted statusUpdate) {
         boolean changed = getStatus() != Service.Status.STARTED;
@@ -96,7 +106,6 @@ public class ReversePassServiceController extends ServiceController {
         }
         return changed;
     }
-
 
     @OnTrigger
     public boolean recalculateStatusForStop() {
