@@ -16,16 +16,14 @@
 
 package com.fluxtion.example.servicestater.graph;
 
-import com.fluxtion.example.servicestater.Service;
-import com.fluxtion.example.servicestater.TaskWrapper;
+import com.fluxtion.example.servicestater.*;
 import com.fluxtion.example.servicestater.graph.GraphEvent.RemoveService;
-import com.fluxtion.runtime.annotations.Initialise;
-import com.fluxtion.runtime.annotations.OnEventHandler;
-import com.fluxtion.runtime.annotations.PushReference;
-import com.fluxtion.runtime.annotations.builder.ExcludeNode;
+import com.fluxtion.runtime.annotations.*;
 import com.fluxtion.runtime.audit.EventLogNode;
 import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.partition.LambdaReflection;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -33,6 +31,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.fluxtion.example.servicestater.Service.Status.STATUS_UNKNOWN;
@@ -48,8 +47,9 @@ import static com.fluxtion.example.servicestater.Service.Status.STATUS_UNKNOWN;
  * be published {@link TaskWrapperPublisher}, for a client app to execute after the graph cycle has completed.
  */
 @ToString
-public abstract class ServiceController extends EventLogNode implements NamedNode {
+public abstract class ServiceController extends EventLogNode implements NamedNode, @ExportService ServiceQuery {
 
+    @Getter
     protected final String serviceName;
     protected final transient String controllerName;
     @PushReference
@@ -60,8 +60,12 @@ public abstract class ServiceController extends EventLogNode implements NamedNod
      * services that depend up on this instance
      */
     private List<ServiceController> dependents = new ArrayList<>();
+    @Setter @Getter
     private transient LambdaReflection.SerializableRunnable startTask;
+    @Setter @Getter
     private transient LambdaReflection.SerializableRunnable stopTask;
+    @Setter @Getter
+    private transient Object wrappedInstance;
 
     public ServiceController(String serviceName, String controllerName, TaskWrapperPublisher taskWrapperPublisher, ServiceStatusRecordCache serviceStatusRecordCache) {
         this.serviceName = serviceName;
@@ -78,7 +82,7 @@ public abstract class ServiceController extends EventLogNode implements NamedNod
     }
 
     @OnEventHandler(propagate = false)
-    public boolean removeDependent(RemoveService removeServiceEvent){
+    public boolean removeDependent(RemoveService removeServiceEvent) {
         dependents.removeIf(removeServiceEvent::serviceMatch);
         return false;
     }
@@ -95,30 +99,26 @@ public abstract class ServiceController extends EventLogNode implements NamedNod
         return serviceStatusRecordCache.getStatus(getServiceName());
     }
 
+    @Override
+    @NoPropagateFunction
+    public void startOrder(Consumer<ServiceOrderRecord<?>> serviceConsumer) {
+    }
+
+    @Override
+    @NoPropagateFunction
+    public void stopOrder(Consumer<ServiceOrderRecord<?>> serviceConsumer) {
+    }
+
+    @OnEventHandler(propagate = false, filterVariable = "serviceName")
+    public boolean registerWrappedInstance(GraphEvent.RegisterWrappedInstance registerWrappedInstance){
+        wrappedInstance = registerWrappedInstance.getWrappedInstance();
+        return false;
+    }
+
     protected void setStatus(Service.Status status) {
         auditLog.info("initialStatus", getStatus());
         auditLog.info("setStatus", status);
         serviceStatusRecordCache.setServiceStatus(getServiceName(), status);
-    }
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public LambdaReflection.SerializableRunnable getStartTask() {
-        return startTask;
-    }
-
-    public void setStartTask(LambdaReflection.SerializableRunnable startTask) {
-        this.startTask = startTask;
-    }
-
-    public LambdaReflection.SerializableRunnable getStopTask() {
-        return stopTask;
-    }
-
-    public void setStopTask(LambdaReflection.SerializableRunnable stopTask) {
-        this.stopTask = stopTask;
     }
 
     protected void publishTask(TaskWrapper task) {

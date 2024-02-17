@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 /**
  * Controls a set of {@link Service}'s
  */
-public interface ServiceManager {
+public interface ServiceManager extends ServiceQuery {
 
     /**
      * Build a transient ServiceManager, when this process ends the {@link ServiceManager} will disappear
@@ -55,13 +55,26 @@ public interface ServiceManager {
         return fluxtionServiceManager;
     }
 
+    static ServiceManager compileServiceManagerAot(String className, String packageName, Service... serviceList) {
+        FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
+        fluxtionServiceManager.buildServiceControllerAot(className, packageName, serviceList);
+        return fluxtionServiceManager;
+    }
+
+    static ServiceManager compileServiceManagerAot(String sourceOutputDirectory, String className, String packageName, Service... serviceList) {
+        FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
+        fluxtionServiceManager.buildServiceControllerAot(sourceOutputDirectory, className, packageName, serviceList);
+        return fluxtionServiceManager;
+    }
+
     /**
      * Load an {@link EventProcessor} and wrap as a ServiceManager, this method is for use when a service manager
      * has been compiled aot.
+     *
      * @param processor the {@link EventProcessor} to wrap as a SserviceManager
      * @return ServiceManager controlling client services
      */
-    static ServiceManager fromProcessor(EventProcessor processor){
+    static ServiceManager fromProcessor(EventProcessor processor) {
         FluxtionServiceManager fluxtionServiceManager = new FluxtionServiceManager();
         fluxtionServiceManager.useProcessor(processor);
         return fluxtionServiceManager;
@@ -141,6 +154,16 @@ public interface ServiceManager {
     void publishSystemStatus();
 
     /**
+     * Bind a user supplied object to a service, can be retrieved using {@link #startOrder(Consumer)}
+     * or {@link #stopOrder(Consumer)}, the returned {@link ServiceOrderRecord} has access to the user
+     * attached object.
+     *
+     * @param serviceName The service name to bind the user object to
+     * @param objectToBind The user object to bind to the service
+     */
+    void bindObjectToService(String serviceName, Object objectToBind);
+
+    /**
      * Add services to an already running graph, only supported on interpreted graphs. Compiled graph will throw an
      * {@link UnsupportedOperationException}. Returns a reference to a new grpah with all the previous states preservec,
      * new service are in {@link com.fluxtion.example.servicestater.Service.Status#STATUS_UNKNOWN} on completion of this
@@ -164,6 +187,7 @@ public interface ServiceManager {
     /**
      * Flag to control triggering of start tasks for a service if an unsolicited start notification is received.
      * When set to true, {@link this#serviceStarted(String)} is equivalent to calling {@link this#startService(String)}
+     *
      * @param triggerDependentsOnStart flag to control start triggering behaviour
      */
     void triggerDependentsOnStartNotification(boolean triggerDependentsOnStart);
@@ -171,6 +195,7 @@ public interface ServiceManager {
     /**
      * Flag to control triggering of stop tasks for a service if an unsolicited stop notification is received.
      * When set to true, {@link this#serviceStopped(String)} is equivalent to calling {@link this#stopService(String)}
+     *
      * @param triggerDependentsOnStop flag to control start triggering behaviour
      */
     void triggerDependentsOnStopNotification(boolean triggerDependentsOnStop);
@@ -194,8 +219,9 @@ public interface ServiceManager {
      *     <li>{@link ServiceManager#serviceStarted(String)}</li>
      *     <li>{@link ServiceManager#serviceStopped(String)}</li>
      * </ul>
-     *
+     * <p>
      * otherwise no notification is sent to the {@link ServiceManager}
+     *
      * @param triggerNotificationOnSuccessfulTaskExecution flag controlling automatic start/stop notification
      */
     void triggerNotificationOnSuccessfulTaskExecution(boolean triggerNotificationOnSuccessfulTaskExecution);
@@ -207,8 +233,9 @@ public interface ServiceManager {
      *     <li>{@link ServiceManager#serviceStarted(String)}</li>
      *     <li>{@link ServiceManager#serviceStopped(String)}</li>
      * </ul>
-     *
+     * <p>
      * otherwise no notification is sent to the {@link ServiceManager}
+     *
      * @param triggerNotificationAfterTaskExecution flag controlling automatic start/stop notification
      */
     void triggerNotificationAfterTaskExecution(boolean triggerNotificationAfterTaskExecution);

@@ -20,9 +20,7 @@ import com.fluxtion.example.servicestater.graph.ForwardPassServiceController;
 import com.fluxtion.example.servicestater.graph.ReversePassServiceController;
 import com.fluxtion.runtime.node.NamedNode;
 import com.fluxtion.runtime.partition.LambdaReflection.SerializableRunnable;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.ToString;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -64,6 +62,9 @@ public class Service implements NamedNode {
     private final SerializableRunnable startTask;
     @Nullable
     private final SerializableRunnable stopTask;
+    @Nullable
+    @Getter
+    private final Object wrappedInstance;
 
     public static ServiceBuilder builder(String name) {
         return hiddenBuilder().name(name)

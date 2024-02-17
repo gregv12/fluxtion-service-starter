@@ -2,15 +2,18 @@ package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service.Status;
 import com.fluxtion.example.servicestater.ServiceModels;
+import com.fluxtion.example.servicestater.ServiceOrderRecord;
 import com.fluxtion.example.servicestater.ServiceStatusRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.fluxtion.example.servicestater.ServiceModels.mapWithStatus;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -67,6 +70,67 @@ class FluxtionServiceManagerModelATest {
     }
 
     @Test
+    void validateStartStopOrderInterpreted() {
+        var serviceManager = ServiceModels.buildModelA(ADD_AUDIT_LOG, false);
+        validateStartOrder(serviceManager);
+        validateStopOrder(serviceManager);
+    }
+
+    @Test
+    void validateStartStopOrderCompiledInMemory() {
+        var serviceManager = ServiceModels.buildModelA(ADD_AUDIT_LOG, true);
+        validateStartOrder(serviceManager);
+        validateStopOrder(serviceManager);
+    }
+
+    @Test
+    void validateStartStopOrderCompiledAOT() {
+        var serviceManager = ServiceModels.buildModelA("ModelAStopOrder", ADD_AUDIT_LOG);
+        validateStartOrder(serviceManager);
+        validateStopOrder(serviceManager);
+    }
+
+    private void validateStartOrder(FluxtionServiceManager serviceManager) {
+        ArrayList<ServiceOrderRecord<?>> actual = new ArrayList<>();
+        serviceManager.startOrder(actual::add);
+        List<String> startOrderNameList = actual.stream().map(ServiceOrderRecord::getServiceName).collect(Collectors.toList());
+//        System.out.println("START ORDER:\n" + startOrderNameList);
+        int persisterIndex = startOrderNameList.indexOf(ServiceModels.PERSISTER);
+        int indexCalc_C = startOrderNameList.indexOf(ServiceModels.CALC_C);
+        int handler_A = startOrderNameList.indexOf(ServiceModels.HANDLER_A);
+        int handler_B = startOrderNameList.indexOf(ServiceModels.HANDLER_B);
+        int handler_C = startOrderNameList.indexOf(ServiceModels.HANDLER_C);
+        int index_AGG_AB = startOrderNameList.indexOf(ServiceModels.AGG_AB);
+        Assertions.assertEquals(0, persisterIndex);
+        //
+        Assertions.assertTrue(persisterIndex < indexCalc_C);
+        Assertions.assertTrue(persisterIndex < index_AGG_AB);
+        Assertions.assertTrue(indexCalc_C < handler_C);
+        Assertions.assertTrue(index_AGG_AB < handler_A);
+        Assertions.assertTrue(index_AGG_AB < handler_B);
+    }
+
+    private void validateStopOrder(FluxtionServiceManager serviceManager) {
+        ArrayList<ServiceOrderRecord<?>> actual = new ArrayList<>();
+        serviceManager.stopOrder(actual::add);
+        List<String> startOrderNameList = actual.stream().map(ServiceOrderRecord::getServiceName).collect(Collectors.toList());
+//        System.out.println("STOP ORDER:\n" + startOrderNameList);
+        int persisterIndex = startOrderNameList.indexOf(ServiceModels.PERSISTER);
+        int indexCalc_C = startOrderNameList.indexOf(ServiceModels.CALC_C);
+        int handler_A = startOrderNameList.indexOf(ServiceModels.HANDLER_A);
+        int handler_B = startOrderNameList.indexOf(ServiceModels.HANDLER_B);
+        int handler_C = startOrderNameList.indexOf(ServiceModels.HANDLER_C);
+        int index_AGG_AB = startOrderNameList.indexOf(ServiceModels.AGG_AB);
+        Assertions.assertEquals(startOrderNameList.size() - 1, persisterIndex);
+        //
+        Assertions.assertTrue(persisterIndex > indexCalc_C);
+        Assertions.assertTrue(persisterIndex > index_AGG_AB);
+        Assertions.assertTrue(indexCalc_C > handler_C);
+        Assertions.assertTrue(index_AGG_AB > handler_A);
+        Assertions.assertTrue(index_AGG_AB > handler_B);
+    }
+
+    @Test
     void startingAggAB() {
         var serviceManager = ServiceModels.buildModelA(ADD_AUDIT_LOG, COMPILED);
         serviceManager.registerStatusListener(this::recordServiceStatus);
@@ -102,7 +166,7 @@ class FluxtionServiceManagerModelATest {
     }
 
     @Test
-    void stopAll(){
+    void stopAll() {
         ADD_AUDIT_LOG = true;
         FluxtionServiceManager fluxtionServiceManager = ServiceModels.buildModelA(ADD_AUDIT_LOG, COMPILED);
         fluxtionServiceManager.registerStatusListener(this::recordServiceStatus);
@@ -115,7 +179,7 @@ class FluxtionServiceManagerModelATest {
     }
 
     @Test
-    void startAll(){
+    void startAll() {
         ADD_AUDIT_LOG = true;
         FluxtionServiceManager fluxtionServiceManager = ServiceModels.buildModelA(ADD_AUDIT_LOG, COMPILED);
         fluxtionServiceManager.registerStatusListener(this::recordServiceStatus);
