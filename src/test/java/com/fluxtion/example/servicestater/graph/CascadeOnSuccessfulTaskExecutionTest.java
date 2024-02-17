@@ -19,16 +19,16 @@ public class CascadeOnSuccessfulTaskExecutionTest extends BaseServiceStarterTest
     @Test
     public void startAllService(){
         svcA = Service.builder("A")
-                .startTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcB = Service.builder("B").servicesThatRequireMe(svcA)
-                .startTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcC = Service.builder("C").servicesThatRequireMe(svcA)
-                .startTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcD = Service.builder("D").servicesThatRequireMe(svcB, svcC)
-                .startTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         buildGraph();
         serviceManager.triggerNotificationOnSuccessfulTaskExecution(true);
@@ -45,16 +45,16 @@ public class CascadeOnSuccessfulTaskExecutionTest extends BaseServiceStarterTest
     @Test
     public void startAllSingleService(){
         svcA = Service.builder("A")
-                .startTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcB = Service.builder("B").servicesThatRequireMe(svcA)
-                .startTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcC = Service.builder("C").servicesThatRequireMe(svcA)
-                .startTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcD = Service.builder("D").servicesThatRequireMe(svcB, svcC)
-                .startTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         buildGraph();
         serviceManager.triggerNotificationOnSuccessfulTaskExecution(true);
@@ -71,15 +71,15 @@ public class CascadeOnSuccessfulTaskExecutionTest extends BaseServiceStarterTest
     @Test
     public void startSomeSingleService_NoStartTaskForC(){
         svcA = Service.builder("A")
-                .startTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcB = Service.builder("B").servicesThatRequireMe(svcA)
-                .startTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcC = Service.builder("C").servicesThatRequireMe(svcA)
                 .build();
         svcD = Service.builder("D").servicesThatRequireMe(svcB, svcC)
-                .startTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         buildGraph();
         serviceManager.triggerNotificationOnSuccessfulTaskExecution(true);
@@ -96,16 +96,16 @@ public class CascadeOnSuccessfulTaskExecutionTest extends BaseServiceStarterTest
     @Test
     public void startSomeSingleService_ExceptionInStartTaskForB(){
         svcA = Service.builder("A")
-                .startTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcB = Service.builder("B").servicesThatRequireMe(svcA)
-                .startTask(this::fail)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::fail)
                 .build();
         svcC = Service.builder("C").servicesThatRequireMe(svcA)
-                .startTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcD = Service.builder("D").servicesThatRequireMe(svcB, svcC)
-                .startTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         buildGraph();
         serviceManager.triggerNotificationOnSuccessfulTaskExecution(true);
@@ -123,20 +123,20 @@ public class CascadeOnSuccessfulTaskExecutionTest extends BaseServiceStarterTest
     @Test
     public void startAllServiceThenStopAll(){
         svcA = Service.builder("A")
-                .startTask(this::success)
-                .stopTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
+                .stopTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcB = Service.builder("B").servicesThatRequireMe(svcA)
-                .startTask(this::success)
-                .stopTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
+                .stopTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcC = Service.builder("C").servicesThatRequireMe(svcA)
-                .startTask(this::success)
-                .stopTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
+                .stopTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcD = Service.builder("D").servicesThatRequireMe(svcB, svcC)
-                .startTask(this::success)
-                .stopTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
+                .stopTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         buildGraph();
         serviceManager.triggerNotificationOnSuccessfulTaskExecution(true);
@@ -160,20 +160,20 @@ public class CascadeOnSuccessfulTaskExecutionTest extends BaseServiceStarterTest
     @Test
     public void startAllServiceThenStopAllWithExceptionInC_StopTask(){
         svcA = Service.builder("A")
-                .startTask(this::success)
-                .stopTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
+                .stopTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcB = Service.builder("B").servicesThatRequireMe(svcA)
-                .startTask(this::success)
-                .stopTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
+                .stopTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcC = Service.builder("C").servicesThatRequireMe(svcA)
-                .startTask(this::success)
-                .stopTask(this::fail)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
+                .stopTask(CascadeOnSuccessfulTaskExecutionTest::fail)
                 .build();
         svcD = Service.builder("D").servicesThatRequireMe(svcB, svcC)
-                .startTask(this::success)
-                .stopTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
+                .stopTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         buildGraph();
         serviceManager.triggerNotificationOnSuccessfulTaskExecution(true);
@@ -198,20 +198,20 @@ public class CascadeOnSuccessfulTaskExecutionTest extends BaseServiceStarterTest
     @Test
     public void startAllServiceThenStopAllWithExceptionInC_StopTask_AndIgnoreException(){
         svcA = Service.builder("A")
-                .startTask(this::success)
-                .stopTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
+                .stopTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcB = Service.builder("B").servicesThatRequireMe(svcA)
-                .startTask(this::success)
-                .stopTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
+                .stopTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         svcC = Service.builder("C").servicesThatRequireMe(svcA)
-                .startTask(this::success)
-                .stopTask(this::fail)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
+                .stopTask(CascadeOnSuccessfulTaskExecutionTest::fail)
                 .build();
         svcD = Service.builder("D").servicesThatRequireMe(svcB, svcC)
-                .startTask(this::success)
-                .stopTask(this::success)
+                .startTask(CascadeOnSuccessfulTaskExecutionTest::success)
+                .stopTask(CascadeOnSuccessfulTaskExecutionTest::success)
                 .build();
         buildGraph();
         serviceManager.triggerNotificationOnSuccessfulTaskExecution(true);
@@ -251,9 +251,9 @@ public class CascadeOnSuccessfulTaskExecutionTest extends BaseServiceStarterTest
         updateStatus(statusMap, svcD.getName(), Service.Status.STATUS_UNKNOWN);
     }
 
-    public void success(){}
+    public static void success(){}
 
-    public void fail(){
+    public static void fail(){
         throw new RuntimeException("failed execution");
     }
 }

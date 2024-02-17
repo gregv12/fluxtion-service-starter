@@ -90,10 +90,14 @@ public class LoadAotCompiledTest extends BaseServiceStarterTest {
         serviceManager.startService("B");
         updateStatus(statusMap, "A", Service.Status.STARTING);
         updateStatus(statusMap, "B", Service.Status.WAITING_FOR_PARENTS_TO_START);
+        Assertions.assertTrue(Astarted);
+        Assertions.assertFalse(Bstarted);
 
         serviceManager.serviceStarted("A");
         updateStatus(statusMap, "A", Service.Status.STARTED);
         updateStatus(statusMap, "B", Service.Status.STARTING);
+        Assertions.assertTrue(Astarted);
+        Assertions.assertTrue(Bstarted);
 
         ArrayList<ServiceOrderRecord<?>> list = new ArrayList<>();
         serviceManager.startOrder(list::add);

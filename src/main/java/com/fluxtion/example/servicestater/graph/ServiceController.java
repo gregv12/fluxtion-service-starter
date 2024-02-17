@@ -61,9 +61,9 @@ public abstract class ServiceController extends EventLogNode implements NamedNod
      */
     private List<ServiceController> dependents = new ArrayList<>();
     @Setter @Getter
-    private transient LambdaReflection.SerializableRunnable startTask;
+    private LambdaReflection.SerializableRunnable startTask;
     @Setter @Getter
-    private transient LambdaReflection.SerializableRunnable stopTask;
+    private LambdaReflection.SerializableRunnable stopTask;
     @Setter @Getter
     private transient Object wrappedInstance;
 
