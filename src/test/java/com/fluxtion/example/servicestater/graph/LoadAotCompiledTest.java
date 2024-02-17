@@ -39,12 +39,16 @@ public class LoadAotCompiledTest extends BaseServiceStarterTest {
 
     @Test
     public void testStartCompileAot() {
+        Astarted = false;
+        Bstarted = false;
         ServiceManager serviceManager = buildModel("ProcessorGetStartOrder");
         validateServiceStarter(serviceManager);
     }
 
     @Test
     public void testStartInterpreted() {
+        Astarted = false;
+        Bstarted = false;
         Service a = Service.builder("A").startTask(LoadAotCompiledTest::startA).wrappedInstance(AAAAA).build();
         Service b = Service.builder("B").requiredServices(a).startTask(LoadAotCompiledTest::startB).build();
         ServiceManager serviceManager = ServiceManager.build(a, b);
@@ -54,6 +58,8 @@ public class LoadAotCompiledTest extends BaseServiceStarterTest {
 
     @Test
     public void testStartCompiledInMemory() {
+        Astarted = false;
+        Bstarted = false;
         Service a = Service.builder("A").startTask(LoadAotCompiledTest::startA).wrappedInstance(AAAAA).build();
         Service b = Service.builder("B").requiredServices(a).startTask(LoadAotCompiledTest::startB).build();
         ServiceManager serviceManager = ServiceManager.compiledServiceManager(a, b);
@@ -62,6 +68,8 @@ public class LoadAotCompiledTest extends BaseServiceStarterTest {
 
     @Test
     public void testStartCompiled() {
+        Astarted = false;
+        Bstarted = false;
         outputDirectory = OutputRegistry.JAVA_TEST_SRC_DIR;
         ServiceManager serviceManager = buildModel("ProcessorTestLoad");
 //        ServiceManager serviceManager = ServiceManager.fromProcessor(new ProcessorTestLoad());
