@@ -18,10 +18,7 @@ package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.compiler.EventProcessorConfig;
 import com.fluxtion.compiler.Fluxtion;
-import com.fluxtion.example.servicestater.Service;
-import com.fluxtion.example.servicestater.ServiceManager;
-import com.fluxtion.example.servicestater.ServiceStatusRecord;
-import com.fluxtion.example.servicestater.TaskWrapper;
+import com.fluxtion.example.servicestater.*;
 import com.fluxtion.example.servicestater.graph.GraphEvent.RemoveService;
 import com.fluxtion.example.servicestater.helpers.Slf4JAuditLogger;
 import com.fluxtion.example.servicestater.helpers.SynchronousTaskExecutor;
@@ -67,7 +64,7 @@ import java.util.stream.Collectors;
  * </ul>
  */
 @Slf4j
-public class FluxtionServiceManager implements ServiceManager {
+public class FluxtionServiceManager implements ServiceManager, ServiceQuery {
 
     public static final String START_SUFFIX = "_start";
     public static final String STOP_SUFFIX = "_stop";
@@ -97,14 +94,12 @@ public class FluxtionServiceManager implements ServiceManager {
             throw new UnsupportedOperationException("only interpreted service graphs can be added to after initial build");
         }
         Set<Service> services = Arrays.stream(serviceToAdd).collect(Collectors.toSet());
-        if(!services.isEmpty()){
+        if (!services.isEmpty()) {
             serviceStatusRecordCache.rebuildingMode();
             services.forEach(this::addServicesToMap);//change to recursive lookup
             services.forEach(this::setServiceDependencies);//use the recursive list here
             startProcessor = new SynchronizedEventProcessor(Fluxtion.interpret(this::serviceStarter));
-            startProcessor.init();
-            startProcessor.onEvent(new EventLogControlEvent(new Slf4JAuditLogger()));
-            startProcessor.onEvent(new RegisterCommandProcessor(taskExecutor));
+            postBuild(serviceToAdd);
             serviceStatusRecordCache.normalMode();
         }
         return this;
@@ -123,34 +118,50 @@ public class FluxtionServiceManager implements ServiceManager {
         Arrays.stream(servicesToRemove).map(FluxtionServiceManager::toStopServiceName).forEach(managedStartServices::remove);
         startProcessor = new SynchronizedEventProcessor(Fluxtion.interpret(this::serviceStarter));
         serviceStatusRecordCache.rebuildingMode();
-        startProcessor.init();
-        startProcessor.onEvent(new EventLogControlEvent(new Slf4JAuditLogger()));
-        startProcessor.onEvent(new RegisterCommandProcessor(taskExecutor));
+        postBuild();
         serviceStatusRecordCache.normalMode();
         return this;
     }
 
     public FluxtionServiceManager buildServiceController(Service... serviceList) {
-        Objects.requireNonNull(serviceList);
-        managedStartServices.clear();
-        Arrays.stream(serviceList).forEach(this::addServicesToMap);//change to recursive lookup
-        Arrays.stream(serviceList).forEach(this::setServiceDependencies);//use the recursive list here
+        preBuild(serviceList);
         if (compile) {
             startProcessor = new SynchronizedEventProcessor(Fluxtion.compile(this::serviceStarter));
         } else {
             startProcessor = new SynchronizedEventProcessor(Fluxtion.interpret(this::serviceStarter));
         }
-        startProcessor.init();
-        startProcessor.onEvent(new EventLogControlEvent(new Slf4JAuditLogger()));
-        startProcessor.onEvent(new RegisterCommandProcessor(taskExecutor));
+        postBuild(serviceList);
+        return this;
+    }
+
+    public FluxtionServiceManager buildServiceControllerAot(
+            String className,
+            String packageName,
+            Service... serviceList) {
+        preBuild(serviceList);
+        startProcessor = new SynchronizedEventProcessor(Fluxtion.compileAot(this::serviceStarter, packageName, className));
+        postBuild(serviceList);
+        return this;
+    }
+
+    public FluxtionServiceManager buildServiceControllerAot(
+            String outputDirectory,
+            String className,
+            String packageName,
+            Service... serviceList) {
+        preBuild(serviceList);
+        startProcessor = Fluxtion.compile(this::serviceStarter, compilerCfg -> {
+            compilerCfg.setOutputDirectory(outputDirectory);
+            compilerCfg.setPackageName(packageName.trim());
+            compilerCfg.setClassName(className.trim());
+        });
+        postBuild(serviceList);
         return this;
     }
 
     public FluxtionServiceManager useProcessor(EventProcessor processor) {
         startProcessor = processor;
-        startProcessor.init();
-        startProcessor.onEvent(new EventLogControlEvent(new Slf4JAuditLogger()));
-        startProcessor.onEvent(new RegisterCommandProcessor(taskExecutor));
+        postBuild();
         return this;
     }
 
@@ -236,6 +247,11 @@ public class FluxtionServiceManager implements ServiceManager {
     }
 
     @Override
+    public void bindObjectToService(String serviceName, Object objectToBind) {
+        new GraphEvent.RegisterWrappedInstance(serviceName, objectToBind);
+    }
+
+    @Override
     public void serviceStarted(String serviceName) {
         log.info("notified service started;'{}'", serviceName);
         GraphEvent.NotifyServiceStarted notifyServiceStarted = new GraphEvent.NotifyServiceStarted(serviceName);
@@ -282,8 +298,8 @@ public class FluxtionServiceManager implements ServiceManager {
         taskExecutor.setTriggerNotificationOnSuccessfulTaskExecution(triggerNotificationOnSuccessfulTaskExecution);
     }
 
-    public void triggerNotificationAfterTaskExecution(boolean triggerNotificationAfterTaskExecution){
-        if(triggerNotificationAfterTaskExecution){
+    public void triggerNotificationAfterTaskExecution(boolean triggerNotificationAfterTaskExecution) {
+        if (triggerNotificationAfterTaskExecution) {
             failFastOnTaskException(false);
         }
         taskExecutor.setTriggerNotificationAfterTaskExecution(triggerNotificationAfterTaskExecution);
@@ -303,9 +319,11 @@ public class FluxtionServiceManager implements ServiceManager {
         ForwardPassServiceController forwardPassServiceController = new ForwardPassServiceController(s.getName(), taskWrapperPublisher, serviceStatusRecordCache);
         forwardPassServiceController.setStartTask(s.getStartTask());
         forwardPassServiceController.setStopTask(s.getStopTask());
+        forwardPassServiceController.setWrappedInstance(s.getWrappedInstance());
         ReversePassServiceController reversePassServiceController = new ReversePassServiceController(s.getName(), taskWrapperPublisher, serviceStatusRecordCache);
         reversePassServiceController.setStartTask(s.getStartTask());
         reversePassServiceController.setStopTask(s.getStopTask());
+        reversePassServiceController.setWrappedInstance(s.getWrappedInstance());
         managedStartServices.put(forwardPassServiceController.getName(), forwardPassServiceController);
         managedStartServices.put(reversePassServiceController.getName(), reversePassServiceController);
     }
@@ -354,6 +372,34 @@ public class FluxtionServiceManager implements ServiceManager {
         }
     }
 
+    private void preBuild(Service... serviceList) {
+        Objects.requireNonNull(serviceList);
+        managedStartServices.clear();
+        Arrays.stream(serviceList).forEach(this::addServicesToMap);//change to recursive lookup
+        Arrays.stream(serviceList).forEach(this::setServiceDependencies);//use the recursive list here
+    }
+
+    private void postBuild(Service... serviceToAdd) {
+        startProcessor.init();
+        startProcessor.onEvent(new EventLogControlEvent(new Slf4JAuditLogger()));
+        for (Service service : serviceToAdd) {
+            if(service.getWrappedInstance() != null){
+                startProcessor.onEvent(new GraphEvent.RegisterWrappedInstance(service.getName(), service.getWrappedInstance()));
+            }
+        }
+        startProcessor.onEvent(new RegisterCommandProcessor(taskExecutor));
+    }
+
+    @Override
+    public void startOrder(Consumer<ServiceOrderRecord<?>> serviceConsumer) {
+        startProcessor.getExportedService(ServiceQuery.class).startOrder(serviceConsumer);
+    }
+
+    @Override
+    public void stopOrder(Consumer<ServiceOrderRecord<?>> serviceConsumer) {
+        startProcessor.getExportedService(ServiceQuery.class).stopOrder(serviceConsumer);
+    }
+
     @Value
     public static class RegisterCommandProcessor {
         Consumer<List<TaskWrapper>> consumer;
@@ -385,6 +431,11 @@ public class FluxtionServiceManager implements ServiceManager {
         public void tearDown() {
             delegate.tearDown();
         }
+
+        @Override
+        public <T> T getExportedService(Class<T> exportedServiceClass) {
+            return delegate.getExportedService(exportedServiceClass);
+        }
     }
 
 
@@ -410,7 +461,7 @@ public class FluxtionServiceManager implements ServiceManager {
         }
 
         public void setTriggerNotificationAfterTaskExecution(boolean triggerNotificationAfterTaskExecution) {
-            if(triggerNotificationAfterTaskExecution){
+            if (triggerNotificationAfterTaskExecution) {
                 failFastFlag = false;
                 triggerNotificationOnSuccessfulTaskExecution = true;
             }

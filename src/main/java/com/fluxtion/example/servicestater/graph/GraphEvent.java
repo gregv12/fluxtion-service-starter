@@ -19,6 +19,7 @@ package com.fluxtion.example.servicestater.graph;
 import com.fluxtion.example.servicestater.Service;
 import com.fluxtion.runtime.event.Event;
 import com.fluxtion.runtime.node.NamedNode;
+import lombok.Getter;
 import lombok.ToString;
 
 /**
@@ -78,6 +79,17 @@ public interface GraphEvent {
     class NotifyServiceStopped extends FilteredGraphEvent {
         public NotifyServiceStopped(String name) {
             super(name);
+        }
+    }
+
+    @Getter
+    @ToString(callSuper = true)
+    class RegisterWrappedInstance extends FilteredGraphEvent {
+        private final Object wrappedInstance;
+
+        public RegisterWrappedInstance(String name, Object wrappedInstance) {
+            super(name);
+            this.wrappedInstance = wrappedInstance;
         }
     }
 
