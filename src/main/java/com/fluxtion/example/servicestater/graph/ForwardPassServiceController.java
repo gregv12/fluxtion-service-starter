@@ -17,9 +17,13 @@
 package com.fluxtion.example.servicestater.graph;
 
 import com.fluxtion.example.servicestater.Service;
+import com.fluxtion.example.servicestater.ServiceOrderRecord;
 import com.fluxtion.example.servicestater.graph.GraphEvent.PublishStopTask;
+import com.fluxtion.runtime.annotations.NoPropagateFunction;
 import com.fluxtion.runtime.annotations.OnEventHandler;
 import com.fluxtion.runtime.annotations.OnTrigger;
+
+import java.util.function.Consumer;
 
 import static com.fluxtion.example.servicestater.Service.Status.*;
 import static com.fluxtion.example.servicestater.graph.FluxtionServiceManager.toStartServiceName;
@@ -81,6 +85,12 @@ public class ForwardPassServiceController extends ServiceController {
             stopService();
         }
         return false;
+    }
+
+    @Override
+    @NoPropagateFunction
+    public void stopOrder(Consumer<ServiceOrderRecord<?>> serviceConsumer) {
+        serviceConsumer.accept(new ServiceOrderRecord<>(getServiceName(), getWrappedInstance(), getStatus()));
     }
 
     @OnEventHandler(filterVariable = "serviceName")
