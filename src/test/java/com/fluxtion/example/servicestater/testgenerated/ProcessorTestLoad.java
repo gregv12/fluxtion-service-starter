@@ -1,5 +1,4 @@
 /*
-* Copyright (C) 2024 gregory higgins
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the Server Side Public License, version 1,
@@ -67,8 +66,8 @@ import java.util.function.Consumer;
  *
  * <pre>
  * generation time                 : Not available
- * eventProcessorGenerator version : 9.2.15
- * api version                     : 9.2.15
+ * eventProcessorGenerator version : 9.3.13
+ * api version                     : 9.3.13
  * </pre>
  *
  * Event classes supported:
@@ -97,11 +96,13 @@ import java.util.function.Consumer;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ProcessorTestLoad
     implements EventProcessor<ProcessorTestLoad>,
+        /*--- @ExportService start ---*/
+        ServiceQuery,
+        /*--- @ExportService end ---*/
         StaticEventProcessor,
         InternalEventProcessor,
         BatchHandler,
-        Lifecycle,
-        ServiceQuery {
+        Lifecycle {
 
   //Node declarations
   private final CallbackDispatcherImpl callbackDispatcher = new CallbackDispatcherImpl();
@@ -137,12 +138,18 @@ public class ProcessorTestLoad
   private boolean isDirty_B_start = false;
   private boolean isDirty_B_stop = false;
   private boolean isDirty_clock = false;
+
   //Forked declarations
 
   //Filter constants
 
+  //unknown event handler
+  private Consumer unKnownEventHandler = (e) -> {};
+
   public ProcessorTestLoad(Map<Object, Object> contextMap) {
-    context.replaceMappings(contextMap);
+    if (context != null) {
+      context.replaceMappings(contextMap);
+    }
     A_start.setDependents(Arrays.asList(B_start));
     A_start.setStartTask(LoadAotCompiledTest::startA);
     B_start.setDependents(Arrays.asList());
@@ -160,8 +167,12 @@ public class ProcessorTestLoad
     initialiseAuditor(clock);
     initialiseAuditor(eventLogger);
     initialiseAuditor(nodeNameLookup);
-    subscriptionManager.setSubscribingEventProcessor(this);
-    context.setEventProcessorCallback(this);
+    if (subscriptionManager != null) {
+      subscriptionManager.setSubscribingEventProcessor(this);
+    }
+    if (context != null) {
+      context.setEventProcessorCallback(this);
+    }
   }
 
   public ProcessorTestLoad() {
@@ -306,6 +317,8 @@ public class ProcessorTestLoad
     } else if (event instanceof com.fluxtion.runtime.time.ClockStrategy.ClockStrategyEvent) {
       ClockStrategyEvent typedEvent = (ClockStrategyEvent) event;
       handleEvent(typedEvent);
+    } else {
+      unKnownEventHandler(event);
     }
   }
 
@@ -999,5 +1012,14 @@ public class ProcessorTestLoad
     } catch (Throwable e) {
       return "";
     }
+  }
+
+  public void unKnownEventHandler(Object object) {
+    unKnownEventHandler.accept(object);
+  }
+
+  @Override
+  public <T> void setUnKnownEventHandler(Consumer<T> consumer) {
+    unKnownEventHandler = consumer;
   }
 }
